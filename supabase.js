@@ -324,25 +324,33 @@ export const db = {
     return { success: !error, message: error?.message };
   },
 
-  async getStealMultiplier() {
-    const { data, error } = await supabase.from('settings').select('value').eq('key', 'steal_win_multiplier').single();
-    if (!error && data) return parseFloat(data.value) || 1.0;
-    return 1.0;
+  async getStealMultipliers() {
+    const { data, error } = await supabase.from('settings').select('*').in('key', ['steal_win_multiplier', 'steal_lose_multiplier']);
+    let win = 1.0, lose = 1.0;
+    if (!error && data) {
+      data.forEach(d => {
+        if (d.key === 'steal_win_multiplier') win = parseFloat(d.value) || 1.0;
+        if (d.key === 'steal_lose_multiplier') lose = parseFloat(d.value) || 1.0;
+      });
+    }
+    return { win, lose };
   },
 
-  async updateStealMultiplier(limit) {
-    const { error } = await supabase.from('settings').upsert({ key: 'steal_win_multiplier', value: String(parseFloat(limit) || 1.0) });
-    return { success: !error, message: error?.message };
+  async updateStealMultipliers(winVal, loseVal) {
+    const { error: err1 } = await supabase.from('settings').upsert({ key: 'steal_win_multiplier', value: String(parseFloat(winVal) || 1.0) });
+    const { error: err2 } = await supabase.from('settings').upsert({ key: 'steal_lose_multiplier', value: String(parseFloat(loseVal) || 1.0) });
+    if (err1 || err2) return { success: false, message: 'Lỗi khi lưu hệ số' };
+    return { success: true };
   },
 
   async getMaxStealsPerDay() {
     const { data, error } = await supabase.from('settings').select('value').eq('key', 'max_steals_per_day').single();
-    if (!error && data) return parseInt(data.value) || 6;
-    return 6;
+    if (!error && data) return parseInt(data.value) || 3;
+    return 3;
   },
 
   async updateMaxStealsPerDay(limit) {
-    const { error } = await supabase.from('settings').upsert({ key: 'max_steals_per_day', value: String(parseInt(limit) || 6) });
+    const { error } = await supabase.from('settings').upsert({ key: 'max_steals_per_day', value: String(parseInt(limit) || 3) });
     return { success: !error, message: error?.message };
   },
 
@@ -556,7 +564,7 @@ export const db = {
     if (error) return { success: false, message: error.message };
 
     // 5. Lấy multiplier từ settings
-    const multiplier = await db.getStealMultiplier();
+    const multipliers = await db.getStealMultipliers();
 
     // 6. Cộng/Trừ điểm
     const { data: usersData } = await supabase.from('users').select('id, total_score').in('id', [attackerId, defenderId]);
@@ -566,8 +574,8 @@ export const db = {
     const attackerTotal = parseInt(attackerData?.total_score) || 0;
     const defenderTotal = parseInt(defenderData?.total_score) || 0;
 
-    const winPoints = Math.round(20 * multiplier);
-    const losePoints = Math.round(10 * multiplier);
+    const winPoints = Math.round(20 * multipliers.win);
+    const losePoints = Math.round(10 * multipliers.lose);
 
     if (isSuccess) {
       // Attacker wins: Attacker gets +winPoints, Defender gets -winPoints (allow negative)

@@ -160,12 +160,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           if (!currentUser) return;
 
+          btn.textContent = '...';
+
           // Check limits before steal mode
           const stealsToday = await db.getStealsToday(currentUser.id);
           const maxSteals = await db.getMaxStealsPerDay();
           if (stealsToday >= maxSteals) {
             alert('Bạn đã hết lượt thách đấu hôm nay!');
-            btn.disabled = false;
             btn.textContent = 'Thách Đấu ⚔️';
             return;
           }
@@ -174,13 +175,47 @@ document.addEventListener('DOMContentLoaded', async () => {
           const alreadyChallenged = await db.hasStolenFromUserToday(currentUser.id, targetId);
           if (alreadyChallenged) {
             alert('Bạn đã thách đấu người này hôm nay rồi! Hãy chọn đối thủ khác.');
-            btn.disabled = false;
             btn.textContent = 'Thách Đấu ⚔️';
             return;
           }
           
-          sessionStorage.setItem('steal_target_id', targetId);
-          window.location.href = '/quiz.html?mode=2';
+          // Lấy cấu hình hệ số và hiển thị popup
+          const multipliers = await db.getStealMultipliers();
+          
+          const elWinMult = document.getElementById('modal_win_multiplier');
+          if (elWinMult) elWinMult.textContent = multipliers.win;
+          const elWinPoints = document.getElementById('modal_win_points');
+          if (elWinPoints) elWinPoints.textContent = '+' + Math.round(20 * multipliers.win);
+          
+          const elLoseMult = document.getElementById('modal_lose_multiplier');
+          if (elLoseMult) elLoseMult.textContent = multipliers.lose;
+          const elLosePoints = document.getElementById('modal_lose_points');
+          if (elLosePoints) elLosePoints.textContent = '-' + Math.round(10 * multipliers.lose);
+          
+          const elStealsCount = document.getElementById('modal_steals_count');
+          if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
+
+          const modal = document.getElementById('steal_confirm_modal');
+          if (modal) modal.classList.remove('hidden');
+
+          const btnCancel = document.getElementById('btn_cancel_steal');
+          const btnConfirm = document.getElementById('btn_confirm_steal');
+
+          if (btnCancel) {
+            btnCancel.onclick = () => {
+              modal.classList.add('hidden');
+              btn.textContent = 'Thách Đấu ⚔️';
+            };
+          }
+
+          if (btnConfirm) {
+            btnConfirm.onclick = () => {
+              btnConfirm.disabled = true;
+              btnConfirm.textContent = 'ĐANG VÀO TRẬN...';
+              sessionStorage.setItem('steal_target_id', targetId);
+              window.location.href = '/quiz.html?mode=2';
+            };
+          }
         });
       });
     }
