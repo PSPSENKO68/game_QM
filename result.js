@@ -69,42 +69,52 @@ document.addEventListener('DOMContentLoaded', async () => {
           const numberEl = document.getElementById('mega_spinner_number');
           const msgEl = document.getElementById('mega_spinner_msg');
           const header = document.getElementById('celebration_header');
+          const btnStartMega = document.getElementById('btn_start_mega');
+          const spinnerContainer = document.getElementById('mega_spinner_container');
           
-          if (modal && numberEl) {
+          if (modal && numberEl && btnStartMega) {
             modal.classList.remove('hidden');
             if (header) header.classList.add('hidden');
             
-            if (audio) {
-              audio.volume = 0.5;
-              audio.play().catch(e => console.log('Audio autoplay blocked', e));
-            }
-
-            let spins = 0;
-            const spinInterval = setInterval(() => {
-               const r = Math.floor(Math.random() * 200) + 1;
-               numberEl.textContent = String(r).padStart(3, '0');
-               spins++;
-            }, 50);
-
-            // Stop after 6 seconds để âm thanh sổ xố phát được lâu hơn
-            setTimeout(() => {
-              clearInterval(spinInterval);
-              numberEl.textContent = megaCode;
-              if (msgEl) msgEl.classList.remove('opacity-0');
-              
-              const btnMegaComplete = document.getElementById('btn_mega_complete');
-              if (btnMegaComplete) {
-                btnMegaComplete.classList.remove('hidden');
-                btnMegaComplete.onclick = () => {
-                  if (audio) {
-                    audio.pause();
-                    audio.currentTime = 0;
-                  }
-                  modal.classList.add('hidden');
-                  if (header) header.classList.remove('hidden');
-                };
+            btnStartMega.onclick = () => {
+              btnStartMega.classList.add('hidden');
+              if (spinnerContainer) {
+                spinnerContainer.classList.remove('hidden');
+                // The flex class is already present, but we need to ensure it overrides hidden properly
               }
-            }, 4000);
+              
+              if (audio) {
+                audio.volume = 0.5;
+                audio.play().catch(e => console.log('Audio autoplay blocked', e));
+              }
+
+              let spins = 0;
+              const spinInterval = setInterval(() => {
+                 const r = Math.floor(Math.random() * 200) + 1;
+                 numberEl.textContent = String(r).padStart(3, '0');
+                 spins++;
+              }, 50);
+
+              // Stop after 4 seconds
+              setTimeout(() => {
+                clearInterval(spinInterval);
+                numberEl.textContent = megaCode;
+                if (msgEl) msgEl.classList.remove('opacity-0');
+                
+                const btnMegaComplete = document.getElementById('btn_mega_complete');
+                if (btnMegaComplete) {
+                  btnMegaComplete.classList.remove('hidden');
+                  btnMegaComplete.onclick = () => {
+                    if (audio) {
+                      audio.pause();
+                      audio.currentTime = 0;
+                    }
+                    modal.classList.add('hidden');
+                    if (header) header.classList.remove('hidden');
+                  };
+                }
+              }, 4000);
+            };
           }
         }
       }
