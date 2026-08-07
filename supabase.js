@@ -408,7 +408,16 @@ export const db = {
       // Chế độ thách đấu
       const result = await db.executeSteal(userId, stealTargetId, correctCount, timeSpent);
       if (result && result.success) {
-        return { success: true, isWin: result.isWin, winPoints: result.winPoints, losePoints: result.losePoints };
+        return { 
+          success: true, 
+          isWin: result.isWin, 
+          winPoints: result.winPoints, 
+          losePoints: result.losePoints,
+          defCorrect: result.defCorrect,
+          defTime: result.defTime,
+          atkCorrect: result.atkCorrect,
+          atkTime: result.atkTime
+        };
       }
       return { success: false, message: result?.message || 'Lỗi thách đấu' };
     }
