@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                spins++;
             }, 50);
 
-            // Stop after 3 seconds
+            // Stop after 6 seconds để âm thanh sổ xố phát được lâu hơn
             setTimeout(() => {
               clearInterval(spinInterval);
               numberEl.textContent = megaCode;
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   if (header) header.classList.remove('hidden');
                 };
               }
-            }, 3000);
+            }, 6500);
           }
         }
       }
