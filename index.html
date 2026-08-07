@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đấu Trường Kiến Thức — Cổng Trò Chơi</title>
+  <meta name="description" content="Hệ thống Quiz nội bộ nâng cao kiến thức và cạnh tranh lành mạnh" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" />
+  <style>
+    /* Modals & Inputs specific to Index */
+    .modal-overlay {
+      background: rgba(10, 30, 40, 0.7);
+      backdrop-filter: blur(5px);
+    }
+
+    .brand-input {
+      background: #FFF8E7;
+      border: 3px solid #C49A6C;
+      color: #4A2E15;
+      border-radius: 12px;
+      padding: 12px 16px;
+      width: 100%;
+      font-size: 0.875rem;
+      font-weight: bold;
+      transition: border-color 0.15s, background 0.15s;
+      outline: none;
+    }
+
+    .brand-input:focus {
+      border-color: #DE3A3B;
+      background: #fff;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeSlideUp 0.4s ease forwards;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between">
+
+  <!-- Top Strip -->
+  <div class="h-1.5 w-full bg-gradient-to-r from-[#FFD700] to-[#DE3A3B]"></div>
+
+  <main class="w-full max-w-md mx-auto px-4 py-8 flex-1 flex flex-col justify-center">
+    <!-- App Header and Logo -->
+    <div class="text-center mb-7 animate-in">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#FFD700] border-4 border-[#2B1607] shadow-xl mb-3 overflow-hidden animate-float">
+        <span class="text-4xl">🪓</span>
+      </div>
+      <h1 class="font-['Space_Grotesk'] text-3xl pk-text-stroke uppercase leading-tight">ĐẤU TRƯỜNG KIẾN THỨC</h1>
+      <p class="text-[#FFF8E7] text-[12px] font-bold uppercase tracking-widest mt-1 text-shadow-md">TRỞ THÀNH TRÙM LÂM TẶC!</p>
+    </div>
+
+    <!-- Welcome Profile Card -->
+    <div id="user_profile_card" class="card-wood p-6 mb-5 hidden shadow-2xl animate-in" style="animation-delay: 0.05s">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-center space-x-3 flex-1">
+          <div class="w-14 h-14 rounded-full bg-[#FFF8E7] border-4 border-[#FFD700] flex items-center justify-center text-[#DE3A3B] font-black text-2xl font-['Space_Grotesk'] shadow-inner" id="user_avatar_char">U</div>
+          <div class="flex-1">
+            <div class="font-bold text-[#FFF8E7] text-[16px] leading-tight" style="text-shadow: 1px 1px 2px #000;" id="user_full_name">Đang tải...</div>
+            <div class="text-[11px] text-[#FFD700] mt-1 font-bold" style="text-shadow: 1px 1px 1px #000;"><span id="user_department">Phòng ban</span> • <span id="user_employee_code" class="font-mono">--</span></div>
+          </div>
+        </div>
+        <!-- Edit profile button -->
+        <button id="btn_edit_profile" class="w-10 h-10 rounded-full btn-pirate-yellow flex items-center justify-center transition cursor-pointer" title="Cập nhật thông tin">
+          <span class="text-lg">⚙️</span>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 pt-4 border-t border-[#4A240A]">
+        <div class="bg-[#4A240A] rounded-xl p-2.5 text-center shadow-inner border border-[#3B1C03]">
+          <p class="text-[9px] uppercase font-bold text-[#D48847] tracking-wider">Hạng</p>
+          <p class="text-lg font-black text-[#FFD700] mt-0.5 font-['Space_Grotesk']" id="user_rank">#--</p>
+        </div>
+        <div class="bg-[#4A240A] rounded-xl p-2.5 text-center shadow-inner border border-[#3B1C03]">
+          <p class="text-[9px] uppercase font-bold text-[#D48847] tracking-wider">Điểm số</p>
+          <p class="text-lg font-black text-[#FFD700] mt-0.5 font-['Space_Grotesk']" id="user_total_score">0</p>
+        </div>
+        <div class="bg-[#4A240A] rounded-xl p-2.5 text-center shadow-inner border border-[#3B1C03]">
+          <p class="text-[9px] uppercase font-bold text-[#D48847] tracking-wider">Lượt chơi</p>
+          <p class="text-lg font-black text-[#DE3A3B] mt-0.5 font-['Space_Grotesk']" id="user_plays_today">0/3</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Panel -->
+    <div id="game_panel" class="card-map p-6 mb-5 text-center hidden animate-in" style="animation-delay: 0.1s">
+      
+      <!-- Game OFF State -->
+      <div id="game_off_state" class="hidden flex-col items-center py-4">
+        <div class="w-16 h-16 bg-[#4A2E15] rounded-full flex items-center justify-center mb-3 border-4 border-[#2B1607]">
+          <span class="text-3xl">🔒</span>
+        </div>
+        <h2 class="text-xl font-black font-['Space_Grotesk'] text-[#2B1607] mb-2">RỪNG ĐANG BỊ PHONG TỎA</h2>
+        <p class="text-[#8B5A2B] text-[12px] font-semibold">Trạm kiểm lâm chưa mở cửa. Vui lòng quay lại sau!</p>
+      </div>
+
+      <!-- Game ON State -->
+      <div id="game_on_state" class="hidden flex-col gap-3">
+        <div class="mb-2">
+          <span class="inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#FFD700] text-[#2B1607] border-2 border-[#2B1607] shadow-sm" id="quiz_week_badge">SỰ KIỆN ĐANG DIỄN RA</span>
+        </div>
+        <h2 class="text-xl font-black font-['Space_Grotesk'] text-[#2B1607] mb-1" id="quiz_title">Đang tải dữ liệu...</h2>
+        <p class="text-[#8B5A2B] text-[12px] mb-4 font-semibold">Tham gia khai thác rừng và săn mồi.</p>
+
+        <!-- Mode 1: Accumulation -->
+        <button id="btn_mode_1" class="btn-pirate w-full py-4 px-4 flex items-center justify-between gap-2 uppercase tracking-wider">
+          <div class="flex flex-col items-start text-left">
+            <span class="text-[16px]">CÀY CUỐC 🪙</span>
+            <span class="text-[10px] text-white/80 font-bold" id="mode1_plays_status">Đang tải...</span>
+          </div>
+          <span class="text-3xl drop-shadow-md">⚔️</span>
+        </button>
+
+        <!-- Mode 2: Steal -->
+        <a href="/leaderboard.html?action=steal" id="btn_mode_2" class="btn-pirate-wood w-full py-4 px-4 flex items-center justify-between transition cursor-pointer block rounded-2xl mt-3">
+          <div class="flex flex-col items-start text-left">
+            <span class="font-black text-[16px] uppercase tracking-wider text-[#FFD700] drop-shadow-md">THÁCH ĐẤU ⚔️</span>
+            <span class="text-[10px] text-white/70 font-bold mt-0.5" id="mode2_steals_status">Đang tải...</span>
+          </div>
+          <span class="text-3xl drop-shadow-md">🥷</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Cards -->
+    <div class="space-y-3 animate-in" style="animation-delay: 0.15s">
+      <!-- Leaderboard -->
+      <a href="/leaderboard.html" class="btn-pirate-yellow w-full rounded-2xl p-4 flex items-center justify-between group block cursor-pointer transition">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-white/20 border-2 border-[#8B6508] flex items-center justify-center font-bold text-2xl shadow-sm">👑</div>
+          <div class="text-left">
+            <h3 class="font-black text-[#2B1607] text-[16px]">Bảng Xếp Hạng</h3>
+            <p class="text-[11px] text-[#4A2E15] font-bold" style="text-shadow: none;">Vinh danh các Trùm Lâm Tặc</p>
+          </div>
+        </div>
+      </a>
+
+      <!-- Admin Dashboard -->
+      <a href="/admin.html" class="btn-pirate-wood w-full rounded-2xl p-4 flex items-center justify-between group hidden cursor-pointer transition">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-xl bg-white/10 border-2 border-[#4A240A] flex items-center justify-center font-bold text-2xl shadow-sm">🧭</div>
+          <div class="text-left">
+            <h3 class="font-black text-white text-[16px]">Trạm Kiểm Lâm</h3>
+            <p class="text-[11px] text-white/60 font-bold" style="text-shadow: none;">Quản lý rừng & câu hỏi</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Logout segment -->
+    <div class="mt-8 text-center animate-in" style="animation-delay: 0.2s">
+      <button id="btn_logout" class="text-[12px] font-black text-[#FFF8E7] uppercase tracking-widest hover:text-[#FFD700] transition cursor-pointer inline-flex items-center gap-2 drop-shadow-md bg-black/20 px-5 py-2.5 rounded-full border border-white/10 backdrop-blur-sm">
+        <span class="text-lg">🚪</span>
+        Rời Rừng (Đăng Xuất)
+      </button>
+    </div>
+  </main>
+
+  <!-- Update Profile Modal -->
+  <div id="modal_update_profile" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+    <div class="card-map p-6 max-w-sm w-full">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-['Space_Grotesk'] font-black text-xl text-[#2B1607]">THÔNG TIN LÂM TẶC</h3>
+        <button id="btn_close_profile_modal" class="w-8 h-8 rounded-full bg-[#D48847] border-2 border-[#4A240A] flex items-center justify-center text-white hover:bg-[#DE3A3B] transition cursor-pointer shadow-sm">
+          <span class="font-bold">X</span>
+        </button>
+      </div>
+      <form id="form_update_profile" class="space-y-4">
+        <div>
+          <label class="block text-[11px] font-black text-[#8B5A2B] uppercase mb-1">Tên Lâm Tặc</label>
+          <input type="text" id="profile_fullname" required class="brand-input" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-black text-[#8B5A2B] uppercase mb-1">Số điện thoại (ID)</label>
+          <input type="text" id="profile_phone" disabled class="brand-input opacity-70 cursor-not-allowed" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-black text-[#8B5A2B] uppercase mb-1">Đội Khai Thác (Phòng Ban)</label>
+          <input type="text" id="profile_dept" required class="brand-input" />
+        </div>
+        <div>
+          <label class="block text-[11px] font-black text-[#8B5A2B] uppercase mb-1">Mã Bí Mật (PIN)</label>
+          <input type="text" id="profile_pin" required class="brand-input font-mono" />
+        </div>
+        <button type="submit" class="btn-pirate w-full text-[14px] py-3 mt-4 cursor-pointer tracking-wider">LƯU CẬP NHẬT</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

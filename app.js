@@ -1,0 +1,259 @@
+/**
+ * Application Core — Màn hình chính của nhân viên
+ * Quản lý thông tin cá nhân, kiểm tra quiz, lượt chơi, và profile update.
+ */
+
+import { db } from './supabase.js';
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Kiểm tra đăng nhập
+  const sessionUser = sessionStorage.getItem('current_user');
+  if (!sessionUser) {
+    window.location.replace('/login.html');
+    return;
+  }
+
+  let user = JSON.parse(sessionUser);
+
+  // Lấy elements
+  const userProfileCard = document.getElementById('user_profile_card');
+  const userAvatarChar = document.getElementById('user_avatar_char');
+  const userFullName = document.getElementById('user_full_name');
+  const userDepartment = document.getElementById('user_department');
+  const userEmployeeCode = document.getElementById('user_employee_code');
+  const userTotalScore = document.getElementById('user_total_score');
+  const userPlaysToday = document.getElementById('user_plays_today');
+  const userRank = document.getElementById('user_rank');
+  const activeQuizPanel = document.getElementById('active_quiz_panel');
+  const quizTitle = document.getElementById('quiz_title');
+  const btnPlayQuiz = document.getElementById('btn_play_quiz');
+  const btnLogout = document.getElementById('btn_logout');
+
+
+  // Làm mới dữ liệu user từ DB
+  try {
+    const updatedUser = await db.getUserById(user.id);
+    if (updatedUser) {
+      user = updatedUser;
+      sessionStorage.setItem('current_user', JSON.stringify(user));
+    }
+  } catch (error) {
+    console.error('Lỗi làm mới thông tin user:', error);
+  }
+
+  // Hiển thị thông tin user
+  if (userProfileCard) {
+    userFullName.textContent = user.full_name;
+    userDepartment.textContent = user.department;
+    userEmployeeCode.textContent = user.employee_code;
+    userAvatarChar.textContent = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U';
+    userTotalScore.textContent = user.total_score || 0;
+
+    if (userRank) {
+      db.getUserRank(user.id).then(rank => {
+        userRank.textContent = rank ? `#${rank}` : `--`; // null = chưa có điểm
+      }).catch(() => {
+        userRank.textContent = `--`;
+      });
+    }
+
+    // Tính giới hạn lượt chơi: ưu tiên max_plays riêng của user, fallback về setting chung
+    const playsNum = await db.getPlaysToday(user.id);
+    const globalLimit = await db.getDailyLimit();
+    const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
+
+    userPlaysToday.textContent = `${playsNum}/${maxPlays}`;
+    if (playsNum >= maxPlays) {
+      userPlaysToday.classList.add('text-rose-600', 'font-extrabold');
+    }
+    userProfileCard.classList.remove('hidden');
+  }
+
+  // ── Profile Update Modal ───────────────────────────────────────────────────
+  const btnEditProfile = document.getElementById('btn_edit_profile');
+  const modalUpdateProfile = document.getElementById('modal_update_profile');
+  const btnCloseProfileModal = document.getElementById('btn_close_profile_modal');
+  const formUpdateProfile = document.getElementById('form_update_profile');
+  const profileFullNameInput = document.getElementById('profile_fullname');
+  const profilePhoneInput = document.getElementById('profile_phone');
+  const profileDeptInput = document.getElementById('profile_dept');
+  const profilePinInput = document.getElementById('profile_pin');
+
+  if (btnEditProfile && modalUpdateProfile) {
+    btnEditProfile.addEventListener('click', () => {
+      profileFullNameInput.value = user.full_name || '';
+      profilePhoneInput.value = user.employee_code || '';
+      profileDeptInput.value = user.department || '';
+      profilePinInput.value = user.pin || '';
+      modalUpdateProfile.classList.remove('hidden');
+    });
+  }
+
+  if (btnCloseProfileModal) {
+    btnCloseProfileModal.addEventListener('click', () => {
+      modalUpdateProfile.classList.add('hidden');
+    });
+  }
+
+  if (formUpdateProfile) {
+    formUpdateProfile.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const newName = profileFullNameInput.value.trim();
+      const newDept = profileDeptInput.value.trim();
+      const newPin = profilePinInput.value.trim();
+
+      if (!newName || !newDept || !newPin) {
+        showGlobalAlert('Thiếu thông tin', 'Vui lòng điền đầy đủ Họ tên, Phòng ban và PIN!');
+        return;
+      }
+
+      try {
+        const payload = {
+          full_name: newName,
+          department: newDept,
+          pin: newPin
+        };
+
+        const result = await db.adminUpdateUser(user.id, payload);
+        if (result && result.success) {
+          user = { ...user, ...payload };
+          sessionStorage.setItem('current_user', JSON.stringify(user));
+
+          // Cập nhật UI
+          userFullName.textContent = user.full_name;
+          userDepartment.textContent = user.department;
+          userAvatarChar.textContent = user.full_name ? user.full_name.charAt(0).toUpperCase() : 'U';
+
+          modalUpdateProfile.classList.add('hidden');
+          showGlobalAlert('Thành công ✅', 'Đã lưu thông tin cá nhân thành công!');
+        } else {
+          showGlobalAlert('Thất bại', result?.message || 'Cập nhật không thành công. Vui lòng thử lại.');
+        }
+      } catch (err) {
+        console.error(err);
+        showGlobalAlert('Lỗi kết nối', 'Không thể kết nối đến cơ sở dữ liệu.');
+      }
+    });
+  }
+
+  // ── Hiển thị link Admin Dashboard ─────────────────────────────────────────
+  const btnAdminLink = document.querySelector('a[href="/admin.html"]');
+  if (btnAdminLink) {
+    if (user.role === 'admin' || user.role === 'owner') {
+      btnAdminLink.classList.remove('hidden');
+    } else {
+      btnAdminLink.classList.add('hidden');
+    }
+  }
+
+  // ── Kiểm tra và hiển thị Trạng thái Game ─────────────────────────────────
+  const gamePanel = document.getElementById('game_panel');
+  const gameOffState = document.getElementById('game_off_state');
+  const gameOnState = document.getElementById('game_on_state');
+
+  const mode1PlaysStatus = document.getElementById('mode1_plays_status');
+  const mode2StealsStatus = document.getElementById('mode2_steals_status');
+  const btnMode1 = document.getElementById('btn_mode_1');
+
+  if (gamePanel) {
+    gamePanel.classList.remove('hidden');
+    
+    const isModule1On = await db.getModule1Status();
+    const isModule2On = await db.getModule2Status();
+    const isGameOn = isModule1On || isModule2On;
+
+    if (!isGameOn) {
+      gameOffState.classList.remove('hidden');
+      gameOnState.classList.add('hidden');
+    } else {
+      gameOffState.classList.add('hidden');
+      gameOnState.classList.remove('hidden');
+
+      const btnMode2 = document.getElementById('btn_mode_2');
+      if (!isModule1On && btnMode1) btnMode1.classList.add('hidden');
+      if (!isModule2On && btnMode2) btnMode2.classList.add('hidden');
+
+      // Tải Active Quiz
+      const activeQuiz = await db.getActiveQuiz();
+      if (activeQuiz) {
+        quizTitle.textContent = activeQuiz.title;
+        sessionStorage.setItem('current_quiz_id', activeQuiz.id);
+
+        // Limit Mode 1
+        const playsToday = await db.getPlaysToday(user.id);
+        const globalLimit = await db.getDailyLimit();
+        const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
+        mode1PlaysStatus.textContent = `${playsToday}/${maxPlays} LƯỢT`;
+        
+        if (playsToday >= maxPlays) {
+          mode1PlaysStatus.classList.add('text-rose-400');
+        }
+
+        btnMode1.addEventListener('click', () => {
+          if (playsToday >= maxPlays) {
+            showGlobalAlert('Hết lượt chơi', `Bạn đã sử dụng hết ${maxPlays} lượt chơi hôm nay.`);
+            return;
+          }
+          window.location.href = '/quiz.html?mode=1';
+        });
+
+        // Limit Mode 2
+        const stealsToday = await db.getStealsToday(user.id);
+        const maxSteals = await db.getMaxStealsPerDay();
+        mode2StealsStatus.textContent = `${stealsToday}/${maxSteals} LƯỢT`;
+
+        if (stealsToday >= maxSteals) {
+          mode2StealsStatus.classList.add('text-rose-400');
+        }
+      } else {
+        quizTitle.textContent = 'Chưa có đề thi nào được kích hoạt';
+        btnMode1.disabled = true;
+        btnMode1.classList.add('opacity-50', 'cursor-not-allowed');
+      }
+    }
+  }
+
+  // ── Đăng xuất ─────────────────────────────────────────────────────────────
+  if (btnLogout) {
+    btnLogout.addEventListener('click', () => {
+      sessionStorage.removeItem('current_user');
+      sessionStorage.removeItem('current_quiz_id');
+      window.location.replace('/login.html');
+    });
+  }
+});
+
+// ── Polyfill alert component ──────────────────────────────────────────────────
+function showGlobalAlert(title, message) {
+  let modal = document.getElementById('global_error_modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'global_error_modal';
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs';
+    modal.innerHTML = `
+      <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-100">
+        <div class="flex items-center justify-center w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 mb-4 mx-auto">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 text-center mb-1" id="global_modal_title">Thông báo</h3>
+        <p class="text-sm text-slate-500 text-center mb-6 leading-relaxed" id="global_modal_msg"></p>
+        <button id="close_global_alert" class="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white font-bold py-3 px-6 rounded-2xl hover:opacity-90 active:scale-95 transition cursor-pointer">
+          Đóng thông báo
+        </button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  document.getElementById('global_modal_title').textContent = title;
+  document.getElementById('global_modal_msg').textContent = message;
+  modal.classList.remove('hidden');
+
+  const closeBtn = document.getElementById('close_global_alert');
+  const newCloseBtn = closeBtn.cloneNode(true);
+  closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+  newCloseBtn.addEventListener('click', () => modal.classList.add('hidden'));
+}

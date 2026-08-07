@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trận Đấu — Đấu Trường Kiến Thức</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" />
+    <style>
+      .quiz-header {
+        background: url("data:image/svg+xml;utf8,<svg width='10' height='10' xmlns='http://www.w3.org/2000/svg'><rect width='10' height='10' fill='%2388542F'/><rect width='10' height='2' fill='%23593113'/></svg>");
+        border-bottom: 6px solid #4A240A;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      }
+      
+      .progress-bg { background: rgba(0,0,0,0.4); border: 2px solid #4A240A; }
+      .progress-fill { background: linear-gradient(90deg, #FFD700, #E3A824, #DE3A3B); }
+
+      /* Modals */
+      .modal-overlay { background: rgba(10,30,40,0.8); backdrop-filter: blur(5px); }
+
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .animate-in { animation: fadeSlideUp 0.3s ease forwards; }
+
+      @keyframes scorePop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.4); color: #fff; text-shadow: 0 0 20px #FFD700; }
+        100% { transform: scale(1); }
+      }
+      .score-animate { animation: scorePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+      
+      .kahoot-btn-base {
+        border: 4px solid rgba(0,0,0,0.25);
+        box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 5px 10px rgba(0,0,0,0.3);
+        text-shadow: 1px 2px 0px rgba(0,0,0,0.5);
+      }
+      .kahoot-btn-base:hover { filter: brightness(1.1); }
+      .kahoot-btn-base:active { transform: translateY(4px); box-shadow: inset 0 0 0 rgba(0,0,0,0.3); border-bottom-width: 4px; }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col justify-between select-none">
+
+    <!-- Top Header & Progress bar -->
+    <header class="quiz-header py-3.5 px-4 sticky top-0 z-40">
+      <div class="max-w-md mx-auto flex items-center justify-between">
+        <!-- Back button -->
+        <button id="btn_quit_quiz" class="text-[#FFF8E7] hover:text-[#FFD700] font-black text-xs flex items-center gap-1 cursor-pointer transition uppercase" style="text-shadow: 1px 1px 0 #000;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          Thoát
+        </button>
+
+        <!-- Current play index indicator -->
+        <span class="font-['Space_Grotesk'] font-black text-[#FFD700] text-[15px] uppercase tracking-wider pk-text-stroke" id="question_counter">Câu 0/10</span>
+
+        <!-- Spacer for alignment -->
+        <div class="w-16"></div>
+      </div>
+
+      <!-- Linear progress bar container -->
+      <div class="w-full progress-bg h-3 mt-3 rounded-full overflow-hidden max-w-md mx-auto relative">
+        <div id="progress_bar_fill" class="progress-fill h-full progress-bar-fill transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </header>
+
+    <!-- Quiz Board area -->
+    <main class="w-full max-w-md mx-auto px-4 py-6 flex-1 flex flex-col justify-between animate-in">
+      
+      <!-- Question Section -->
+      <div class="card-map p-6 flex-1 flex flex-col justify-center min-h-[130px] relative mb-5">
+        <!-- Floating category/week badge -->
+        <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md" id="quiz_week_badge">
+          Tuần Này
+        </div>
+        
+        <!-- Countdown timer badge (Bomb style) -->
+        <div class="absolute -top-5 right-2 inline-flex items-center justify-center w-12 h-12 bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
+          15
+        </div>
+        
+        <div class="absolute -top-6 right-0 text-2xl rotate-45 animate-shake">💥</div>
+
+        <p class="font-extrabold text-center text-[#2B1607] leading-relaxed text-[17px] md:text-[19px] block drop-shadow-sm mt-3" id="question_text">
+          Đang chuẩn bị câu hỏi...
+        </p>
+      </div>
+
+      <!-- Current session score indicator (Centered Pill) -->
+      <div class="flex justify-center mb-5">
+        <div id="score_pill" class="flex items-center justify-center gap-2 bg-[#4A240A] border-4 border-[#FFD700] px-6 py-2 rounded-full shadow-2xl min-w-[150px]">
+          <span id="score_label" class="text-[12px] text-[#FFD700] uppercase tracking-widest font-black mt-0.5 pk-text-stroke">ĐIỂM:</span>
+          <span id="score_display" class="text-3xl font-black font-['Space_Grotesk'] text-[#FFF8E7] tracking-tight transition-transform pk-text-stroke-gold">0</span>
+        </div>
+      </div>
+
+      <!-- Live Answer Choice Segment (Feedback alert overlay when chosen) -->
+      <div id="feedback_banner" class="hidden mb-4 p-4 rounded-3xl flex items-center justify-between overflow-hidden shadow-2xl border-4 border-[#2B1607] bg-[#FFF8E7]">
+        <div class="flex items-center gap-3">
+          <div id="feedback_icon" class="w-12 h-12 rounded-full border-4 border-[#2B1607] flex items-center justify-center font-black text-2xl shadow-sm text-white">
+            ✓
+          </div>
+          <div>
+            <p id="feedback_title" class="font-black text-lg uppercase tracking-wide text-[#2B1607]"></p>
+            <p id="feedback_sub" class="text-[13px] text-[#4A2E15] font-bold"></p>
+          </div>
+        </div>
+        <button id="btn_next_question" class="btn-pirate-yellow text-xs uppercase px-5 py-3 ml-2 tracking-tight">
+          TIẾP TỤC ➔
+        </button>
+      </div>
+
+      <!-- Grid of 4 colored Options cards (Kahoot shape pattern) -->
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2" id="answers_container">
+        <!-- Answer 1 (Red / Triangle) -->
+        <button id="opt_red" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-red outline-none cursor-pointer flex items-center space-x-3 group relative">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-triangle border-b-white scale-110"></div>
+          </div>
+          <span class="text-white font-black leading-snug text-[15px] pr-2 select-none drop-shadow-md" id="text_red">...</span>
+        </button>
+
+        <!-- Answer 2 (Blue / Diamond) -->
+        <button id="opt_blue" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-blue outline-none cursor-pointer flex items-center space-x-3 group relative">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-diamond bg-white scale-110"></div>
+          </div>
+          <span class="text-white font-black leading-snug text-[15px] pr-2 select-none drop-shadow-md" id="text_blue">...</span>
+        </button>
+
+        <!-- Answer 3 (Yellow / Circle) -->
+        <button id="opt_yellow" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-yellow outline-none cursor-pointer flex items-center space-x-3 group relative">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-circle bg-white scale-110"></div>
+          </div>
+          <span class="text-white font-black leading-snug text-[15px] pr-2 select-none drop-shadow-md" id="text_yellow">...</span>
+        </button>
+
+        <!-- Answer 4 (Green / Square) -->
+        <button id="opt_green" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-green outline-none cursor-pointer flex items-center space-x-3 group relative">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-square bg-white scale-110"></div>
+          </div>
+          <span class="text-white font-black leading-snug text-[15px] pr-2 select-none drop-shadow-md" id="text_green">...</span>
+        </button>
+      </div>
+    </main>
+
+    <div class="h-4"></div>
+
+    <!-- Confirm quit dialog overlay -->
+    <div id="quit_confirm_modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+      <div class="card-wood p-6 max-w-sm w-full shadow-2xl text-center">
+        <div class="text-4xl mb-2">☠️</div>
+        <h3 class="text-xl font-black text-[#FFD700] mb-2 font-['Space_Grotesk'] uppercase tracking-wider pk-text-stroke">Thoát Trận?</h3>
+        <p class="text-[#FFF8E7] text-[13px] mb-6 leading-relaxed font-bold">
+          Nếu rời tàu bây giờ, thành tích của bạn sẽ bị vứt xuống biển. Bạn có chắc không?
+        </p>
+        <div class="grid grid-cols-2 gap-3">
+          <button id="btn_cancel_quit" class="btn-pirate-yellow text-xs uppercase py-3 rounded-2xl">
+            Ở LẠI
+          </button>
+          <button id="btn_confirm_quit" class="btn-pirate text-xs uppercase py-3 rounded-2xl">
+            NHẢY XUỐNG BIỂN
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" src="/quiz.js"></script>
+  </body>
+</html>

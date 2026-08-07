@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quản Trị — Đấu Trường Kiến Thức</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" />
+</head>
+
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">  <!-- Top Design Strip Brand -->
+  <div class="h-1.5 w-full" style="background:linear-gradient(90deg,#E07242,#E5853F,#677B40,#E9C691)"></div>
+
+  <header class="header-wood py-4 px-6 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden shadow-sm"
+          style="background:linear-gradient(135deg,#E07242,#677B40)">
+          <img src="/logo/logo.png" alt="Quiz Logo" class="w-full h-full object-cover" />
+        </div>
+        <div>
+          <h1 class="text-lg font-black font-['Space_Grotesk'] text-[#FFD700] uppercase pk-text-stroke leading-tight">BẢNG QUẢN TRỊ ADMIN</h1>
+          <p class="text-xs text-[#FFF8E7] font-bold">ĐẤU TRƯỜNG KIẾN THỨC</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a href="/index.html"
+          class="btn-pirate-yellow inline-flex px-4 py-2 text-[#2B1607] rounded-xl font-bold text-xs transition">
+          VỀ TRANG CHỦ TRÒ CHƠI
+        </a>
+        <button id="btn_logout_admin"
+          class="btn-pirate px-4 py-2 text-white rounded-xl font-bold text-xs transition cursor-pointer">
+          Đăng xuất
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="w-full max-w-7xl mx-auto px-4 py-6 flex-1">
+    <!-- Layout grids: left menu tabs, right viewport -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+      <!-- Navigation Tabs Sidebar -->
+      <div class="flex flex-col gap-2 card-wood p-4 h-fit text-[#FFF8E7]">
+        <p class="text-[10px] font-black tracking-widest text-[#FFD700] uppercase mb-2 px-2">Danh mục điều khiển</p>
+
+        <!-- Users Manager tab -->
+        <button id="tab_users_btn"
+          class="tab-btn w-full text-left px-4 py-3 rounded-2xl font-bold text-sm transition flex items-center gap-3 cursor-pointer"
+          style="background:rgba(255,255,255,0.15); border: 2px solid #FFD700; color:#FFD700; box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);">
+          👤 Quản lý Nhân Viên
+        </button>
+
+        <!-- Quizzes Manager tab -->
+        <button id="tab_quizzes_btn"
+          class="tab-btn w-full text-left px-4 py-3 rounded-2xl font-bold text-sm text-[#FFF8E7] hover:bg-[rgba(255,255,255,0.1)] transition flex items-center gap-3 cursor-pointer">
+          📝 Quản lý Đề Quiz
+        </button>
+
+        <!-- History Manager tab -->
+        <button id="tab_history_btn"
+          class="tab-btn w-full text-left px-4 py-3 rounded-2xl font-bold text-sm text-[#FFF8E7] hover:bg-[rgba(255,255,255,0.1)] transition flex items-center gap-3 cursor-pointer">
+          🕒 Lịch Sử Thi Đấu
+        </button>
+
+        <!-- Import CSV/Excel tab -->
+        <button id="tab_import_btn"
+          class="tab-btn w-full text-left px-4 py-3 rounded-2xl font-bold text-sm text-[#FFF8E7] hover:bg-[rgba(255,255,255,0.1)] transition flex items-center gap-3 cursor-pointer">
+          📤 Import Dữ Liệu
+        </button>
+
+        <div class="mt-4 pt-4 border-t border-[rgba(255,255,255,0.2)] px-2 text-[11px] text-[#E9C691] leading-relaxed">
+          Môi trường kết nối:<br />
+          <span id="admin_db_mode" class="font-bold text-[#FFD700]">Checking...</span>
+        </div>
+      </div>
+
+      <!-- Right Working Section Viewport -->
+      <div class="lg:col-span-3 flex flex-col gap-6">
+
+        <!-- VIEWPORT 1: MANAGERS USERS -->
+        <section id="section_users"
+          class="admin-view card-map p-6 flex flex-col gap-6">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Danh Sách Nhân Viên</h2>
+              <p class="text-xs text-[#593113]">Tổng hợp danh hiệu và chỉ số tài khoản tham dự thi</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btn_export_accounts"
+                class="btn-pirate-yellow px-4 py-2.5 text-[#2B1607] font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                <span>⬇️ XUẤT ACCOUNTS (.csv)</span>
+              </button>
+              <button id="btn_export_scores"
+                class="btn-pirate-yellow px-4 py-2.5 text-[#2B1607] font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                <span>⬇️ XUẤT BÁO CÁO (.xlsx)</span>
+              </button>
+              <button id="btn_open_user_modal"
+                class="btn-pirate px-4 py-2.5 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+                <span>➕ THÊM NHÂN VIÊN MỚI</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Global Settings -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <!-- Module 1 Status -->
+            <div class="card-wood p-4 flex flex-col gap-2">
+              <p class="text-xs font-bold text-[#FFD700]">Trạng thái Module 1 (Cày cuốc)</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Bật/Tắt module tích lũy.</p>
+              <div class="flex items-center gap-2 mt-2">
+                <select id="input_module1_status" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
+                  <option value="ON">🟢 ĐANG MỞ (ON)</option>
+                  <option value="OFF">🔴 ĐÃ ĐÓNG (OFF)</option>
+                </select>
+                <button id="btn_save_module1_status" class="btn-pirate px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU</button>
+              </div>
+            </div>
+
+            <!-- Module 2 Status -->
+            <div class="card-wood p-4 flex flex-col gap-2">
+              <p class="text-xs font-bold text-[#FFD700]">Trạng thái Module 2 (Thách Đấu)</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Bật/Tắt module thách đấu.</p>
+              <div class="flex items-center gap-2 mt-2">
+                <select id="input_module2_status" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
+                  <option value="ON">🟢 ĐANG MỞ (ON)</option>
+                  <option value="OFF">🔴 ĐÃ ĐÓNG (OFF)</option>
+                </select>
+                <button id="btn_save_module2_status" class="btn-pirate px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU</button>
+              </div>
+            </div>
+
+            <!-- Module 2 Multiplier -->
+            <div class="card-wood p-4 flex flex-col gap-2">
+              <p class="text-xs font-bold text-[#FFD700]">SỐ NHÂN KHI THÁCH ĐẤU</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Nhân điểm khi thắng thách đấu.</p>
+              <div class="flex items-center gap-2 mt-2">
+                <input type="number" step="0.1" id="input_steal_multiplier" min="1" max="10" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none" />
+                <button id="btn_save_multiplier" class="btn-pirate px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users search and filters -->
+          <div id="user_list_wrapper" class="overflow-x-auto border-2 border-[#8B5A2B] rounded-2xl bg-[rgba(255,255,255,0.5)]">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="bg-[rgba(139,90,43,0.1)] text-[#8B5A2B] font-black uppercase tracking-wider border-b-2 border-[#8B5A2B]">
+                  <th class="p-3">Tài khoản (SĐT/Email)</th>
+                  <th class="p-3">Họ Tên</th>
+                  <th class="p-3">Vai Trò</th>
+                  <th class="p-3">Phòng Ban</th>
+                  <th class="p-3">PIN / Mật khẩu</th>
+                  <th class="p-4 text-center">Giới Hạn Lượt</th>
+                  <th class="p-4 text-center">Tổng Điểm</th>
+                  <th class="p-4 text-center">Hoạt Động</th>
+                  <th class="p-4 text-center">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="users_table_body" class="divide-y-2 divide-dashed divide-[rgba(139,90,43,0.3)] font-semibold text-[#4A240A]">
+                <!-- Users rows will be appended dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <!-- VIEWPORT 2: QUIZZES MANAGER -->
+        <section id="section_quizzes"
+          class="admin-view card-map p-6 flex flex-col gap-6 hidden">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quản Lý Đề Thi & Câu Hỏi</h2>
+              <p class="text-xs text-[#593113]">Mỗi quiz tối thiểu 10 câu hỏi để đảm bảo tính thử thách ngẫu nhiên</p>
+            </div>
+            <button id="btn_open_quiz_modal"
+              class="btn-pirate px-4 py-2.5 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center gap-1.5 cursor-pointer">
+              <span>➕ TẠO QUIZ MỚI</span>
+            </button>
+          </div>
+
+          <!-- Filter Bar for Quizzes -->
+          <div class="flex items-center gap-4 card-wood p-4 mb-2">
+            <div class="flex items-center gap-2">
+              <label for="filter_quiz_month" class="text-xs font-bold text-[#FFD700]">Tháng:</label>
+              <input type="number" id="filter_quiz_month"
+                class="w-16 p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-center text-xs font-bold focus:outline-none"
+                placeholder="Tất cả" />
+            </div>
+            <div class="flex items-center gap-2">
+              <label for="filter_quiz_week" class="text-xs font-bold text-[#FFD700]">Tuần:</label>
+              <input type="number" id="filter_quiz_week"
+                class="w-16 p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-center text-xs font-bold focus:outline-none"
+                placeholder="Tất cả" />
+            </div>
+            <button id="btn_clear_filter"
+              class="btn-pirate-yellow px-3 py-1.5 text-[#2B1607] font-bold text-[10px] rounded-lg transition uppercase">Xóa
+              bộ lọc</button>
+          </div>
+
+          <!-- Current Quizzes Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quizzes_container">
+            <!-- Rendered quiz cards dynamically -->
+          </div>
+
+          <!-- Specific Selected Quiz details showing its questions -->
+          <div id="quiz_questions_box" class="hidden border-2 border-[#8B5A2B] rounded-2xl p-5 bg-[rgba(255,255,255,0.5)]">
+            <div
+              class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-4">
+              <div>
+                <span
+                  class="text-[10px] font-bold text-white bg-[#DE3A3B] px-2 py-0.5 rounded-full uppercase border-2 border-[#8B5A2B]"
+                  id="selected_quiz_subtitle">QUIZ q1</span>
+                <div class="flex items-center gap-2 mt-1">
+                  <h3 class="text-base font-extrabold text-[#4A240A]" id="selected_quiz_title">Đề thi số...</h3>
+                  <button id="btn_edit_quiz_info"
+                    class="p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] hover:bg-[#E9C691] rounded-lg transition"
+                    title="Sửa thông tin đề thi">✏️</button>
+                </div>
+              </div>
+              <button id="btn_add_question_form"
+                class="btn-pirate px-3.5 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer">
+                ➕ Thêm câu hỏi
+              </button>
+            </div>
+
+            <!-- List of current quiz Questions -->
+            <div class="space-y-4" id="questions_list_wrapper">
+              <!-- Appended dynamically -->
+            </div>
+          </div>
+        </section>
+
+
+        <!-- VIEWPORT 3: CSV IMPORT INTERFACE -->
+        <section id="section_import"
+          class="admin-view card-map p-6 flex flex-col gap-6 hidden">
+          <div>
+            <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Nhập Liệu Nhanh từ file Excel / CSV</h2>
+            <p class="text-xs text-[#593113]">Sao chép dữ liệu bảng tính của bạn dán thẳng vào đây hoặc upload file để
+              nạp hàng trăm câu hỏi hoặc user tức thì</p>
+          </div>
+
+          <!-- Config Form -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 card-wood p-4">
+            <div>
+              <label for="import_type_select" class="block text-xs font-bold text-[#FFD700] mb-1.5 uppercase">1. Chọn
+                loại tài nguyên</label>
+              <select id="import_type_select"
+                class="block w-full p-2.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-xs font-bold focus:outline-none">
+                <option value="users">👤 DANH SÁCH NHÂN VIÊN</option>
+                <option value="quizzes">📝 ĐỀ THI & PHÂN LOẠI CÂU HỎI (KÈM ĐÁP ÁN)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-[#FFD700] mb-1.5 uppercase">2. Tùy chọn Nhập liệu</label>
+              <div class="flex items-center gap-3">
+                <input type="file" id="csv_file_input" accept=".csv,.xlsx,.xls" class="hidden" />
+                <button type="button" onclick="document.getElementById('csv_file_input').click()"
+                  class="btn-pirate-yellow px-4 py-2 text-[#2B1607] font-bold text-xs rounded-xl transition cursor-pointer flex-1">
+                  📁 Chọn file Excel / CSV
+                </button>
+                <span class="text-xs text-[#FFF8E7] italic font-medium flex-1 truncate" id="file_name_display">Chưa chọn
+                  file</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quiz details for import (Only visible when Quizzes is selected) -->
+          <div id="quiz_import_details"
+            class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+            <div>
+              <label for="import_quiz_title" class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Tên Đề Thi
+                Quiz mới</label>
+              <input type="text" id="import_quiz_title"
+                class="block w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold"
+                placeholder="Ví dụ: Quiz Tuần 27 - Quy chuẩn văn hóa" />
+            </div>
+            <div>
+              <label for="import_quiz_month"
+                class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Tháng</label>
+              <input type="number" id="import_quiz_month" min="1" max="12"
+                class="block w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold"
+                placeholder="Ví dụ: 7" />
+            </div>
+            <div>
+              <label for="import_quiz_week" class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Tuần
+                số</label>
+              <input type="number" id="import_quiz_week" min="1"
+                class="block w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold"
+                placeholder="Ví dụ: 27" />
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label for="csv_textarea_input" class="block text-xs font-bold text-slate-500 uppercase">3. Hoặc sao chép
+              bảng trực tiếp từ Excel / dán CSV, TSV vào đây (Nhận diện Tab, Phẩy , Chấm phẩy ;)</label>
+            <textarea id="csv_textarea_input" rows="8"
+              placeholder="Sao chép toàn bộ bảng dữ liệu trong Excel (hoặc Google Sheets) rồi nhấn Ctrl+V / dán thẳng vào đây..."
+              class="w-full bg-slate-50 border border-slate-200 font-mono text-[11px] p-4 rounded-2xl focus:outline-hidden focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"></textarea>
+          </div>
+
+          <!-- Guides for importing -->
+          <div class="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl text-xs text-indigo-700 leading-relaxed">
+            <p class="font-bold uppercase tracking-wider mb-2 text-[10px]">Hướng dẫn định dạng cấu trúc CSV:</p>
+
+            <!-- Column guide for Users -->
+            <div id="guide_users_csv">
+              <p class="font-bold">Nhân Viên:</p>
+              <p class="font-mono text-[10px] bg-indigo-100/50 p-2 rounded-lg mt-1 select-all">
+                employee_code,full_name,department,pin,total_score,is_active,max_plays
+                0902223333,Hoang Quoc Huy,Phòng Công Nghệ,5555,100,true,3
+                0913334444,Phan Thu Trang,Phòng Hành Chính,6666,0,true,5</p>
+              <p class="mt-1.5 text-indigo-600">Lưu ý: Cột "employee_code" là SĐT hoặc Email đăng nhập của nhân viên.
+                Dòng tiêu đề viết chính xác. Cột max_plays là giới hạn lượt chơi của riêng nhân viên đó (để trống nếu
+                muốn áp dụng giới hạn chung).</p>
+            </div>
+
+            <!-- Column guide for Quizzes -->
+            <div id="guide_quizzes_csv" class="hidden">
+              <p class="font-bold">Danh sách Câu hỏi Đề thi (Nhập cột tương tự như sau):</p>
+              <p class="font-mono text-[10px] bg-indigo-100/50 p-2 rounded-lg mt-1 select-all">Câu hỏi,Answer 1,Answer
+                2,Answer 3,Answer 4,Đáp án đúng
+                Thời gian bắt đầu làm việc buổi sáng là mấy giờ?,08:30 sáng,09:30 sáng,10:30 sáng,Thỏa thích tự do,1
+                Quy trình xin nghỉ phép từ 3 ngày trở lên cần báo trước mấy ngày?,5 ngày,3 ngày,2 ngày,Không cần báo
+                trước,1</p>
+              <p class="mt-1.5 text-indigo-600">Lưu ý: Cột "Đáp án đúng" nhận giá trị số từ 1 tới 4 tương đương với các
+                câu trả lời đúng từ Answer 1 đến Answer 4.</p>
+            </div>
+          </div>
+
+          <!-- Submit action -->
+          <button id="btn_process_import"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl text-xs shadow-md active:scale-95 transition cursor-pointer">
+            XỬ LÝ IMPORT DỮ LIỆU NGAY
+          </button>
+        </section>
+
+        <!-- VIEWPORT 4: HISTORY -->
+        <section id="section_history"
+          class="admin-view card-map p-6 hidden">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+            <div>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Lịch Sử Thi Đấu</h2>
+              <p class="text-xs text-[#593113] mt-1">Xem chi tiết các lượt chơi của nhân sự</p>
+            </div>
+            <button id="btn_refresh_history"
+              class="btn-pirate-yellow px-3 py-2 text-[#2B1607] font-bold text-xs rounded-xl transition cursor-pointer">🔄
+              Làm mới</button>
+          </div>
+
+          <div
+            class="flex flex-col sm:flex-row items-center gap-3 mb-6 card-wood p-3">
+            <input type="text" id="filter_history_search" placeholder="Tìm kiếm theo tên người chơi..."
+              class="w-full sm:w-auto p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-xs font-bold flex-1 focus:outline-none" />
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <span class="text-xs font-bold text-[#FFD700]">Đề thi:</span>
+              <select id="filter_history_quiz"
+                class="p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-xs font-bold flex-1 sm:w-48 focus:outline-none">
+                <option value="">Tất cả đề thi</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <span class="text-xs font-bold text-[#FFD700]">Tháng:</span>
+              <input type="number" id="filter_history_month" min="1" max="12" placeholder="Tất cả"
+                class="w-16 p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-xs font-bold text-center focus:outline-none" />
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <span class="text-xs font-bold text-[#FFD700]">Tuần:</span>
+              <input type="number" id="filter_history_week" min="1" max="5" placeholder="Tất cả"
+                class="w-16 p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-xs font-bold text-center focus:outline-none" />
+            </div>
+            <button id="btn_clear_history_filter"
+              class="w-full sm:w-auto btn-pirate-yellow px-4 py-2 text-[#2B1607] font-bold text-xs rounded-xl transition cursor-pointer">
+              XÓA LỌC
+            </button>
+          </div>
+
+          <!-- Dashboard Stats -->
+          <div id="dashboard_stats" class="hidden mb-6 animate-in"></div>
+
+          <div class="overflow-x-auto border-2 border-[#8B5A2B] rounded-2xl bg-[rgba(255,255,255,0.5)]">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-[rgba(139,90,43,0.1)] border-b-2 border-[#8B5A2B] text-[#8B5A2B]">
+                <tr>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider">Thời gian</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider">Người chơi</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider">Đề thi</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider text-center">Điểm</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider text-center">Đúng/Sai</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider text-center">TG</th>
+                  <th class="py-3 px-4 font-black uppercase tracking-wider text-center">Chi tiết</th>
+                </tr>
+              </thead>
+              <tbody id="history_table_body" class="divide-y-2 divide-dashed divide-[rgba(139,90,43,0.3)] font-semibold text-[#4A240A]">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FLOATING MODAL 1: ADD/EDIT USER FORM -->
+  <div id="modal_user"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4" id="modal_user_title">Thêm Nhân Viên
+      </h3>
+      <form id="form_user" class="space-y-4">
+        <input type="hidden" id="form_user_id" />
+
+        <div>
+          <label for="form_user_code" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tài khoản đăng nhập (SĐT hoặc
+            Email)</label>
+          <input type="text" id="form_user_code" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Ví dụ: nduy6374@gmail.com" />
+        </div>
+
+        <div>
+          <label for="form_user_fullname" class="block text-xs font-bold text-[#8B5A2B] mb-1">Họ tên nhân viên</label>
+          <input type="text" id="form_user_fullname" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Nguyễn Văn A" />
+        </div>
+
+        <div>
+          <label for="form_user_dept" class="block text-xs font-bold text-[#8B5A2B] mb-1">Ban phòng sở tại</label>
+          <input type="text" id="form_user_dept" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Phòng Kế Hoạch" />
+        </div>
+
+        <div>
+          <label for="form_user_role" class="block text-xs font-bold text-[#8B5A2B] mb-1">Vai Trò (Phân Quyền)</label>
+          <select id="form_user_role"
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none">
+            <option value="user">👤 Nhân Viên (user) — Chỉ được chơi quiz</option>
+            <option value="admin">⚡ Quản Trị Viên (admin) — Truy cập trang Admin</option>
+            <option value="owner" disabled>👑 Chủ Hệ Thống (owner) — Không thể thay đổi</option>
+          </select>
+          <p class="text-[10px] text-[#8B5A2B] mt-1">⚠️ Cấp quyền Admin sẽ cho phép nhân viên này truy cập toàn bộ bảng
+            điều khiển.</p>
+        </div>
+
+        <div>
+          <label for="form_user_pin" class="block text-xs font-bold text-[#8B5A2B] mb-1">Mã PIN / Mật khẩu</label>
+          <input type="text" id="form_user_pin" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none"
+            placeholder="1234" />
+        </div>
+
+        <div>
+          <label for="form_user_score" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tổng điểm tích lũy
+            (Điểm)</label>
+          <input type="number" id="form_user_score" min="0"
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-[#DE3A3B] font-['Space_Grotesk'] focus:outline-none"
+            placeholder="0" />
+        </div>
+
+        <div>
+          <label for="form_user_max_plays" class="block text-xs font-bold text-[#8B5A2B] mb-1">Giới hạn lượt chơi
+            riêng/ngày (Để trống = Mặc định chung)</label>
+          <input type="number" id="form_user_max_plays" min="1"
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Ví dụ: 5" />
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <input type="checkbox" id="form_user_active" checked
+            class="w-4 h-4 rounded border-2 border-[#8B5A2B]" />
+          <label for="form_user_active" class="text-xs font-semibold text-[#4A240A]">Bật trạng thái Hoạt Động
+            (is_active)</label>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-3">
+          <button type="button" id="btn_close_user_modal"
+            class="btn-pirate-yellow text-[#2B1607] font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit"
+            class="btn-pirate text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer uppercase">
+            Xác Nhận Lưu Kho
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- FLOATING MODAL 2: ADD QUIZ FORM -->
+  <div id="modal_quiz"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#8B5A2B]">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Tạo Đề Thi Mới</h3>
+      <form id="form_quiz" class="space-y-4">
+        <div>
+          <label for="form_quiz_title" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tiêu đề đề thi</label>
+          <input type="text" id="form_quiz_title" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Ví dụ: Quiz Quy Tắc Vận Hành Khối Sản Xuất" />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label for="form_quiz_month" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tháng thi đấu</label>
+            <input type="number" id="form_quiz_month" required min="1" max="12"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none"
+              placeholder="7" />
+          </div>
+          <div>
+            <label for="form_quiz_week" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tuần số</label>
+            <input type="number" id="form_quiz_week" required
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none"
+              placeholder="26" />
+          </div>
+          <div class="flex flex-col justify-end">
+            <div class="flex items-center space-x-2 pb-2">
+              <input type="checkbox" id="form_quiz_active" class="w-4 h-4 rounded border-2 border-[#8B5A2B]" />
+              <label for="form_quiz_active" class="text-[11px] font-semibold text-[#4A240A]">Kích hoạt</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-3">
+          <button type="button" id="btn_close_quiz_modal"
+            class="btn-pirate-yellow text-[#2B1607] font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit"
+            class="btn-pirate text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Tạo đề Quiz
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- FLOATING MODAL 2.5: EDIT QUIZ FORM -->
+  <div id="modal_edit_quiz"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#8B5A2B]">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Chỉnh Sửa Thông Tin Đề Thi</h3>
+      <form id="form_edit_quiz" class="space-y-4">
+        <input type="hidden" id="form_edit_quiz_id" />
+        <div>
+          <label for="form_edit_quiz_title" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tiêu đề đề thi</label>
+          <input type="text" id="form_edit_quiz_title" required
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="form_edit_quiz_month" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tháng thi đấu</label>
+            <input type="number" id="form_edit_quiz_month" required min="1" max="12"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none" />
+          </div>
+          <div>
+            <label for="form_edit_quiz_week" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tuần số</label>
+            <input type="number" id="form_edit_quiz_week" required
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-3">
+          <button type="button" id="btn_close_edit_quiz_modal"
+            class="btn-pirate-yellow text-[#2B1607] font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit"
+            class="btn-pirate text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Lưu thay đổi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- FLOATING MODAL 3: ADD QUESTION FORM -->
+  <div id="modal_question"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div
+      class="card-map rounded-3xl p-6 max-w-md w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[90vh]">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Thêm câu hỏi vào đề</h3>
+      <form id="form_question" class="space-y-4">
+        <input type="hidden" id="form_question_quiz_id" />
+
+        <div>
+          <label for="form_question_text" class="block text-xs font-bold text-[#8B5A2B] mb-1">Nội dung câu hỏi</label>
+          <textarea id="form_question_text" required rows="2"
+            class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Nhập câu hỏi..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="form_question_point" class="block text-xs font-bold text-[#8B5A2B] mb-1">Điểm gốc</label>
+            <input type="number" id="form_question_point" required min="1" value="10"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+          </div>
+          <div>
+            <label for="form_question_time" class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (giây)</label>
+            <input type="number" id="form_question_time" required min="5" value="15"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+          </div>
+        </div>
+
+        <p class="text-[10px] font-black uppercase tracking-wider text-[#8B5A2B] border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-1">Đáp án
+          gợi ý (Hãy tích dấu chọn cho đáp án ĐÚNG nhất)</p>
+
+        <!-- Ans 1 (Red style inside modal) -->
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="correct_answer_radio" value="0" checked class="w-4 h-4 text-[#DE3A3B]" />
+          <input type="text" id="ans_text_0" required
+            class="block flex-1 p-2 bg-[rgba(222,58,59,0.1)] border-2 border-[#DE3A3B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án đỏ (Đúng hoặc Sai)" />
+        </div>
+
+        <!-- Ans 2 (Blue style inside modal) -->
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="correct_answer_radio" value="1" class="w-4 h-4 text-[#1C5D9F]" />
+          <input type="text" id="ans_text_1" required
+            class="block flex-1 p-2 bg-[rgba(28,93,159,0.1)] border-2 border-[#1C5D9F] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án xanh dương" />
+        </div>
+
+        <!-- Ans 3 (Yellow style inside modal) -->
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="correct_answer_radio" value="2" class="w-4 h-4 text-[#D39B1E]" />
+          <input type="text" id="ans_text_2" required
+            class="block flex-1 p-2 bg-[rgba(211,155,30,0.1)] border-2 border-[#D39B1E] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án vàng" />
+        </div>
+
+        <!-- Ans 4 (Green style inside modal) -->
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="correct_answer_radio" value="3" class="w-4 h-4 text-[#3C8230]" />
+          <input type="text" id="ans_text_3" required
+            class="block flex-1 p-2 bg-[rgba(60,130,48,0.1)] border-2 border-[#3C8230] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án xanh lá" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-3">
+          <button type="button" id="btn_close_question_modal"
+            class="btn-pirate-yellow text-[#2B1607] font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit"
+            class="btn-pirate text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Thêm vào Quiz
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- FLOATING MODAL 4: EDIT QUESTION FORM -->
+  <div id="modal_edit_question"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div
+      class="card-map rounded-3xl p-6 max-w-md w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[90vh]">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-1">✏️ Sửa câu hỏi</h3>
+      <p class="text-[11px] text-[#593113] mb-4">Chỉnh sửa nội dung câu hỏi, đáp án và đánh dấu đáp án đúng.</p>
+      <form id="form_edit_question" class="space-y-4">
+        <input type="hidden" id="edit_question_id" />
+
+        <div>
+          <label for="edit_question_text" class="block text-xs font-bold text-[#8B5A2B] mb-1">Nội dung câu hỏi</label>
+          <textarea id="edit_question_text" required rows="3"
+            class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Nhập câu hỏi..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="edit_question_point" class="block text-xs font-bold text-[#8B5A2B] mb-1">Điểm gốc</label>
+            <input type="number" id="edit_question_point" required min="1"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+          </div>
+          <div>
+            <label for="edit_question_time" class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (giây)</label>
+            <input type="number" id="edit_question_time" required min="5"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+          </div>
+        </div>
+
+        <p class="text-[10px] font-black uppercase tracking-wider text-[#8B5A2B] border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-1">Đáp án
+          (Tích chọn đáp án ĐÚNG)</p>
+
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="edit_correct_radio" value="0" checked class="w-4 h-4 text-[#DE3A3B]" />
+          <input type="text" id="edit_ans_0" required
+            class="block flex-1 p-2 bg-[rgba(222,58,59,0.1)] border-2 border-[#DE3A3B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án 1 (Đỏ)" />
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="edit_correct_radio" value="1" class="w-4 h-4 text-[#1C5D9F]" />
+          <input type="text" id="edit_ans_1" required
+            class="block flex-1 p-2 bg-[rgba(28,93,159,0.1)] border-2 border-[#1C5D9F] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án 2 (Xanh dương)" />
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="edit_correct_radio" value="2" class="w-4 h-4 text-[#D39B1E]" />
+          <input type="text" id="edit_ans_2" required
+            class="block flex-1 p-2 bg-[rgba(211,155,30,0.1)] border-2 border-[#D39B1E] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án 3 (Vàng)" />
+        </div>
+        <div class="flex items-center space-x-2">
+          <input type="radio" name="edit_correct_radio" value="3" class="w-4 h-4 text-[#3C8230]" />
+          <input type="text" id="edit_ans_3" required
+            class="block flex-1 p-2 bg-[rgba(60,130,48,0.1)] border-2 border-[#3C8230] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="Đáp án 4 (Xanh lá)" />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-3">
+          <button type="button" id="btn_close_edit_question"
+            class="btn-pirate-yellow text-[#2B1607] font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            Đóng
+          </button>
+          <button type="submit"
+            class="btn-pirate text-white font-bold py-2 px-4 rounded-xl text-xs cursor-pointer">
+            💾 Lưu thay đổi
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Alert Modal component fallback -->
+  <div id="admin_alert_modal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div class="card-wood rounded-3xl p-6 max-w-sm w-full shadow-2xl">
+      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#FFD700] mb-2 text-center" id="admin_alert_title">Thành công!</h3>
+      <p class="text-xs text-[#FFF8E7] mb-6 text-center leading-relaxed" id="admin_alert_content"></p>
+      <button id="btn_close_admin_alert"
+        class="w-full btn-pirate text-white font-bold py-2.5 px-6 rounded-xl transition text-xs cursor-pointer">
+        Xác Nhận
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <!-- FLOATING MODAL 4: WRONG ANSWERS DETAIL -->
+  <div id="modal_wrong_answers"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+    <div
+      class="card-map rounded-3xl p-6 max-w-lg w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[80vh]">
+      <div class="flex justify-between items-center mb-4 border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-3">
+        <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A]">Chi Tiết Các Câu Trả Lời Sai</h3>
+        <button id="btn_close_wrong_answers"
+          class="text-[#8B5A2B] hover:text-[#4A240A] font-bold p-2 cursor-pointer">✕</button>
+      </div>
+      <div id="wrong_answers_list" class="space-y-4">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/admin.js"></script>
+</body>
+
+</html>

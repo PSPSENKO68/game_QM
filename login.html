@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cổng Khai Thác — LÂM TẶC</title>
+  <meta name="description" content="Cổng đăng nhập hệ thống Lâm Tặc" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" />
+  <style>
+    body {
+      background-color: #677b40;
+      font-family: 'Inter', system-ui, sans-serif;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(139, 90, 43, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(139, 90, 43, 0.15) 0%, transparent 25%);
+    }
+
+    .brand-card {
+      background: #F4E4C1; /* Wood paper */
+      border: 4px solid #4A240A; /* Dark wood */
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(139, 90, 43, 0.3);
+    }
+
+    .brand-input {
+      background: #fff;
+      border: 2px solid #C49A6C;
+      color: #2B1607;
+      border-radius: 12px;
+      padding: 12px 14px 12px 40px;
+      width: 100%;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      outline: none;
+    }
+    
+    .brand-input-iconless {
+      padding-left: 14px;
+    }
+
+    .brand-input::placeholder {
+      color: rgba(74, 36, 10, 0.4);
+    }
+
+    .brand-input:focus {
+      border-color: #677b40;
+      background: #FAFAFA;
+      box-shadow: 0 0 0 3px rgba(103, 123, 64, 0.2);
+    }
+    
+    .brand-select {
+      background: #fff;
+      border: 2px solid #C49A6C;
+      color: #2B1607;
+      border-radius: 12px;
+      padding: 12px 14px;
+      width: 100%;
+      font-size: 0.875rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    .btn-submit {
+      background: linear-gradient(180deg, #677b40 0%, #4F5E30 100%);
+      color: #fff;
+      font-weight: 900;
+      font-family: 'Space Grotesk', sans-serif;
+      border: 3px solid #143310;
+      box-shadow: inset 0 -4px 0 rgba(0,0,0,0.3), 0 4px 10px rgba(0,0,0,0.25);
+      border-radius: 12px;
+      padding: 14px 24px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 1rem;
+      transition: filter 0.15s, transform 0.1s;
+    }
+
+    .btn-submit:hover {
+      filter: brightness(1.15);
+    }
+
+    .btn-submit:active {
+      transform: translateY(4px);
+      box-shadow: inset 0 0 0 rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .tab-btn {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      font-weight: 900;
+      font-family: 'Space Grotesk', sans-serif;
+      text-transform: uppercase;
+      cursor: pointer;
+      color: #8B5A2B;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #677b40;
+      border-bottom: 3px solid #677b40;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in {
+      animation: fadeSlideUp 0.45s ease forwards;
+    }
+    
+    .hidden-form {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between">
+
+  <div class="h-1.5 w-full bg-[#677b40]"></div>
+
+  <main class="w-full max-w-sm mx-auto px-4 py-8 flex-1 flex flex-col justify-center">
+
+    <!-- Logo & Title -->
+    <div class="text-center mb-6 animate-in">
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#4A240A] border-4 border-[#4F5E30] shadow-xl mb-3 overflow-hidden">
+        <span class="text-4xl">🪓</span>
+      </div>
+      <h1 class="font-['Space_Grotesk'] text-2xl font-black text-white tracking-tight uppercase" style="text-shadow: 2px 2px 0px #143310;">LÂM TẶC ĐẠI CHIẾN</h1>
+      <p class="text-[12px] font-bold text-[#F4E4C1] mt-1 uppercase" style="text-shadow: 1px 1px 1px #000;">KHAI THÁC RỪNG & SĂN MỒI</p>
+    </div>
+
+    <!-- Login/Register Card -->
+    <div class="brand-card animate-in" style="animation-delay: 0.1s">
+      <!-- Tabs -->
+      <div class="flex border-b border-[#C49A6C] mb-4 bg-[rgba(255,255,255,0.3)] rounded-t-xl overflow-hidden">
+        <div id="tab_quickplay" class="tab-btn active">CHƠI NGAY</div>
+        <div id="tab_admin" class="tab-btn">TRẠM TRƯỞNG</div>
+      </div>
+      
+      <div class="p-6 pt-0">
+        <!-- Error Alert -->
+        <div id="error_alert" class="hidden mb-4 p-3 bg-red-100 border-2 border-red-400 text-red-700 rounded-lg text-xs font-bold leading-relaxed text-center">
+          Thông báo lỗi.
+        </div>
+        
+        <!-- Success Alert -->
+        <div id="success_alert" class="hidden mb-4 p-3 bg-green-100 border-2 border-green-500 text-green-700 rounded-lg text-xs font-bold leading-relaxed text-center">
+          Thông báo thành công.
+        </div>
+
+        <!-- QUICK PLAY FORM -->
+        <form id="quick_play_form" class="space-y-4">
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">Họ và Tên</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">👤</span>
+              <input type="text" id="quick_fullname" required placeholder="Nhập tên của bạn để chơi..." class="brand-input" />
+            </div>
+          </div>
+          <button type="submit" id="btn_submit_quick" class="btn-submit mt-2">
+            <span>VÀO RỪNG NGAY</span>
+          </button>
+        </form>
+
+        <!-- ADMIN LOGIN FORM -->
+        <form id="admin_login_form" class="space-y-4 hidden-form">
+          <div class="bg-[#FFF8E7] p-3 rounded-xl border-2 border-[#C49A6C] mb-3">
+            <p class="text-[11px] text-[#4A240A] text-center font-bold">Khu vực dành riêng cho Trạm Trưởng kiểm lâm.</p>
+          </div>
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">SĐT / Mã nhân viên</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">📱</span>
+              <input type="tel" id="admin_phone" required placeholder="09xxxx..." class="brand-input" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">Mật khẩu (PIN)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">🔒</span>
+              <input type="password" id="admin_pin" required placeholder="Nhập mã PIN" class="brand-input" />
+            </div>
+          </div>
+          <button type="submit" id="btn_submit_admin" class="btn-submit mt-2" style="background: linear-gradient(180deg, #D48847 0%, #9C6036 100%); border-color: #4A240A;">
+            <span>ĐĂNG NHẬP ADMIN</span>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center py-4 text-white/50 text-xs font-bold font-['Space_Grotesk']">
+    LÂM TẶC - HỆ THỐNG TRẠM KIỂM LÂM
+  </footer>
+
+  <script>
+    // Tab switching logic
+    const tabQuick = document.getElementById('tab_quickplay');
+    const tabAdmin = document.getElementById('tab_admin');
+    const quickForm = document.getElementById('quick_play_form');
+    const adminForm = document.getElementById('admin_login_form');
+    const errorAlert = document.getElementById('error_alert');
+    const successAlert = document.getElementById('success_alert');
+
+    tabQuick.addEventListener('click', () => {
+      tabQuick.classList.add('active');
+      tabAdmin.classList.remove('active');
+      quickForm.classList.remove('hidden-form');
+      adminForm.classList.add('hidden-form');
+      errorAlert.classList.add('hidden');
+      successAlert.classList.add('hidden');
+    });
+
+    tabAdmin.addEventListener('click', () => {
+      tabAdmin.classList.add('active');
+      tabQuick.classList.remove('active');
+      adminForm.classList.remove('hidden-form');
+      quickForm.classList.add('hidden-form');
+      errorAlert.classList.add('hidden');
+      successAlert.classList.add('hidden');
+    });
+  </script>
+  
+  <script type="module" src="/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Corporate Quiz Game",
+  "description": "An interactive internal corporate quiz game for employees, styled like Kahoot for mobile devices with a full admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
