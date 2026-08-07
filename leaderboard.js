@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (isStealMode) {
     const titleEl = document.querySelector('h2');
-    if (titleEl) titleEl.textContent = 'CHỌN MỤC TIÊU KHAI THÁC';
+    if (titleEl) titleEl.textContent = 'CHỌN MỤC TIÊU SĂN MỒI';
     const subtitleEl = document.querySelector('p.text-xs');
     if (subtitleEl) subtitleEl.textContent = 'Chọn một đối thủ để khiêu chiến và thách đấu';
   }
