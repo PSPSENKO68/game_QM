@@ -96,6 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               if (btnMegaComplete) {
                 btnMegaComplete.classList.remove('hidden');
                 btnMegaComplete.onclick = () => {
+                  if (audio) {
+                    audio.pause();
+                    audio.currentTime = 0;
+                  }
                   modal.classList.add('hidden');
                   if (header) header.classList.remove('hidden');
                 };
