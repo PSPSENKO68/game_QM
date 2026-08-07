@@ -868,13 +868,21 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputModule2Status = document.getElementById('input_module2_status');
   const btnSaveModule2Status = document.getElementById('btn_save_module2_status');
 
-  const inputStealMultiplier = document.getElementById('input_steal_multiplier');
+  const inputStealWinMultiplier = document.getElementById('input_steal_win_multiplier');
+  const inputStealLoseMultiplier = document.getElementById('input_steal_lose_multiplier');
+  const inputMaxSteals = document.getElementById('input_max_steals');
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
 
   // Load Settings
   if (inputModule1Status) db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
-  if (inputStealMultiplier) db.getStealMultiplier().then(val => inputStealMultiplier.value = val);
+  if (inputStealWinMultiplier && inputStealLoseMultiplier) {
+    db.getStealMultipliers().then(m => {
+      inputStealWinMultiplier.value = m.win;
+      inputStealLoseMultiplier.value = m.lose;
+    });
+  }
+  if (inputMaxSteals) db.getMaxStealsPerDay().then(val => inputMaxSteals.value = val);
 
   // Save Settings
   if (btnSaveModule1Status && inputModule1Status) {
@@ -893,13 +901,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  if (btnSaveMultiplier && inputStealMultiplier) {
+  if (btnSaveMultiplier && inputStealWinMultiplier && inputStealLoseMultiplier && inputMaxSteals) {
     btnSaveMultiplier.addEventListener('click', async () => {
-      const val = parseFloat(inputStealMultiplier.value);
-      if (isNaN(val) || val <= 0) { showAdminAlert('Lỗi', 'Nhập > 0'); return; }
-      const result = await db.updateStealMultiplier(val);
-      if (result.success) showAdminAlert('Đã lưu ✅', `Hệ số thách đấu: x${val}`);
-      else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
+      const winVal = parseFloat(inputStealWinMultiplier.value);
+      const loseVal = parseFloat(inputStealLoseMultiplier.value);
+      const maxSteals = parseInt(inputMaxSteals.value);
+      if (isNaN(winVal) || winVal <= 0 || isNaN(loseVal) || loseVal <= 0 || isNaN(maxSteals) || maxSteals < 1) { 
+        showAdminAlert('Lỗi', 'Thông số không hợp lệ'); return; 
+      }
+      
+      const r1 = await db.updateStealMultipliers(winVal, loseVal);
+      const r2 = await db.updateMaxStealsPerDay(maxSteals);
+      
+      if (r1.success && r2.success) {
+        showAdminAlert('Đã lưu ✅', `Hệ số: ${winVal}x / ${loseVal}x | Số lượt: ${maxSteals}`);
+      } else {
+        showAdminAlert('Lỗi', 'Không thể lưu cấu hình.');
+      }
     });
   }
 
