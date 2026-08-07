@@ -154,6 +154,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Bind Steal buttons
     if (isStealMode) {
+      // Helper function for custom alerts
+      const showCustomAlert = (msg) => {
+        const modal = document.getElementById('custom_alert_modal');
+        const msgEl = document.getElementById('custom_alert_message');
+        const btnClose = document.getElementById('btn_close_custom_alert');
+        if (modal && msgEl && btnClose) {
+          msgEl.textContent = msg;
+          modal.classList.remove('hidden');
+          btnClose.onclick = () => modal.classList.add('hidden');
+        } else {
+          alert(msg); // Fallback
+        }
+      };
+
       document.querySelectorAll('.btn-steal').forEach(btn => {
         btn.addEventListener('click', async () => {
           const targetId = btn.getAttribute('data-id');
@@ -166,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const stealsToday = await db.getStealsToday(currentUser.id);
           const maxSteals = await db.getMaxStealsPerDay();
           if (stealsToday >= maxSteals) {
-            alert('Bạn đã hết lượt thách đấu hôm nay!');
+            showCustomAlert('Bạn đã hết lượt thách đấu hôm nay!');
             btn.textContent = 'Thách Đấu ⚔️';
             return;
           }
@@ -174,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Check if already challenged THIS SPECIFIC person today
           const alreadyChallenged = await db.hasStolenFromUserToday(currentUser.id, targetId);
           if (alreadyChallenged) {
-            alert('Bạn đã thách đấu người này hôm nay rồi! Hãy chọn đối thủ khác.');
+            showCustomAlert('Bạn đã thách đấu người này hôm nay rồi! Hãy chọn đối thủ khác.');
             btn.textContent = 'Thách Đấu ⚔️';
             return;
           }
