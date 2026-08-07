@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       let actionHtml = '';
       const playerScore = parseInt(player.total_score) || 0;
       if (isStealMode && player.id !== currentUser.id) {
-        if (playerScore < 0) {
+        if (playerScore <= 0) {
           actionHtml = `<button class="btn-steal btn-pirate px-3 py-1.5 ml-3 shrink-0 text-[11px] uppercase tracking-wider opacity-40 cursor-not-allowed" disabled>Thách Đấu ⚔️</button>`;
         } else {
           actionHtml = `<button class="btn-steal btn-pirate px-3 py-1.5 ml-3 cursor-pointer shrink-0 text-[11px] uppercase tracking-wider" data-id="${player.id}">Thách Đấu ⚔️</button>`;

@@ -174,9 +174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
        userFeedbackMsg.innerHTML = isWin 
          ? `Bạn đã đánh bại đối thủ và giành được ${winPoints} điểm!<br><br><span style="color:#0284c7; font-weight:normal;">Chi tiết: ${reasonHTML}</span>` 
          : `Bạn đã thua cuộc và bị trừ ${losePoints} điểm!<br><br><span style="color:#dc2626; font-weight:normal;">Chi tiết: ${reasonHTML}</span>`;
-       if (!isWin) {
-           userFeedbackMsg.className = "mt-4 p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-[11px] text-rose-400 leading-normal font-medium";
-       }
     }
 
     if (btnRetryQuiz) {
