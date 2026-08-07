@@ -168,7 +168,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (Number(atkCorrect) > Number(defCorrect)) {
         reasonHTML = `Thắng do bạn trả lời đúng nhiều hơn (${atkCorrect} vs ${defCorrect} câu).`;
       } else {
-        reasonHTML = `Thắng do bạn trả lời nhanh hơn (${atkTime}s vs ${defTime}s) với cùng ${atkCorrect} câu đúng.`;
+        let diff = Math.abs(Number(defTime) - Number(atkTime));
+        reasonHTML = `Bạn trả lời nhanh hơn đối thủ ${diff}s với ${atkCorrect} câu đúng.`;
       }
     } else {
       if (Number(atkCorrect) < Number(defCorrect)) {
@@ -188,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (btnRetryQuiz) {
       btnRetryQuiz.innerHTML = `
-        🪓 ĐI CHẶT TRẠM KHÁC
+        🥷 THÁCH ĐẤU NGƯỜI KHÁC
       `;
     }
   }
