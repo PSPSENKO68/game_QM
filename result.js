@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                   if (header) header.classList.remove('hidden');
                 };
               }
-            }, 6500);
+            }, 4000);
           }
         }
       }
