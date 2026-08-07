@@ -870,6 +870,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const inputStealWinMultiplier = document.getElementById('input_steal_win_multiplier');
   const inputStealLoseMultiplier = document.getElementById('input_steal_lose_multiplier');
+  const inputStealWinBase = document.getElementById('input_steal_win_base');
+  const inputStealLoseBase = document.getElementById('input_steal_lose_base');
   const inputMaxSteals = document.getElementById('input_max_steals');
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
 
@@ -880,6 +882,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     db.getStealMultipliers().then(m => {
       inputStealWinMultiplier.value = m.win;
       inputStealLoseMultiplier.value = m.lose;
+    });
+  }
+  if (inputStealWinBase && inputStealLoseBase) {
+    db.getStealBasePoints().then(b => {
+      inputStealWinBase.value = b.win;
+      inputStealLoseBase.value = b.lose;
     });
   }
   if (inputMaxSteals) db.getMaxStealsPerDay().then(val => inputMaxSteals.value = val);
@@ -901,20 +909,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  if (btnSaveMultiplier && inputStealWinMultiplier && inputStealLoseMultiplier && inputMaxSteals) {
+  if (btnSaveMultiplier && inputStealWinMultiplier && inputStealLoseMultiplier && inputMaxSteals && inputStealWinBase && inputStealLoseBase) {
     btnSaveMultiplier.addEventListener('click', async () => {
       const winVal = parseFloat(inputStealWinMultiplier.value);
       const loseVal = parseFloat(inputStealLoseMultiplier.value);
+      const winBase = parseInt(inputStealWinBase.value);
+      const loseBase = parseInt(inputStealLoseBase.value);
       const maxSteals = parseInt(inputMaxSteals.value);
-      if (isNaN(winVal) || winVal <= 0 || isNaN(loseVal) || loseVal <= 0 || isNaN(maxSteals) || maxSteals < 1) { 
+      
+      if (isNaN(winVal) || winVal <= 0 || isNaN(loseVal) || loseVal <= 0 || 
+          isNaN(winBase) || winBase <= 0 || isNaN(loseBase) || loseBase <= 0 || 
+          isNaN(maxSteals) || maxSteals < 1) { 
         showAdminAlert('Lỗi', 'Thông số không hợp lệ'); return; 
       }
       
       const r1 = await db.updateStealMultipliers(winVal, loseVal);
-      const r2 = await db.updateMaxStealsPerDay(maxSteals);
+      const r2 = await db.updateStealBasePoints(winBase, loseBase);
+      const r3 = await db.updateMaxStealsPerDay(maxSteals);
       
-      if (r1.success && r2.success) {
-        showAdminAlert('Đã lưu ✅', `Hệ số: ${winVal}x / ${loseVal}x | Số lượt: ${maxSteals}`);
+      if (r1.success && r2.success && r3.success) {
+        showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Số lượt: ${maxSteals}`);
       } else {
         showAdminAlert('Lỗi', 'Không thể lưu cấu hình.');
       }

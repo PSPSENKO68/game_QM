@@ -136,19 +136,27 @@
             <!-- Module 2 Multiplier -->
             <div class="card-wood p-4 flex flex-col gap-2">
               <p class="text-xs font-bold text-[#FFD700]">CẤU HÌNH THÁCH ĐẤU</p>
-              <p class="text-[10px] text-[#FFF8E7] flex-1">Hệ số nhân khi thắng/thua & số lượt cướp/ngày.</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Cấu hình Hệ số và Điểm cơ bản</p>
               
-              <div class="flex items-center gap-2 mt-2">
-                <label class="text-[10px] text-[#FFF8E7] w-16">HS Thắng:</label>
-                <input type="number" step="0.1" id="input_steal_win_multiplier" min="1" max="10" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none" />
+              <div class="flex items-center gap-1 mt-1">
+                <label class="text-[10px] text-[#FFD700] w-12 font-bold uppercase">Thắng:</label>
+                <input type="number" step="0.5" id="input_steal_win_multiplier" class="flex-1 p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold" title="Hệ số nhân">
+                <span class="text-[10px] text-white">x</span>
+                <input type="number" step="1" id="input_steal_win_base" class="flex-1 p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold" title="Điểm cơ bản">
+                <span class="text-[10px] text-white">đ</span>
               </div>
-              <div class="flex items-center gap-2">
-                <label class="text-[10px] text-[#FFF8E7] w-16">HS Thua:</label>
-                <input type="number" step="0.1" id="input_steal_lose_multiplier" min="1" max="10" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none" />
+              
+              <div class="flex items-center gap-1">
+                <label class="text-[10px] text-[#DE3A3B] w-12 font-bold uppercase">Thua:</label>
+                <input type="number" step="0.5" id="input_steal_lose_multiplier" class="flex-1 p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold" title="Hệ số nhân">
+                <span class="text-[10px] text-white">x</span>
+                <input type="number" step="1" id="input_steal_lose_base" class="flex-1 p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold" title="Điểm cơ bản">
+                <span class="text-[10px] text-white">đ</span>
               </div>
-              <div class="flex items-center gap-2">
+              
+              <div class="flex items-center gap-2 mt-1">
                 <label class="text-[10px] text-[#FFF8E7] w-16">Lượt/ngày:</label>
-                <input type="number" id="input_max_steals" min="1" max="100" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none" />
+                <input type="number" id="input_max_steals" min="1" max="100" class="w-full p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold focus:outline-none" />
               </div>
               
               <button id="btn_save_multiplier" class="btn-pirate mt-1 px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer">LƯU CẤU HÌNH</button>

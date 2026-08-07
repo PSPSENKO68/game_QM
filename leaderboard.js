@@ -198,13 +198,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           const elWinMult = document.getElementById('modal_win_multiplier');
           if (elWinMult) elWinMult.textContent = multipliers.win;
-          const elWinPoints = document.getElementById('modal_win_points');
-          if (elWinPoints) elWinPoints.textContent = '+' + Math.round(20 * multipliers.win);
           
           const elLoseMult = document.getElementById('modal_lose_multiplier');
           if (elLoseMult) elLoseMult.textContent = multipliers.lose;
-          const elLosePoints = document.getElementById('modal_lose_points');
-          if (elLosePoints) elLosePoints.textContent = '-' + Math.round(10 * multipliers.lose);
           
           const elStealsCount = document.getElementById('modal_steals_count');
           if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;

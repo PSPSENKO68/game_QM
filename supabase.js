@@ -337,9 +337,24 @@ export const db = {
   },
 
   async updateStealMultipliers(winVal, loseVal) {
-    const { error: err1 } = await supabase.from('settings').upsert({ key: 'steal_win_multiplier', value: String(parseFloat(winVal) || 1.0) });
-    const { error: err2 } = await supabase.from('settings').upsert({ key: 'steal_lose_multiplier', value: String(parseFloat(loseVal) || 1.0) });
-    if (err1 || err2) return { success: false, message: 'Lỗi khi lưu hệ số' };
+    await supabase.from('settings').upsert({ key: 'steal_win_multiplier', value: winVal.toString() });
+    await supabase.from('settings').upsert({ key: 'steal_lose_multiplier', value: loseVal.toString() });
+    return { success: true };
+  },
+
+  async getStealBasePoints() {
+    const { data: winData } = await supabase.from('settings').select('value').eq('key', 'steal_win_base').single();
+    const { data: loseData } = await supabase.from('settings').select('value').eq('key', 'steal_lose_base').single();
+    
+    return {
+      win: winData ? parseFloat(winData.value) : 20,
+      lose: loseData ? parseFloat(loseData.value) : 10
+    };
+  },
+
+  async updateStealBasePoints(winVal, loseVal) {
+    await supabase.from('settings').upsert({ key: 'steal_win_base', value: winVal.toString() });
+    await supabase.from('settings').upsert({ key: 'steal_lose_base', value: loseVal.toString() });
     return { success: true };
   },
 
@@ -525,21 +540,11 @@ export const db = {
     // 3. Lấy thành tích tốt nhất của người bị thách đấu
     const defenderBest = await db.getBestPlayToday(defenderId);
     
-    // Đảm bảo là số để so sánh chính xác
     const defCorrect = defenderBest ? parseInt(defenderBest.correct_count) || 0 : 0;
     const defTime = defenderBest ? parseInt(defenderBest.time_spent) || 999999 : 999999;
     
     const atkCorrect = parseInt(attackerCorrectCount) || 0;
     const atkTime = parseInt(attackerTimeSpent) || 0;
-
-    console.log('[THÁCH ĐẤU DEBUG]', {
-      attackerId, defenderId,
-      atkCorrect, atkTime,
-      defCorrect, defTime,
-      defenderBest,
-      rawAtkCorrect: attackerCorrectCount,
-      rawAtkTime: attackerTimeSpent
-    });
 
     let isSuccess = false;
     if (atkCorrect > defCorrect) {
@@ -547,7 +552,6 @@ export const db = {
     } else if (atkCorrect === defCorrect) {
       if (atkTime <= defTime) isSuccess = true;
     }
-    console.log('[THÁCH ĐẤU KẾT QUẢ] isSuccess:', isSuccess);
 
     // 4. Lưu lịch sử
     const { error } = await supabase.from('steal_history').insert({
@@ -563,8 +567,9 @@ export const db = {
 
     if (error) return { success: false, message: error.message };
 
-    // 5. Lấy multiplier từ settings
+    // 5. Lấy multiplier & base points từ settings
     const multipliers = await db.getStealMultipliers();
+    const basePoints = await db.getStealBasePoints();
 
     // 6. Cộng/Trừ điểm
     const { data: usersData } = await supabase.from('users').select('id, total_score').in('id', [attackerId, defenderId]);
@@ -574,8 +579,8 @@ export const db = {
     const attackerTotal = parseInt(attackerData?.total_score) || 0;
     const defenderTotal = parseInt(defenderData?.total_score) || 0;
 
-    const winPoints = Math.round(20 * multipliers.win);
-    const losePoints = Math.round(10 * multipliers.lose);
+    const winPoints = Math.round(basePoints.win * multipliers.win);
+    const losePoints = Math.round(basePoints.lose * multipliers.lose);
 
     if (isSuccess) {
       // Attacker wins: Attacker gets +winPoints, Defender gets -winPoints (allow negative)
