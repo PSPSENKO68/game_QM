@@ -96,7 +96,6 @@ document.addEventListener('DOMContentLoaded', async () => {
               if (btnMegaComplete) {
                 btnMegaComplete.classList.remove('hidden');
                 btnMegaComplete.onclick = () => {
-                  alert("Vui lòng chụp màn hình số MEGA để tham gia xổ số ngày CLOSING DAY");
                   modal.classList.add('hidden');
                   if (header) header.classList.remove('hidden');
                 };
