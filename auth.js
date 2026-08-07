@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // DOM Elements - Quick Play
   const quickForm = document.getElementById('quick_play_form');
   const quickNameInput = document.getElementById('quick_fullname');
+  const quickDeptInput = document.getElementById('quick_department');
   const btnSubmitQuick = document.getElementById('btn_submit_quick');
   
   // DOM Elements - Admin Login
@@ -39,16 +40,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       hideAlerts();
 
       const fullName = quickNameInput.value.trim();
+      const department = quickDeptInput ? quickDeptInput.value.trim() : 'Khách';
 
-      if (!fullName) {
-        showError('Vui lòng nhập Họ và Tên của bạn.');
+      if (!fullName || (quickDeptInput && !department)) {
+        showError('Vui lòng nhập đầy đủ Họ và Tên cùng Bộ phận làm việc.');
         return;
       }
 
       setLoading(btnSubmitQuick, true, 'VÀO RỪNG NGAY');
 
       try {
-        const result = await db.quickLogin(fullName);
+        const result = await db.quickLogin(fullName, department);
         if (result.success) {
           sessionStorage.setItem('current_user', JSON.stringify(result.user));
           window.location.replace('/index.html');
