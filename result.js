@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (userFeedbackMsg && mode === 1) {
     let comment = '';
     if (correct === total) {
-      comment = `Tuyệt đỉnh! Bạn trả lời đúng tuyệt đối ${correct}/${total} câu hỏi! Tặng bạn ${bonus} điểm thưởng hoàn thành! 🏆`;
+      comment = `Tuyệt đỉnh! Bạn trả lời đúng tuyệt đối ${correct}/${total} câu hỏi! Tặng bạn ${bonus} like hoàn thành! 🏆`;
     } else if (correct >= 8) {
       comment = `Rất Xuất Sắc! Đúng ${correct}/${total} câu hỏi. Tiếp tục phát huy nhé! 🎉`;
     } else if (correct >= 5) {
