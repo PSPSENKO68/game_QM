@@ -240,3 +240,25 @@ body::after {
 .kahoot-circle { width: 18px; height: 18px; background: white; border-radius: 50%; }
 .kahoot-square { width: 18px; height: 18px; background: white; }
 
+/* Custom Scrollbar for Wood Theme */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(139, 90, 43, 0.15); 
+  border-radius: 10px;
+  border: 1px solid rgba(139, 90, 43, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--pk-wood-base); 
+  border: 2px solid var(--pk-wood-border);
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--pk-wood-light); 
+}
