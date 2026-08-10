@@ -78,11 +78,14 @@
         </div>
         
         <!-- Countdown timer badge (Bomb style) -->
-        <div class="absolute -top-5 right-2 inline-flex items-center justify-center w-12 h-12 bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
-          15
+        <div class="absolute -top-5 right-2 w-12 h-12">
+          <div class="absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
+            15
+          </div>
+          <div id="spark_container" class="absolute inset-0 pointer-events-none transition-transform duration-1000 ease-linear" style="transform: rotate(0deg);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-2xl animate-shake">💥</div>
+          </div>
         </div>
-        
-        <div class="absolute -top-6 right-0 text-2xl rotate-45 animate-shake">💥</div>
 
         <p class="font-extrabold text-center text-[#2B1607] leading-relaxed text-[17px] md:text-[19px] block drop-shadow-sm mt-3" id="question_text">
           Đang chuẩn bị câu hỏi...

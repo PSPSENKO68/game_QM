@@ -148,14 +148,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (timerInterval) clearInterval(timerInterval);
     currentMaxTime = currentQuestion.time_limit || 15;
     currentRemainingTime = currentMaxTime;
+    const sparkContainer = document.getElementById('spark_container');
     if (countdownTimer) {
       countdownTimer.textContent = currentRemainingTime;
-      countdownTimer.className = 'absolute -top-5 right-2 inline-flex items-center justify-center w-12 h-12 bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors';
+      countdownTimer.className = 'absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors';
+    }
+    if (sparkContainer) {
+      sparkContainer.style.transform = `rotate(0deg)`;
+      sparkContainer.style.opacity = '1';
     }
 
     timerInterval = setInterval(() => {
       currentRemainingTime--;
       if (countdownTimer) countdownTimer.textContent = currentRemainingTime;
+      
+      if (sparkContainer) {
+        const angle = ((currentMaxTime - currentRemainingTime) / currentMaxTime) * 360;
+        sparkContainer.style.transform = `rotate(${angle}deg)`;
+      }
       
       if (currentRemainingTime <= 5 && countdownTimer) {
          countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
@@ -163,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       if (currentRemainingTime <= 0) {
+        if (sparkContainer) sparkContainer.style.opacity = '0';
         clearInterval(timerInterval);
         if (!hasSelected) {
           handleAnswerSelection(null); // Time out
