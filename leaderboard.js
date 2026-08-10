@@ -144,8 +144,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             </p>
           </div>
         </div>
-        <div class="text-right flex items-center justify-end pl-2">
-          <span class="text-[17px] font-black font-['Space_Grotesk']" style="color:${scoreColor}">${player.total_score || 0} 🪙</span>
+        <div class="text-right flex items-center justify-end pl-2 shrink-0">
+          <span class="text-[17px] font-black font-['Space_Grotesk'] shrink-0 whitespace-nowrap" style="color:${scoreColor}">${player.total_score || 0} 🪙</span>
           ${actionHtml}
         </div>
       `;
