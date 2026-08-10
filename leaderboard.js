@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       row.innerHTML = `
         <div class="flex items-center gap-3 flex-1 overflow-hidden">
           ${medalHtml}
-          <div class="truncate">
-            <div class="font-black text-[14px] text-[#2B1607] flex items-center truncate drop-shadow-sm">
-              <span class="truncate">${player.full_name}</span>
+          <div class="flex-1">
+            <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1 drop-shadow-sm">
+              <span class="break-words leading-tight">${player.full_name}</span>
               ${selfBadge}
             </div>
-            <p class="text-[11px] text-[#8B5A2B] font-bold mt-0.5 truncate flex gap-2">
+            <p class="text-[11px] text-[#8B5A2B] font-bold mt-1 flex flex-wrap gap-2">
               <span>${player.department || '—'}</span>
               ${player.mega_code ? `<span class="text-[#DE3A3B] bg-rose-50 px-1 rounded">MEGA: ${player.mega_code}</span>` : ''}
             </p>
