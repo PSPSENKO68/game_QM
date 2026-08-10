@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     currentRemainingTime = currentMaxTime;
     if (countdownTimer) {
       countdownTimer.textContent = currentRemainingTime;
-      countdownTimer.className = 'absolute top-4 right-4 inline-flex items-center justify-center w-9 h-9 bg-rose-50 border-2 border-rose-200 rounded-full text-rose-600 font-black text-xs shadow-sm transition-colors';
+      countdownTimer.className = 'absolute -top-5 right-2 inline-flex items-center justify-center w-12 h-12 bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors';
     }
 
     timerInterval = setInterval(() => {
@@ -158,7 +158,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (countdownTimer) countdownTimer.textContent = currentRemainingTime;
       
       if (currentRemainingTime <= 5 && countdownTimer) {
-         countdownTimer.classList.add('animate-pulse', 'bg-rose-200', 'text-rose-800');
+         countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
+         countdownTimer.classList.add('animate-pulse', 'bg-red-600', 'text-white');
       }
 
       if (currentRemainingTime <= 0) {
