@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (gamePanel) {
     gamePanel.classList.remove('hidden');
-    
+
     const isModule1On = await db.getModule1Status();
     const isModule2On = await db.getModule2Status();
     const isGameOn = isModule1On || isModule2On;
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const globalLimit = await db.getDailyLimit();
         const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
         mode1PlaysStatus.textContent = `${playsToday}/${maxPlays} LƯỢT`;
-        
+
         if (playsToday >= maxPlays) {
           mode1PlaysStatus.classList.add('text-rose-400');
         }
@@ -212,6 +212,75 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode1.classList.add('opacity-50', 'cursor-not-allowed');
       }
     }
+  }
+
+  // ── Lucky Wheel ───────────────────────────────────────────────────────────
+  const btnLuckyWheel = document.getElementById('btn_lucky_wheel');
+  const modalLuckyWheel = document.getElementById('modal_lucky_wheel');
+  const btnCloseWheel = document.getElementById('btn_close_wheel');
+  const btnSpinWheel = document.getElementById('btn_spin_wheel');
+  const wheelSpinner = document.getElementById('wheel_spinner');
+
+  if (btnLuckyWheel && modalLuckyWheel) {
+    const isWheelOn = await db.getWheelStatus();
+    if (isWheelOn) {
+      btnLuckyWheel.classList.remove('hidden');
+    }
+
+    btnLuckyWheel.addEventListener('click', () => {
+      modalLuckyWheel.classList.remove('hidden');
+    });
+
+    btnCloseWheel.addEventListener('click', () => {
+      modalLuckyWheel.classList.add('hidden');
+    });
+
+    let isSpinning = false;
+    btnSpinWheel.addEventListener('click', async () => {
+      if (isSpinning) return;
+
+      // Kiểm tra xem đã quay chưa
+      const freshUser = await db.getUserById(user.id);
+      if (freshUser && freshUser.has_spun_wheel) {
+        showGlobalAlert('Bạn đã quay rồi!', 'Mỗi người chỉ được quay vòng quay 1 lần duy nhất.');
+        return;
+      }
+
+      isSpinning = true;
+      btnSpinWheel.disabled = true;
+      btnSpinWheel.textContent = 'ĐANG QUAY...';
+      btnSpinWheel.classList.add('opacity-50', 'cursor-not-allowed');
+
+      const slice = Math.floor(Math.random() * 4);
+      const targetAngles = [
+        { type: 'POINTS', value: 10, angle: 315, label: '+10 Điểm' },
+        { type: 'SHIELD', value: 0, angle: 225, label: 'KHIÊN BẢO VỆ' },
+        { type: 'POINTS', value: 20, angle: 135, label: '+20 Điểm' },
+        { type: 'POINTS', value: 50, angle: 45, label: '+50 Điểm' },
+      ];
+
+      const prize = targetAngles[slice];
+
+      // Randomize angle within slice slightly
+      const offset = Math.floor(Math.random() * 60) - 30; // +/- 30 degrees
+      const totalRotation = 5 * 360 + prize.angle + offset;
+
+      wheelSpinner.style.transform = `rotate(${totalRotation}deg)`;
+
+      setTimeout(async () => {
+        const result = await db.updateUserWheelResult(user.id, prize.type, prize.value);
+        if (result.success) {
+          showGlobalAlert('Chúc mừng!', `Bạn quay trúng: ${prize.label}.`);
+          if (prize.type === 'POINTS') {
+            userTotalScore.textContent = result.newScore;
+          }
+        } else {
+          showGlobalAlert('Lỗi', result.message || 'Có lỗi xảy ra.');
+        }
+
+        btnSpinWheel.textContent = 'ĐÃ QUAY XONG';
+      }, 5000);
+    });
   }
 
   // ── Đăng xuất ─────────────────────────────────────────────────────────────

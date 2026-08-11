@@ -30,6 +30,70 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (subtitleEl) subtitleEl.textContent = 'Chọn một đối thủ để khiêu chiến và thách đấu';
   }
 
+  // --- Defense History Logic ---
+  const btnHistoryModal = document.getElementById('btn_history_modal');
+  const defenseHistoryModal = document.getElementById('defense_history_modal');
+  const defenseHistoryList = document.getElementById('defense_history_list');
+  const btnCloseDefenseHistory = document.getElementById('btn_close_defense_history');
+
+  if (currentUser && btnHistoryModal) {
+    btnHistoryModal.classList.remove('hidden');
+    
+    btnHistoryModal.addEventListener('click', async () => {
+      if (defenseHistoryModal) defenseHistoryModal.classList.remove('hidden');
+      if (defenseHistoryList) {
+        defenseHistoryList.innerHTML = '<p class="text-center text-xs text-[#8B5A2B] font-bold mt-4">Đang tải lịch sử...</p>';
+        const history = await db.getDefenseHistory(currentUser.id);
+        
+        if (!history || history.length === 0) {
+          defenseHistoryList.innerHTML = '<p class="text-center text-xs text-[#8B5A2B] font-bold mt-4">Chưa có ai thách đấu bạn.</p>';
+          return;
+        }
+
+        defenseHistoryList.innerHTML = '';
+        history.forEach(record => {
+          const isWin = !record.is_success; // Tức là người thủ thắng (kẻ địch thua)
+          const statusHtml = isWin 
+            ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">Phòng Thủ THÀNH CÔNG</span>'
+            : '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">Bị cướp THẤT BẠI</span>';
+            
+          const attackerName = record.attacker ? record.attacker.full_name : 'Người ẩn danh';
+          const attackerDept = record.attacker ? record.attacker.department : '';
+          
+          const timeLabel = new Date(record.created_at).toLocaleString('vi-VN', { 
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+          });
+
+          const div = document.createElement('div');
+          div.className = 'border-b-2 border-dashed border-[#8B5A2B]/20 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0';
+          div.innerHTML = `
+            <div class="flex justify-between items-start mb-1">
+              <div>
+                <p class="font-bold text-[#4A240A] text-[12px]">${attackerName}</p>
+                <p class="text-[10px] text-[#8B5A2B]">${attackerDept}</p>
+              </div>
+              <div class="text-right">
+                ${statusHtml}
+                <p class="text-[9px] text-[#8B5A2B] mt-1">${timeLabel}</p>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-[10px] bg-white/50 p-1.5 rounded">
+              <span class="text-[#DE3A3B] font-bold">Kẻ địch: ${record.attacker_correct_count || 0} câu (${record.attacker_time_spent || 0}s)</span>
+              <span class="text-emerald-600 font-bold">Bạn: ${record.defender_correct_count || 0} câu (${record.defender_time_spent || 0}s)</span>
+            </div>
+          `;
+          defenseHistoryList.appendChild(div);
+        });
+      }
+    });
+  }
+
+  if (btnCloseDefenseHistory) {
+    btnCloseDefenseHistory.addEventListener('click', () => {
+      if (defenseHistoryModal) defenseHistoryModal.classList.add('hidden');
+    });
+  }
+
   try {
     const rankings = await db.getLeaderboard();
 

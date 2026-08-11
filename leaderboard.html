@@ -139,11 +139,31 @@
     </div>
 
     <!-- Action buttons -->
-    <div class="mt-6 flex gap-3">
-      <a href="/index.html" class="btn-pirate-wood flex-1 py-3 text-center text-xs uppercase tracking-wider rounded-2xl block font-black border-4 border-[#3B1C03]">QUAY LẠI</a>
-      <a href="/index.html" class="btn-pirate-yellow flex-1 py-3 text-center text-xs uppercase tracking-wider rounded-2xl block font-black">XUẤT PHÁT</a>
+    <div class="mt-6 flex flex-col gap-3">
+      <div class="flex gap-3">
+        <a href="/index.html" class="btn-pirate-wood flex-1 py-3 text-center text-xs uppercase tracking-wider rounded-2xl block font-black border-4 border-[#3B1C03]">QUAY LẠI</a>
+        <a href="/index.html" class="btn-pirate-yellow flex-1 py-3 text-center text-xs uppercase tracking-wider rounded-2xl block font-black">XUẤT PHÁT</a>
+      </div>
+      <button id="btn_history_modal" class="btn-pirate py-3 text-center text-xs text-white uppercase tracking-wider rounded-2xl block font-black cursor-pointer hidden">LỊCH SỬ BỊ THÁCH ĐẤU</button>
     </div>
   </main>
+
+  <div class="h-4"></div>
+
+  <!-- Defense History Modal -->
+  <div id="defense_history_modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-[#8B5A2B] relative overflow-hidden flex flex-col max-h-[80vh]">
+      <div class="relative z-10 flex flex-col h-full">
+        <h3 class="text-xl font-black font-['Space_Grotesk'] text-[#4A240A] mb-4 uppercase tracking-widest text-center">LỊCH SỬ BỊ THÁCH ĐẤU</h3>
+        <div id="defense_history_list" class="flex-1 overflow-y-auto space-y-3 mb-4 bg-[#FFF8E7] rounded-xl p-3 border-2 border-[#8B5A2B] shadow-inner min-h-[150px]">
+          <p class="text-center text-xs text-[#8B5A2B] font-bold mt-4">Đang tải lịch sử...</p>
+        </div>
+        <button id="btn_close_defense_history" class="btn-pirate-yellow w-full py-3 rounded-xl font-black text-[#2B1607] text-[12px] uppercase shadow-md active:scale-95 transition-transform shrink-0">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="h-4"></div>
 

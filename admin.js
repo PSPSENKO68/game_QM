@@ -868,6 +868,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputModule2Status = document.getElementById('input_module2_status');
   const btnSaveModule2Status = document.getElementById('btn_save_module2_status');
 
+  const inputRandomizeQuestions = document.getElementById('input_randomize_questions');
+  const btnSaveRandomizeQuestions = document.getElementById('btn_save_randomize_questions');
+
+  const inputWheelStatus = document.getElementById('input_wheel_status');
+  const btnSaveWheelStatus = document.getElementById('btn_save_wheel_status');
+
   const inputStealWinMultiplier = document.getElementById('input_steal_win_multiplier');
   const inputStealLoseMultiplier = document.getElementById('input_steal_lose_multiplier');
   const inputStealWinBase = document.getElementById('input_steal_win_base');
@@ -878,6 +884,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Load Settings
   if (inputModule1Status) db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
+  if (inputRandomizeQuestions) db.getRandomizeQuestionsStatus().then(isOn => inputRandomizeQuestions.value = isOn ? 'ON' : 'OFF');
+  if (inputWheelStatus) db.getWheelStatus().then(isOn => inputWheelStatus.value = isOn ? 'ON' : 'OFF');
   if (inputStealWinMultiplier && inputStealLoseMultiplier) {
     db.getStealMultipliers().then(m => {
       inputStealWinMultiplier.value = m.win;
@@ -905,6 +913,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnSaveModule2Status.addEventListener('click', async () => {
       const result = await db.updateModule2Status(inputModule2Status.value);
       if (result.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 2: ${inputModule2Status.value}`);
+      else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
+    });
+  }
+
+  if (btnSaveRandomizeQuestions && inputRandomizeQuestions) {
+    btnSaveRandomizeQuestions.addEventListener('click', async () => {
+      const result = await db.updateRandomizeQuestionsStatus(inputRandomizeQuestions.value);
+      if (result.success) showAdminAlert('Đã lưu ✅', `Trạng thái Xáo Câu Hỏi: ${inputRandomizeQuestions.value}`);
+      else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
+    });
+  }
+
+  if (btnSaveWheelStatus && inputWheelStatus) {
+    btnSaveWheelStatus.addEventListener('click', async () => {
+      const result = await db.updateWheelStatus(inputWheelStatus.value);
+      if (result.success) showAdminAlert('Đã lưu ✅', `Trạng thái Vòng Quay: ${inputWheelStatus.value}`);
       else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
     });
   }

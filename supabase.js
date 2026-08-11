@@ -51,6 +51,8 @@ export async function bootstrapDatabase() {
 
     // Seed cấu hình mặc định
     await supabase.from('settings').upsert({ key: 'max_plays_per_day', value: '3' });
+    await supabase.from('settings').upsert({ key: 'randomize_questions', value: 'OFF' });
+    await supabase.from('settings').upsert({ key: 'wheel_status', value: 'OFF' });
 
     console.log('✅ Đã khởi tạo Super Admin thành công!');
     return { success: true, reason: 'created' };
@@ -324,6 +326,28 @@ export const db = {
     return { success: !error, message: error?.message };
   },
 
+  async getRandomizeQuestionsStatus() {
+    const { data, error } = await supabase.from('settings').select('value').eq('key', 'randomize_questions').single();
+    if (!error && data) return data.value === 'ON';
+    return false;
+  },
+
+  async updateRandomizeQuestionsStatus(statusStr) {
+    const { error } = await supabase.from('settings').upsert({ key: 'randomize_questions', value: statusStr });
+    return { success: !error, message: error?.message };
+  },
+
+  async getWheelStatus() {
+    const { data, error } = await supabase.from('settings').select('value').eq('key', 'wheel_status').single();
+    if (!error && data) return data.value === 'ON';
+    return false;
+  },
+
+  async updateWheelStatus(statusStr) {
+    const { error } = await supabase.from('settings').upsert({ key: 'wheel_status', value: statusStr });
+    return { success: !error, message: error?.message };
+  },
+
   async getStealMultipliers() {
     const { data, error } = await supabase.from('settings').select('*').in('key', ['steal_win_multiplier', 'steal_lose_multiplier']);
     let win = 1.0, lose = 1.0;
@@ -393,6 +417,23 @@ export const db = {
       .gte('created_at', todayStart.toISOString())
       .lte('created_at', todayEnd.toISOString());
     return (count || 0) > 0;
+  },
+
+  async getDefenseHistory(userId) {
+    const { data, error } = await supabase
+      .from('steal_history')
+      .select(`
+        id, created_at, is_success, attacker_correct_count, attacker_time_spent, defender_correct_count, defender_time_spent,
+        attacker:users!steal_history_attacker_id_fkey ( full_name, department, mega_code )
+      `)
+      .eq('defender_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('getDefenseHistory error:', error);
+      return [];
+    }
+    return data || [];
   },
 
   // ── 3. QUIZ & CÂU HỎI ───────────────────────────────────────────────────
@@ -572,7 +613,7 @@ export const db = {
     const basePoints = await db.getStealBasePoints();
 
     // 6. Cộng/Trừ điểm
-    const { data: usersData } = await supabase.from('users').select('id, total_score').in('id', [attackerId, defenderId]);
+    const { data: usersData } = await supabase.from('users').select('id, total_score, has_shield').in('id', [attackerId, defenderId]);
     const attackerData = usersData.find(u => u.id === attackerId);
     const defenderData = usersData.find(u => u.id === defenderId);
 
@@ -582,17 +623,25 @@ export const db = {
     const winPoints = Math.round(basePoints.win * multipliers.win);
     const losePoints = Math.round(basePoints.lose * multipliers.lose);
 
+    let shieldUsed = false;
     if (isSuccess) {
       // Attacker wins: Attacker gets +winPoints, Defender gets -winPoints (allow negative)
       await supabase.from('users').update({ total_score: attackerTotal + winPoints }).eq('id', attackerId);
-      await supabase.from('users').update({ total_score: defenderTotal - winPoints }).eq('id', defenderId);
+      
+      if (defenderData?.has_shield) {
+        shieldUsed = true;
+        // Shield saves the day, defender loses 0 points, but shield breaks
+        await supabase.from('users').update({ has_shield: false }).eq('id', defenderId);
+      } else {
+        await supabase.from('users').update({ total_score: defenderTotal - winPoints }).eq('id', defenderId);
+      }
     } else {
       // Attacker loses: Attacker gets -losePoints (allow negative), Defender gets +losePoints
       await supabase.from('users').update({ total_score: attackerTotal - losePoints }).eq('id', attackerId);
       await supabase.from('users').update({ total_score: defenderTotal + losePoints }).eq('id', defenderId);
     }
 
-    return { success: true, isWin: isSuccess, defCorrect, defTime, atkCorrect, atkTime, winPoints, losePoints };
+    return { success: true, isWin: isSuccess, defCorrect, defTime, atkCorrect, atkTime, winPoints, losePoints, shieldUsed };
   },
 
   // ── 5. LEADERBOARD ──────────────────────────────────────────────────────
@@ -609,6 +658,23 @@ export const db = {
       return [];
     }
     return data || [];
+  },
+
+  async updateUserWheelResult(userId, prizeType, bonusPoints = 0) {
+    const { data: user } = await supabase.from('users').select('total_score, has_spun_wheel').eq('id', userId).single();
+    if (!user) return { success: false, message: 'User not found' };
+    if (user.has_spun_wheel) return { success: false, message: 'Bạn đã quay vòng quay rồi!' };
+
+    const updates = { has_spun_wheel: true };
+    if (prizeType === 'SHIELD') {
+      updates.has_shield = true;
+    } else if (prizeType === 'POINTS') {
+      updates.total_score = (parseInt(user.total_score) || 0) + bonusPoints;
+    }
+
+    const { error } = await supabase.from('users').update(updates).eq('id', userId);
+    if (error) return { success: false, message: error.message };
+    return { success: true, newScore: updates.total_score };
   },
 
   async getUserRank(userId) {

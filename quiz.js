@@ -121,9 +121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     return arr;
   }
 
-  // Set up quiz questions sequence:
-  // Randomize questions list, then take maximum of 10 questions (as requested "Mỗi quiz 10 câu. Random thứ tự câu hỏi")
-  questions = shuffleArray(rawQuestions).slice(0, 10);
+  // Set up quiz questions sequence
+  const isRandomizeOn = await db.getRandomizeQuestionsStatus();
+  if (isRandomizeOn) {
+    questions = shuffleArray(rawQuestions).slice(0, 10);
+  } else {
+    questions = rawQuestions.slice(0, 10);
+  }
 
   // Initialize Gameplay
   loadQuestion(currentIndex);
