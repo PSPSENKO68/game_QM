@@ -161,14 +161,75 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const isModule1On = await db.getModule1Status();
     const isModule2On = await db.getModule2Status();
-    const isGameOn = isModule1On || isModule2On;
+    const isStreakOn = await db.getStreakGameMode();
+    const isGameOn = isModule1On || isModule2On || isStreakOn;
+
+    const gameStreakState = document.getElementById('game_streak_state');
 
     if (!isGameOn) {
       gameOffState.classList.remove('hidden');
       gameOnState.classList.add('hidden');
+      if (gameStreakState) gameStreakState.classList.add('hidden');
     } else {
       gameOffState.classList.add('hidden');
-      gameOnState.classList.remove('hidden');
+
+      if (isStreakOn && gameStreakState) {
+        gameOnState.classList.add('hidden');
+        gameStreakState.classList.remove('hidden');
+        
+        const lbLink = document.querySelector('a[href="/leaderboard.html"]');
+        if (lbLink) lbLink.href = '/leaderboard.html?mode=streak';
+        
+        const streakInfo = await db.getUserStreakStatus(user.id);
+        const maxDays = 5;
+        let timelineHtml = '';
+        for (let i = 1; i <= maxDays; i++) {
+          let statusColor = 'bg-[#FFF8E7] text-[#4A240A] border-[#8B5A2B] opacity-70';
+          let icon = i;
+          
+          if (i <= streakInfo.streakDays) {
+            statusColor = 'bg-[#677B40] text-white border-[#677B40]';
+            icon = '✓';
+          } else if (i === streakInfo.streakDays + 1) {
+            statusColor = 'bg-[#FFD700] text-[#2B1607] border-[#2B1607] animate-pulse';
+          }
+          
+          timelineHtml += `
+            <div class="relative flex flex-col items-center flex-1">
+              <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold text-xs ${statusColor} z-10 relative shadow-sm">
+                ${icon}
+              </div>
+              <div class="text-[9px] font-bold mt-1 text-[#8B5A2B]">Ngày ${i}</div>
+              ${i < maxDays ? `<div class="absolute top-4 left-[50%] w-full h-0.5 bg-[#8B5A2B]/30 z-0"></div>` : ''}
+            </div>
+          `;
+        }
+        
+        const timeline = document.getElementById('streak_timeline');
+        if (timeline) timeline.innerHTML = timelineHtml;
+        
+        // Find active streak quiz
+        const activeStreakQuiz = await db.getActiveStreakQuiz();
+        
+        const btnPlayStreak = document.getElementById('btn_play_streak');
+        const streakPlayStatus = document.getElementById('streak_play_status');
+        
+        if (activeStreakQuiz) {
+          sessionStorage.setItem('current_quiz_id', activeStreakQuiz.id);
+          streakPlayStatus.textContent = activeStreakQuiz.title;
+          btnPlayStreak.addEventListener('click', () => {
+             // In Streak Mode, we might not check limit plays unless we want to. Let's let them play unlimited.
+             window.location.href = '/quiz.html?mode=streak';
+          });
+        } else {
+          streakPlayStatus.textContent = 'Chưa có đề hôm nay';
+          btnPlayStreak.disabled = true;
+          btnPlayStreak.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+      } else {
+        if (gameStreakState) gameStreakState.classList.add('hidden');
+        gameOnState.classList.remove('hidden');
 
       const btnMode2 = document.getElementById('btn_mode_2');
       if (!isModule1On && btnMode1) btnMode1.classList.add('hidden');
@@ -212,6 +273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode1.classList.add('opacity-50', 'cursor-not-allowed');
       }
     }
+  }
   }
 
   // ── Lucky Wheel ───────────────────────────────────────────────────────────

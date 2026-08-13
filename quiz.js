@@ -68,12 +68,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const countdownTimer = document.getElementById('countdown_timer');
 
   const urlParams = new URLSearchParams(window.location.search);
-  const mode = parseInt(urlParams.get('mode')) || 1;
+  const modeParam = urlParams.get('mode');
+  const mode = modeParam === 'streak' ? 'streak' : (parseInt(modeParam) || 1);
   const stealTargetId = sessionStorage.getItem('steal_target_id');
   let targetUser = null;
 
   // Active quiz metadata elements
-  const activeQuiz = await db.getActiveQuiz();
+  const activeQuiz = await db.getActiveQuiz(mode === 'streak');
 
   if (mode === 2) {
     if (!stealTargetId) {
@@ -95,6 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (scoreLabel) scoreLabel.textContent = 'Điểm Thách Đấu:';
     const bonusLabel = document.getElementById('bonus_label');
     if (bonusLabel) bonusLabel.textContent = '';
+  } else if (mode === 'streak') {
+    if (activeQuiz && quizWeekBadge) {
+      quizWeekBadge.textContent = `🔥 Ngày ${activeQuiz.streak_day || 1}`;
+    }
   } else {
     if (activeQuiz && quizWeekBadge) {
       quizWeekBadge.textContent = `Tháng ${activeQuiz.month_no || 1} • Tuần ${activeQuiz.week_no || 'Này'}`;
@@ -123,10 +128,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Set up quiz questions sequence
   const isRandomizeOn = await db.getRandomizeQuestionsStatus();
-  if (isRandomizeOn) {
-    questions = shuffleArray(rawQuestions).slice(0, 10);
+  if (mode === 'streak') {
+    const imgQs = rawQuestions.filter(q => q.image_url);
+    const txtQs = rawQuestions.filter(q => !q.image_url);
+    const selectedQs = [...shuffleArray(imgQs).slice(0, 2), ...shuffleArray(txtQs).slice(0, 5)];
+    questions = isRandomizeOn ? shuffleArray(selectedQs) : selectedQs;
   } else {
-    questions = rawQuestions.slice(0, 10);
+    if (isRandomizeOn) {
+      questions = shuffleArray(rawQuestions).slice(0, 10);
+    } else {
+      questions = rawQuestions.slice(0, 10);
+    }
   }
 
   // Initialize Gameplay
@@ -195,6 +207,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Question content text
     questionText.textContent = currentQuestion.question_text;
+    const questionImage = document.getElementById('question_image');
+    if (questionImage) {
+      if (currentQuestion.image_url && currentQuestion.image_url.trim() !== '') {
+        questionImage.src = currentQuestion.image_url.trim();
+        questionImage.classList.remove('hidden');
+      } else {
+        questionImage.src = '';
+        questionImage.classList.add('hidden');
+      }
+    }
 
     // Randomize answers list
     const shuffledAnswers = shuffleArray(currentQuestion.answers || []);

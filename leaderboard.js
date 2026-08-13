@@ -23,7 +23,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const module2Status = await db.getModule2Status();
   const isStealMode = module2Status || isActionSteal;
 
-  if (isStealMode) {
+  const isStreakMode = urlParams.get('mode') === 'streak';
+
+  if (isStreakMode) {
+    const titleEl = document.querySelector('h2');
+    if (titleEl) titleEl.textContent = 'TOP LÂM TẶC GIỮ CHUỖI';
+    const subtitleEl = document.querySelector('p.text-xs');
+    if (subtitleEl) subtitleEl.textContent = 'Dựa trên chuỗi ngày sống sót cao nhất';
+  } else if (isStealMode) {
     const titleEl = document.querySelector('h2');
     if (titleEl) titleEl.textContent = 'CHỌN MỤC TIÊU SĂN MỒI';
     const subtitleEl = document.querySelector('p.text-xs');
@@ -95,7 +102,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   try {
-    const rankings = await db.getLeaderboard();
+    const rankings = isStreakMode ? await db.getStreakLeaderboard() : await db.getLeaderboard();
 
     leaderboardList.innerHTML = '';
 
@@ -113,14 +120,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentUserScore = currentUser ? (currentUser.total_score || 0) : 0;
 
     if (currentUser) {
-      const foundIdx = rankings.findIndex(r => r.id === currentUser.id);
+      const foundIdx = rankings.findIndex(r => r.user_id === currentUser.id || r.id === currentUser.id);
       if (foundIdx !== -1) {
         currentUserRank = foundIdx + 1;
-        currentUserScore = rankings[foundIdx].total_score;
+        currentUserScore = isStreakMode ? (rankings[foundIdx].maxStreakDay || 0) : rankings[foundIdx].total_score;
       } else {
-        // Ngoài top 20 → lấy rank thực từ DB
-        const realRank = await db.getUserRank(currentUser.id);
-        currentUserRank = realRank || '20+';
+        if (!isStreakMode) {
+          const realRank = await db.getUserRank(currentUser.id);
+          currentUserRank = realRank || '20+';
+        }
       }
     }
 
@@ -128,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentUser && selfRankRow) {
       selfName.textContent = currentUser.full_name;
       selfDept.textContent = currentUser.department;
-      selfScore.textContent = `${currentUserScore}đ`;
+      selfScore.textContent = isStreakMode ? `Chuỗi ${currentUserScore}` : `${currentUserScore}đ`;
       
       const freshUser = await db.getUserById(currentUser.id);
       if (freshUser && freshUser.mega_code) {
@@ -161,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let rankCounter = 1;
     playersWithScore.forEach((player, index) => {
       const rank = index + 1;
-      const isSelf = currentUser && (player.id === currentUser.id);
+      const isSelf = currentUser && ((player.id || player.user_id) === currentUser.id);
 
       // Medal icon
       let medalHtml = '';
@@ -183,8 +191,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       const scoreColor = rank <= 3 ? '#DE3A3B' : '#4A2E15';
 
       let actionHtml = '';
-      const playerScore = parseInt(player.total_score) || 0;
-      if (isStealMode && player.id !== currentUser.id) {
+      const playerScore = isStreakMode ? (player.maxStreakDay || 0) : (parseInt(player.total_score) || 0);
+      const playerDisplayScore = isStreakMode ? `Chuỗi ${playerScore}` : `${playerScore} 🪙`;
+      const playerId = isStreakMode ? player.user_id : player.id;
+      const playerName = isStreakMode ? player.user.full_name : player.full_name;
+      const playerDept = isStreakMode ? player.user.department : player.department;
+      const playerMega = isStreakMode ? player.user.mega_code : player.mega_code;
+      
+      if (isStealMode && !isStreakMode && playerId !== currentUser.id) {
         if (playerScore <= 0) {
           actionHtml = `<button class="btn-steal btn-pirate px-3 py-1.5 ml-3 shrink-0 text-[11px] uppercase tracking-wider opacity-40 cursor-not-allowed" disabled>Thách Đấu ⚔️</button>`;
         } else {
@@ -199,17 +213,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           ${medalHtml}
           <div class="flex-1">
             <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1 drop-shadow-sm">
-              <span class="break-words leading-tight">${player.full_name}</span>
+              <span class="break-words leading-tight">${playerName}</span>
               ${selfBadge}
             </div>
             <p class="text-[11px] text-[#8B5A2B] font-bold mt-1 flex flex-wrap gap-2">
-              <span>${player.department || '—'}</span>
-              ${player.mega_code ? `<span class="text-[#DE3A3B] bg-rose-50 px-1 rounded">MEGA: ${player.mega_code}</span>` : ''}
+              <span>${playerDept || '—'}</span>
+              ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1 rounded">MEGA: ${playerMega}</span>` : ''}
             </p>
           </div>
         </div>
         <div class="text-right flex items-center justify-end pl-2 shrink-0">
-          <span class="text-[17px] font-black font-['Space_Grotesk'] shrink-0 whitespace-nowrap" style="color:${scoreColor}">${player.total_score || 0} 🪙</span>
+          <span class="text-[17px] font-black font-['Space_Grotesk'] shrink-0 whitespace-nowrap" style="color:${scoreColor}">${playerDisplayScore}</span>
           ${actionHtml}
         </div>
       `;

@@ -348,6 +348,29 @@ export const db = {
     return { success: !error, message: error?.message };
   },
 
+  async getActiveStreakQuiz() {
+    const { data, error } = await supabase
+      .from('quizzes')
+      .select('*')
+      .eq('active', true)
+      .not('streak_day', 'is', null)
+      .order('streak_day', { ascending: true })
+      .limit(1);
+    if (error || !data || data.length === 0) return null;
+    return data[0];
+  },
+
+  async getStreakGameMode() {
+    const { data, error } = await supabase.from('settings').select('value').eq('key', 'streak_game_mode').single();
+    if (!error && data) return data.value === 'ON';
+    return false;
+  },
+
+  async updateStreakGameMode(statusStr) {
+    const { error } = await supabase.from('settings').upsert({ key: 'streak_game_mode', value: statusStr });
+    return { success: !error, message: error?.message };
+  },
+
   async getStealMultipliers() {
     const { data, error } = await supabase.from('settings').select('*').in('key', ['steal_win_multiplier', 'steal_lose_multiplier']);
     let win = 1.0, lose = 1.0;
@@ -437,12 +460,14 @@ export const db = {
   },
 
   // ── 3. QUIZ & CÂU HỎI ───────────────────────────────────────────────────
-  async getActiveQuiz() {
-    const { data, error } = await supabase
-      .from('quizzes')
-      .select('*')
-      .eq('active', true)
-      .limit(1);
+  async getActiveQuiz(isStreak = false) {
+    let query = supabase.from('quizzes').select('*').eq('active', true);
+    if (isStreak) {
+      query = query.not('streak_day', 'is', null);
+    } else {
+      query = query.is('streak_day', null);
+    }
+    const { data, error } = await query.limit(1);
     if (error || !data || data.length === 0) return null;
     return data[0];
   },
@@ -521,8 +546,8 @@ export const db = {
       return { success: false };
     }
 
-    // Chỉ cập nhật total_score nếu có phá kỷ lục trong ngày
-    if (scoreDiff > 0) {
+    // Chỉ cập nhật total_score nếu có phá kỷ lục trong ngày và KHÔNG phải game Streak
+    if (scoreDiff > 0 && mode !== 'streak') {
       const { data: userData } = await supabase
         .from('users')
         .select('total_score')
@@ -827,6 +852,8 @@ export const db = {
       month_no: parseInt(quizData.month_no) || 1,
       week_no: parseInt(quizData.week_no) || 1,
       active: quizData.active || false,
+      is_compensation: quizData.is_compensation || false,
+      streak_day: quizData.streak_day || null,
       created_at: new Date().toISOString()
     };
     const { error } = await supabase.from('quizzes').insert(newQuiz);
@@ -838,7 +865,9 @@ export const db = {
     const { error } = await supabase.from('quizzes').update({
       title: updates.title,
       month_no: updates.month_no,
-      week_no: updates.week_no
+      week_no: updates.week_no,
+      is_compensation: updates.is_compensation !== undefined ? updates.is_compensation : false,
+      streak_day: updates.streak_day !== undefined ? updates.streak_day : null
     }).eq('id', quizId);
     if (error) return { success: false, message: error.message };
     return { success: true };
@@ -867,9 +896,9 @@ export const db = {
    * Import toàn bộ câu hỏi từ rows (mảng objects) vào quiz mới.
    * Format mỗi row: { 'Câu hỏi', 'Answer 1', 'Answer 2', 'Answer 3', 'Answer 4', 'Đáp án đúng' }
    */
-  async adminImportQuizFromRows(rows, quizTitle, monthNo, weekNo, activateNow = false) {
+  async adminImportQuizFromRows(rows, quizTitle, monthNo, weekNo, activateNow = false, isCompensation = false, streakDay = null) {
     // Bước 1: Tạo Quiz mới
-    const quizResult = await db.adminCreateQuiz({ title: quizTitle, month_no: monthNo, week_no: weekNo, active: false });
+    const quizResult = await db.adminCreateQuiz({ title: quizTitle, month_no: monthNo, week_no: weekNo, active: false, is_compensation: isCompensation, streak_day: streakDay });
     if (!quizResult.success) return quizResult;
 
     const quizId = quizResult.quiz.id;
@@ -891,6 +920,7 @@ export const db = {
 
       const point = parseInt(row['Point'] || row['point'] || row['Điểm'] || '10');
       const timeLimit = parseInt(row['Time'] || row['time'] || row['Thời gian'] || '15');
+      const imageUrl = row['Hình ảnh'] || row['image_url'] || row['Image'] || row['image'] || null;
 
       const questionId = genId('qn');
       const { error: qErr } = await supabase.from('questions').insert({
@@ -898,7 +928,8 @@ export const db = {
         quiz_id: quizId,
         question_text: questionText,
         point: isNaN(point) ? 10 : point,
-        time_limit: isNaN(timeLimit) ? 15 : timeLimit
+        time_limit: isNaN(timeLimit) ? 15 : timeLimit,
+        image_url: imageUrl
       });
 
       if (qErr) {
@@ -950,14 +981,15 @@ export const db = {
     return enriched;
   },
 
-  async adminCreateQuestion(quizId, questionText, answers, correctIndex, point = 10, timeLimit = 15) {
+  async adminCreateQuestion(quizId, questionText, answers, correctIndex, point = 10, timeLimit = 15, imageUrl = null) {
     const questionId = genId('qn');
     const { error: qErr } = await supabase.from('questions').insert({
       id: questionId,
       quiz_id: quizId,
       question_text: questionText,
-      point: point,
-      time_limit: timeLimit
+      point: parseInt(point) || 10,
+      time_limit: parseInt(timeLimit) || 15,
+      image_url: imageUrl
     });
     if (qErr) return { success: false, message: qErr.message };
 
@@ -979,14 +1011,15 @@ export const db = {
     return { success: true };
   },
 
-  async adminUpdateQuestion(questionId, questionText, answers, correctIndex, point = 10, timeLimit = 15) {
+  async adminUpdateQuestion(questionId, questionText, answers, correctIndex, point = 10, timeLimit = 15, imageUrl = null) {
     // 1. Cập nhật nội dung câu hỏi
     const { error: qErr } = await supabase
       .from('questions')
       .update({
         question_text: questionText,
-        point: point,
-        time_limit: timeLimit
+        point: parseInt(point) || 10,
+        time_limit: parseInt(timeLimit) || 15,
+        image_url: imageUrl
       })
       .eq('id', questionId);
     if (qErr) return { success: false, message: qErr.message };
@@ -1146,7 +1179,7 @@ export const db = {
       .select(`
         *,
         users ( full_name, employee_code, department ),
-        quizzes ( title, month_no, week_no )
+        quizzes ( title, month_no, week_no, streak_day )
       `)
       .order('played_at', { ascending: false });
     if (error) {
@@ -1177,5 +1210,76 @@ export const db = {
     }
 
     return counts;
+  },
+
+  // ── 11. GAME GIỮ CHUỖI (STREAK MODE) ──────────────────────────────
+  async getUserStreakStatus(userId) {
+    const { data: history, error } = await supabase
+      .from('play_history')
+      .select(`
+        score,
+        played_at,
+        quizzes ( streak_day, is_compensation )
+      `)
+      .eq('user_id', userId)
+      .order('played_at', { ascending: false });
+
+    if (error || !history || history.length === 0) {
+      return { streakDays: 0, lastPlayedStreakDay: 0, isBroken: false };
+    }
+
+    const streakHistory = history.filter(h => h.quizzes && h.quizzes.streak_day !== null);
+    
+    let maxStreakDay = 0;
+    streakHistory.forEach(record => {
+      const q = record.quizzes;
+      if (q && q.streak_day && q.streak_day > maxStreakDay) {
+         maxStreakDay = q.streak_day;
+      }
+    });
+
+    return { streakDays: maxStreakDay, lastPlayedStreakDay: maxStreakDay, isBroken: false };
+  },
+
+  async getStreakLeaderboard() {
+    const { data, error } = await supabase
+      .from('play_history')
+      .select(`
+        score,
+        time_spent,
+        correct_count,
+        user_id,
+        users ( full_name, department, employee_code ),
+        quizzes!inner ( streak_day, is_compensation )
+      `)
+      .not('quizzes.streak_day', 'is', null)
+      .order('score', { ascending: false });
+
+    if (error) return [];
+    
+    const userStats = {};
+    (data || []).forEach(row => {
+      if (!userStats[row.user_id]) {
+        userStats[row.user_id] = {
+          user: row.users,
+          totalScore: 0,
+          totalTime: 0,
+          totalCorrect: 0,
+          maxStreakDay: 0
+        };
+      }
+      userStats[row.user_id].totalScore += (row.score || 0);
+      userStats[row.user_id].totalTime += (row.time_spent || 0);
+      userStats[row.user_id].totalCorrect += (row.correct_count || 0);
+      const q = row.quizzes;
+      if (q && q.streak_day && q.streak_day > userStats[row.user_id].maxStreakDay) {
+        userStats[row.user_id].maxStreakDay = q.streak_day;
+      }
+    });
+
+    return Object.values(userStats).sort((a, b) => {
+      if (b.totalCorrect !== a.totalCorrect) return b.totalCorrect - a.totalCorrect;
+      return a.totalTime - b.totalTime;
+    });
   }
 };

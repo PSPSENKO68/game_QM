@@ -66,6 +66,10 @@
           🕒 Lịch Sử Thi Đấu
         </button>
 
+
+
+
+
         <!-- Import CSV/Excel tab -->
         <button id="tab_import_btn"
           class="tab-btn w-full text-left px-4 py-3 rounded-2xl font-bold text-sm text-[#FFF8E7] hover:bg-[rgba(255,255,255,0.1)] transition flex items-center gap-3 cursor-pointer">
@@ -101,7 +105,7 @@
           </div>
 
           <!-- Global Settings -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-4">
             <!-- Module 1 Status -->
             <div class="card-wood p-4 flex flex-col gap-2">
               <p class="text-xs font-bold text-[#FFD700]">Trạng thái Module 1 (Cày cuốc)</p>
@@ -112,6 +116,19 @@
                   <option value="OFF">🔴 ĐÃ ĐÓNG (OFF)</option>
                 </select>
                 <button id="btn_save_module1_status" class="btn-pirate px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU</button>
+              </div>
+            </div>
+
+            <!-- Streak Game Mode Status -->
+            <div class="card-wood p-4 flex flex-col gap-2">
+              <p class="text-xs font-bold text-[#FFD700]">Trạng thái Game Giữ Chuỗi</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Bật/Tắt chế độ Giữ Chuỗi.</p>
+              <div class="flex items-center gap-2 mt-2">
+                <select id="input_streak_game_mode" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
+                  <option value="ON">🟢 ĐANG MỞ (ON)</option>
+                  <option value="OFF">🔴 ĐÃ ĐÓNG (OFF)</option>
+                </select>
+                <button id="btn_save_streak_game_mode" class="btn-pirate px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU</button>
               </div>
             </div>
 
@@ -199,6 +216,15 @@
         <!-- VIEWPORT 2: QUIZZES MANAGER -->
         <section id="section_quizzes"
           class="admin-view card-map p-6 flex flex-col gap-6 hidden">
+          <!-- Sub-tabs -->
+          <div class="flex items-center gap-2 bg-[rgba(139,90,43,0.1)] p-1 rounded-xl mb-2 w-fit">
+            <button id="subtab_quiz_normal" class="px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer">Chế độ Thường</button>
+            <button id="subtab_quiz_streak" class="px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer">Chế độ Giữ Chuỗi</button>
+          </div>
+          
+          <!-- Normal Quizzes Wrapper -->
+          <div id="wrapper_quizzes_normal" class="flex flex-col gap-6">
+
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quản Lý Đề Thi & Câu Hỏi</h2>
@@ -277,7 +303,9 @@
               <!-- Appended dynamically -->
             </div>
           </div>
-        </section>
+        
+          </div>
+          </section>
 
 
         <!-- VIEWPORT 3: CSV IMPORT INTERFACE -->
@@ -316,9 +344,16 @@
           </div>
 
           <!-- Quiz details for import (Only visible when Quizzes is selected) -->
-          <div id="quiz_import_details"
-            class="hidden grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-            <div>
+          <div id="wrapper_import_quiz" class="hidden flex flex-col gap-4">
+            <!-- Sub-tabs -->
+            <div class="flex items-center gap-2 bg-[rgba(139,90,43,0.1)] p-1 rounded-xl w-fit">
+              <button id="subtab_import_quiz_normal" class="px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer">Chế độ Thường</button>
+              <button id="subtab_import_quiz_streak" class="px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer">Chế độ Giữ Chuỗi</button>
+            </div>
+            
+            <div id="quiz_import_details"
+              class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <div>
               <label for="import_quiz_title" class="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Tên Đề Thi
                 Quiz mới</label>
               <input type="text" id="import_quiz_title"
@@ -339,6 +374,13 @@
                 class="block w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-bold"
                 placeholder="Ví dụ: 27" />
             </div>
+            <div id="import_quiz_streak_fields" class="hidden">
+              <label for="import_quiz_streak_day" class="block text-xs font-bold text-orange-500 mb-1.5 uppercase">Ngày Chuỗi</label>
+              <input type="number" id="import_quiz_streak_day" min="1" max="5"
+                class="block w-full p-2.5 bg-orange-50 border border-orange-200 rounded-xl text-xs font-bold text-orange-700 placeholder-orange-300"
+                placeholder="Ví dụ: 1" />
+            </div>
+          </div>
           </div>
 
           <div class="space-y-2">
@@ -375,6 +417,9 @@
                 trước,1</p>
               <p class="mt-1.5 text-indigo-600">Lưu ý: Cột "Đáp án đúng" nhận giá trị số từ 1 tới 4 tương đương với các
                 câu trả lời đúng từ Answer 1 đến Answer 4.</p>
+              <div class="mt-3">
+                <a href="/quiz_streak_mau.csv" download class="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-600 text-white rounded-lg font-bold text-[11px] hover:bg-indigo-700 transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>Tải file CSV mẫu (Dành cho Giữ Chuỗi)</a>
+              </div>
             </div>
           </div>
 
@@ -388,6 +433,15 @@
         <!-- VIEWPORT 4: HISTORY -->
         <section id="section_history"
           class="admin-view card-map p-6 hidden">
+          <!-- Sub-tabs -->
+          <div class="flex items-center gap-2 bg-[rgba(139,90,43,0.1)] p-1 rounded-xl mb-2 w-fit">
+            <button id="subtab_history_normal" class="px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer">Chế độ Thường</button>
+            <button id="subtab_history_streak" class="px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer">Chế độ Giữ Chuỗi</button>
+          </div>
+          
+          <!-- Normal History Wrapper -->
+          <div id="wrapper_history_normal" class="flex flex-col gap-6">
+
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <div>
               <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Lịch Sử Thi Đấu</h2>
@@ -446,7 +500,13 @@
               </tbody>
             </table>
           </div>
-        </section>
+        
+          </div>
+          </section>
+
+
+
+
 
       </div>
     </div>
@@ -571,6 +631,20 @@
               <input type="checkbox" id="form_quiz_active" class="w-4 h-4 rounded border-2 border-[#8B5A2B]" />
               <label for="form_quiz_active" class="text-[11px] font-semibold text-[#4A240A]">Kích hoạt</label>
             </div>
+          </div>
+        </div>
+
+        <div id="quiz_streak_fields" class="hidden grid grid-cols-1 gap-3">
+          <div>
+            <label for="form_quiz_streak_day" class="block text-xs font-bold text-rose-600 mb-1">Ngày Giữ Chuỗi (1-5)</label>
+            <select id="form_quiz_streak_day"
+              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-rose-600 text-rose-700 rounded-lg text-xs font-bold focus:outline-none">
+              <option value="1">Ngày 1</option>
+              <option value="2">Ngày 2</option>
+              <option value="3">Ngày 3</option>
+              <option value="4">Ngày 4</option>
+              <option value="5">Ngày 5</option>
+            </select>
           </div>
         </div>
 
@@ -737,6 +811,13 @@
             <input type="number" id="edit_question_time" required min="5"
               class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
           </div>
+        </div>
+
+        <div>
+          <label for="edit_q_image" class="block text-xs font-bold text-[#8B5A2B] mb-1">Hình ảnh đính kèm (URL - tùy chọn)</label>
+          <input type="text" id="edit_q_image"
+            class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none"
+            placeholder="https://..." />
         </div>
 
         <p class="text-[10px] font-black uppercase tracking-wider text-[#8B5A2B] border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-1">Đáp án

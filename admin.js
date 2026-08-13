@@ -22,12 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabQuizzesBtn = document.getElementById('tab_quizzes_btn');
   const tabHistoryBtn = document.getElementById('tab_history_btn');
   const tabImportBtn = document.getElementById('tab_import_btn');
-  const adminDbMode = document.getElementById('admin_db_mode');
+      const adminDbMode = document.getElementById('admin_db_mode');
   const sectionUsers = document.getElementById('section_users');
   const sectionQuizzes = document.getElementById('section_quizzes');
   const sectionHistory = document.getElementById('section_history');
   const sectionImport = document.getElementById('section_import');
-
+    
   // User Modal
   const modalUser = document.getElementById('modal_user');
   const formUser = document.getElementById('form_user');
@@ -91,12 +91,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   const csvTextareaInput = document.getElementById('csv_textarea_input');
   const btnProcessImport = document.getElementById('btn_process_import');
 
+  // Import Sub-tabs
+  const wrapperImportQuiz = document.getElementById('wrapper_import_quiz');
+  const subtabImportQuizNormal = document.getElementById('subtab_import_quiz_normal');
+  const subtabImportQuizStreak = document.getElementById('subtab_import_quiz_streak');
+  const importQuizStreakFields = document.getElementById('import_quiz_streak_fields');
+  let currentImportQuizMode = 'normal';
+
+  if (subtabImportQuizNormal && subtabImportQuizStreak) {
+    subtabImportQuizNormal.addEventListener('click', () => {
+      currentImportQuizMode = 'normal';
+      subtabImportQuizNormal.classList.replace('text-[#8B5A2B]', 'bg-[#DE3A3B]');
+      subtabImportQuizNormal.classList.replace('hover:bg-[rgba(139,90,43,0.1)]', 'text-white');
+      subtabImportQuizStreak.classList.replace('bg-[#DE3A3B]', 'text-[#8B5A2B]');
+      subtabImportQuizStreak.classList.replace('text-white', 'hover:bg-[rgba(139,90,43,0.1)]');
+      if (importQuizStreakFields) importQuizStreakFields.classList.add('hidden');
+    });
+
+    subtabImportQuizStreak.addEventListener('click', () => {
+      currentImportQuizMode = 'streak';
+      subtabImportQuizStreak.classList.replace('text-[#8B5A2B]', 'bg-[#DE3A3B]');
+      subtabImportQuizStreak.classList.replace('hover:bg-[rgba(139,90,43,0.1)]', 'text-white');
+      subtabImportQuizNormal.classList.replace('bg-[#DE3A3B]', 'text-[#8B5A2B]');
+      subtabImportQuizNormal.classList.replace('text-white', 'hover:bg-[rgba(139,90,43,0.1)]');
+      if (importQuizStreakFields) importQuizStreakFields.classList.remove('hidden');
+    });
+  }
+
+
   // Alert Modal
+  const inputStreakGameMode = document.getElementById('input_streak_game_mode');
+  const btnSaveStreakGameMode = document.getElementById('btn_save_streak_game_mode');
+  if (inputStreakGameMode && btnSaveStreakGameMode) {
+    db.getStreakGameMode().then(isOn => {
+      inputStreakGameMode.value = isOn ? 'ON' : 'OFF';
+    });
+    btnSaveStreakGameMode.addEventListener('click', async () => {
+      const res = await db.updateStreakGameMode(inputStreakGameMode.value);
+      if (res.success) alert('Cập nhật chế độ Giữ Chuỗi thành công!');
+      else alert('Lỗi: ' + res.message);
+    });
+  }
+
   const adminAlertModal = document.getElementById('admin_alert_modal');
   const adminAlertTitle = document.getElementById('admin_alert_title');
   const adminAlertContent = document.getElementById('admin_alert_content');
   const btnCloseAdminAlert = document.getElementById('btn_close_admin_alert');
 
+  let currentQuizMode = 'normal';
+  let currentHistoryMode = 'normal';
   let currentExpandedQuizId = null;
   let currentExpandedQuizMonth = null;
   let currentExpandedQuizWeek = null;
@@ -140,10 +183,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       tab.btn.style.color = '#E07242';
       if (tab.section) tab.section.classList.remove('hidden');
       if (tab.btn === tabUsersBtn) fetchAndRenderUsers();
-      if (tab.btn === tabQuizzesBtn) fetchAndRenderQuizzes();
-      if (tab.btn === tabHistoryBtn) fetchAndRenderHistory();
+      if (tab.btn === tabQuizzesBtn) { fetchAndRenderQuizzes(); }
+      if (tab.btn === tabHistoryBtn) { fetchAndRenderHistory(); }
     });
   });
+  // ── SUB-TAB ROUTING ──────────────────────────────────────────────────────────
+  const subtabQuizNormal = document.getElementById('subtab_quiz_normal');
+  const subtabQuizStreak = document.getElementById('subtab_quiz_streak');
+  const wrapperQuizNormal = document.getElementById('wrapper_quizzes_normal');
+  const wrapperQuizStreak = document.getElementById('wrapper_quizzes_streak');
+
+  if (subtabQuizNormal && subtabQuizStreak) {
+    subtabQuizNormal.addEventListener('click', () => {
+      subtabQuizNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
+      subtabQuizStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+      currentQuizMode = 'normal';
+      fetchAndRenderQuizzes();
+    });
+    subtabQuizStreak.addEventListener('click', () => {
+      subtabQuizStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
+      subtabQuizNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+      currentQuizMode = 'streak';
+      fetchAndRenderQuizzes();
+    });
+  }
+
+  const subtabHistoryNormal = document.getElementById('subtab_history_normal');
+  const subtabHistoryStreak = document.getElementById('subtab_history_streak');
+  const wrapperHistoryNormal = document.getElementById('wrapper_history_normal');
+  const wrapperHistoryStreak = document.getElementById('wrapper_history_streak');
+
+  if (subtabHistoryNormal && subtabHistoryStreak) {
+    subtabHistoryNormal.addEventListener('click', () => {
+      subtabHistoryNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
+      subtabHistoryStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+      currentHistoryMode = 'normal';
+      fetchAndRenderHistory();
+    });
+    subtabHistoryStreak.addEventListener('click', () => {
+      subtabHistoryStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
+      subtabHistoryNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+      currentHistoryMode = 'streak';
+      fetchAndRenderHistory();
+    });
+  }
+
 
   // ── 1. USERS MANAGEMENT ──────────────────────────────────────────────────────
   async function fetchAndRenderUsers() {
@@ -328,8 +412,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── 2. QUIZZES MANAGEMENT ────────────────────────────────────────────────────
   async function fetchAndRenderQuizzes() {
-    if (!quizzesContainer) return;
-    quizzesContainer.innerHTML = '<p class="text-slate-400 p-4">Đang tải đề kiểm tra...</p>';
+    const targetContainer = document.getElementById('quizzes_container');
+    if (!targetContainer) return;
+    targetContainer.innerHTML = '<p class="text-slate-400 p-4">Đang tải đề kiểm tra...</p>';
 
     let qList = await db.adminGetQuizzes();
     const participantCounts = await db.adminGetQuizParticipantCount();
@@ -344,11 +429,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (filterWeek) {
       qList = qList.filter(q => q.week_no == filterWeek);
     }
+    
+    if (currentQuizMode === 'streak') {
+      qList = qList.filter(q => q.streak_day != null);
+    } else {
+      qList = qList.filter(q => q.streak_day == null);
+    }
 
-    quizzesContainer.innerHTML = '';
+    targetContainer.innerHTML = '';
 
     if (!qList || qList.length === 0) {
-      quizzesContainer.innerHTML = '<p class="text-[#8B5A2B] col-span-2 p-4 italic">Chưa có đề thi nào (hoặc không khớp với bộ lọc). Import từ Excel hoặc tạo mới.</p>';
+      targetContainer.innerHTML = '<p class="text-[#8B5A2B] col-span-2 p-4 italic">Chưa có đề thi nào (hoặc không khớp với bộ lọc). Import từ Excel hoặc tạo mới.</p>';
       return;
     }
 
@@ -376,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }" data-id="${q.id}">🗑️ Xóa đề</button>
         </div>
       `;
-      quizzesContainer.appendChild(card);
+      targetContainer.appendChild(card);
     });
 
     document.querySelectorAll('.quiz-toggle-active-chk').forEach(chk => {
@@ -437,7 +528,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="flex items-start justify-between gap-3 mb-3">
           <p class="text-xs font-bold text-[#4A240A] flex-1"><span class="text-[#DE3A3B] mr-1 font-['Space_Grotesk']">${idx + 1}.</span>${q.question_text}</p>
           <div class="flex items-center gap-1.5">
-            <button class="edit-question-btn p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg hover:bg-[#E9C691] transition inline-flex items-center cursor-pointer text-[10px] font-bold gap-1" data-id="${q.id}" data-qtext="${encodeURIComponent(q.question_text)}" data-point="${q.point || 10}" data-time="${q.time_limit || 15}" data-answers='${JSON.stringify((q.answers || []).map(a => ({ text: a.answer_text, correct: a.is_correct })))}' title="Sửa câu hỏi">✏️ Sửa</button>
+            <button class="edit-question-btn p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg hover:bg-[#E9C691] transition inline-flex items-center cursor-pointer text-[10px] font-bold gap-1" data-id="${q.id}" data-qtext="${encodeURIComponent(q.question_text)}" data-point="${q.point || 10}" data-time="${q.time_limit || 15}" data-image="${q.image_url || ''}" data-answers='${JSON.stringify((q.answers || []).map(a => ({ text: a.answer_text, correct: a.is_correct })))}' title="Sửa câu hỏi">✏️ Sửa</button>
             <button class="del-question-btn p-1.5 bg-rose-50 border-2 border-rose-200 text-rose-600 rounded-lg hover:bg-rose-100 transition inline-flex items-center cursor-pointer" data-id="${q.id}" title="Xóa câu hỏi">🗑️</button>
           </div>
         </div>
@@ -472,6 +563,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const qText = decodeURIComponent(btn.getAttribute('data-qtext') || '');
         const qPoint = btn.getAttribute('data-point') || '10';
         const qTime = btn.getAttribute('data-time') || '15';
+        const qImage = btn.getAttribute('data-image') || '';
         let answers = [];
         try { answers = JSON.parse(btn.getAttribute('data-answers') || '[]'); } catch (_) { }
 
@@ -479,6 +571,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         editQuestionText.value = qText;
         document.getElementById('edit_question_point').value = qPoint;
         document.getElementById('edit_question_time').value = qTime;
+        const imgField = document.getElementById('edit_q_image');
+        if (imgField) imgField.value = qImage;
 
         // Điền đáp án vào các field
         answers.forEach((ans, i) => {
@@ -498,6 +592,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnOpenQuizModal) {
     btnOpenQuizModal.addEventListener('click', () => {
       formQuiz.reset();
+      const streakFields = document.getElementById('quiz_streak_fields');
+      if (streakFields) streakFields.classList.add('hidden');
+      modalQuiz.classList.remove('hidden');
+    });
+  }
+
+  const btnOpenStreakQuizModal = document.getElementById('btn_open_streak_quiz_modal');
+  if (btnOpenStreakQuizModal) {
+    btnOpenStreakQuizModal.addEventListener('click', () => {
+      formQuiz.reset();
+      const streakFields = document.getElementById('quiz_streak_fields');
+      if (streakFields) streakFields.classList.remove('hidden');
       modalQuiz.classList.remove('hidden');
     });
   }
@@ -547,11 +653,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (formQuiz) {
     formQuiz.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const streakDayStr = document.getElementById('form_quiz_streak_day')?.value;
+      const streakDay = (currentQuizMode === 'streak' && streakDayStr) ? parseInt(streakDayStr) : null;
       const result = await db.adminCreateQuiz({
         title: formQuizTitle.value.trim(),
         month_no: parseInt(document.getElementById('form_quiz_month')?.value || '1'),
         week_no: parseInt(formQuizWeek.value) || 1,
-        active: formQuizActive.checked
+        active: formQuizActive.checked,
+        streak_day: streakDay
       });
       if (result.success) {
         showAdminAlert('Tạo đề thành công ✅', `Đề thi "${formQuizTitle.value.trim()}" đã được tạo.`);
@@ -586,10 +695,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       ];
       const point = parseInt(document.getElementById('form_question_point').value || '10');
       const timeLimit = parseInt(document.getElementById('form_question_time').value || '15');
+      const qImage = document.getElementById('input_q_image')?.value.trim() || null;
       const correctRadio = document.querySelector('input[name="correct_answer_radio"]:checked');
       const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
 
-      const result = await db.adminCreateQuestion(qId, qText, answers.filter(Boolean), correctIdx, point, timeLimit);
+      const result = await db.adminCreateQuestion(qId, qText, answers.filter(Boolean), correctIdx, point, timeLimit, qImage);
       if (result.success) {
         document.getElementById('modal_question').classList.add('hidden');
         const currentQ = await db.adminGetQuizzes().then(qs => qs.find(q => q.id === currentExpandedQuizId));
@@ -631,8 +741,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const timeLimit = parseInt(document.getElementById('edit_question_time')?.value || '15');
       const correctRadio = document.querySelector('input[name="edit_correct_radio"]:checked');
       const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
+      const imageUrl = document.getElementById('edit_q_image')?.value.trim() || null;
 
-      const result = await db.adminUpdateQuestion(qId, qText, answers, correctIdx, point, timeLimit);
+      const result = await db.adminUpdateQuestion(qId, qText, answers, correctIdx, point, timeLimit, imageUrl);
       if (result.success) {
         if (modalEditQuestion) modalEditQuestion.classList.add('hidden');
         showAdminAlert('Cập nhật thành công ✅', 'Câu hỏi và đáp án đã được lưu.');
@@ -652,8 +763,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isQuiz = importTypeSelect.value === 'quizzes';
       if (guideUsersCsv) guideUsersCsv.classList.toggle('hidden', isQuiz);
       if (guideQuizzesCsv) guideQuizzesCsv.classList.toggle('hidden', !isQuiz);
-      if (quizImportDetails) quizImportDetails.classList.toggle('hidden', !isQuiz);
+      if (wrapperImportQuiz) wrapperImportQuiz.classList.toggle('hidden', !isQuiz);
     });
+    // Trigger initially
+    importTypeSelect.dispatchEvent(new Event('change'));
   }
 
   let importedFileRows = null;
@@ -750,10 +863,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             showAdminAlert('Import thành công ✅', `Đã tạo mới ${createResult.created} tài khoản.`);
             fetchAndRenderUsers();
           }
-        } else {
-          // Quiz import — cần title và week
+        } else if (type === 'quizzes') {
           const quizTitle = document.getElementById('import_quiz_title')?.value.trim();
+          const quizMonth = parseInt(document.getElementById('import_quiz_month')?.value || '1');
           const quizWeek = parseInt(document.getElementById('import_quiz_week')?.value || '1');
+          
+          let streakDay = null;
+          if (currentImportQuizMode === 'streak') {
+            const streakDayInput = document.getElementById('import_quiz_streak_day');
+            if (streakDayInput && streakDayInput.value) {
+              streakDay = parseInt(streakDayInput.value);
+            } else {
+              streakDay = 1; // Default to Day 1
+            }
+          }
 
           if (!quizTitle) {
             showAdminAlert('Thiếu tên đề', 'Vui lòng nhập tên đề thi Quiz trước khi import.');
@@ -762,7 +885,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
           }
 
-          const result = await db.adminImportQuizFromRows(rows, quizTitle, quizWeek, false);
+          const result = await db.adminImportQuizFromRows(rows, quizTitle, quizMonth, quizWeek, false, false, streakDay);
           if (result.success) {
             showAdminAlert('Import Quiz thành công ✅', `Đã tạo đề "${quizTitle}" với ${result.importedCount} câu hỏi.`);
             fetchAndRenderQuizzes();
@@ -1054,6 +1177,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         dashboardContainer.classList.add('hidden');
         dashboardContainer.innerHTML = '';
       }
+    }
+
+    // Lọc theo currentHistoryMode
+    if (currentHistoryMode === 'streak') {
+      historyData = historyData.filter(row => row.quizzes?.streak_day != null);
+    } else {
+      historyData = historyData.filter(row => row.quizzes?.streak_day == null);
     }
 
     if (historyData.length === 0) {

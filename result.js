@@ -60,7 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // MEGA Spinner Logic for Mode 1
-      const mode = parseInt(sessionStorage.getItem('last_quiz_mode') || '1');
+      const modeRaw = sessionStorage.getItem('last_quiz_mode') || '1';
+      const mode = modeRaw === 'streak' ? 'streak' : parseInt(modeRaw);
       if (mode === 1 && !freshUser.mega_code) {
         const megaCode = await db.generateMegaCode(user.id);
         if (megaCode) {
@@ -124,10 +125,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  const mode = parseInt(sessionStorage.getItem('last_quiz_mode') || '1');
+  const modeRaw = sessionStorage.getItem('last_quiz_mode') || '1';
+  const mode = modeRaw === 'streak' ? 'streak' : parseInt(modeRaw);
   const isWin = sessionStorage.getItem('steal_result_is_win') === 'true';
 
   // Dynamic feedback personalized comments
+  if (userFeedbackMsg && mode === 'streak') {
+    let comment = '';
+    if (correct === total) {
+      comment = `Tuyệt vời! Bạn đã giữ được chuỗi. Hoàn hảo ${correct}/${total}! 🔥`;
+    } else if (correct >= 5) {
+      comment = `Làm tốt lắm! Bạn đã sống sót với ${correct}/${total} câu đúng! 🔥`;
+    } else {
+      comment = `Rất tiếc, chuỗi của bạn có nguy cơ bị đứt! Đúng ${correct}/${total} câu hỏi.`;
+    }
+    userFeedbackMsg.textContent = comment;
+    const titleEl = document.querySelector('h2');
+    if (titleEl) titleEl.textContent = 'KẾT QUẢ GIỮ CHUỖI';
+  }
+
   if (userFeedbackMsg && mode === 1) {
     let comment = '';
     if (correct === total) {
