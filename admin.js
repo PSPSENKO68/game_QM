@@ -121,14 +121,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Alert Modal
   const inputStreakGameMode = document.getElementById('input_streak_game_mode');
+  const inputMaxStreakDays = document.getElementById('input_max_streak_days');
   const btnSaveStreakGameMode = document.getElementById('btn_save_streak_game_mode');
   if (inputStreakGameMode && btnSaveStreakGameMode) {
     db.getStreakGameMode().then(isOn => {
       inputStreakGameMode.value = isOn ? 'ON' : 'OFF';
     });
+    if (inputMaxStreakDays) {
+      db.getMaxStreakDays().then(maxDays => {
+        inputMaxStreakDays.value = maxDays || 5;
+      });
+    }
     btnSaveStreakGameMode.addEventListener('click', async () => {
+      const maxDays = inputMaxStreakDays ? inputMaxStreakDays.value : 5;
+      await db.updateMaxStreakDays(maxDays);
       const res = await db.updateStreakGameMode(inputStreakGameMode.value);
-      if (res.success) alert('Cập nhật chế độ Giữ Chuỗi thành công!');
+      if (res.success) alert('Cập nhật cấu hình Giữ Chuỗi thành công!');
       else alert('Lỗi: ' + res.message);
     });
   }
@@ -144,6 +152,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   let currentExpandedQuizMonth = null;
   let currentExpandedQuizWeek = null;
   let currentExpandedQuizTitle = null;
+  let currentExpandedQuizStreakDay = null;
 
   // ── Connection badge ─────────────────────────────────────────────────────────
   if (adminDbMode) {
@@ -462,7 +471,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
         <div class="flex items-center justify-between pt-4 border-t-2 border-dashed ${q.active ? 'border-[rgba(255,255,255,0.3)]' : 'border-[rgba(139,90,43,0.3)]'}">
           <button class="view-q-questions-btn px-3 py-1.5 border-2 text-[10px] font-bold rounded-xl transition cursor-pointer ${q.active ? 'bg-[rgba(255,255,255,0.15)] text-white border-white hover:bg-[rgba(255,255,255,0.25)]' : 'bg-[#F9F5F0] text-[#4A240A] border-[#8B5A2B] hover:bg-[#E9C691]'
-        }" data-id="${q.id}" data-title="${q.title}" data-week="${q.week_no}" data-month="${q.month_no || 1}">✏️ Chỉnh sửa</button>
+        }" data-id="${q.id}" data-title="${q.title}" data-week="${q.week_no}" data-month="${q.month_no || 1}" data-streak="${q.streak_day || ''}">✏️ Chỉnh sửa</button>
           <button class="delete-quiz-btn px-2 py-1.5 text-[10px] font-bold rounded-xl transition flex items-center gap-1 cursor-pointer border-2 ${q.active ? 'bg-[rgba(222,58,59,0.3)] text-white border-[#DE3A3B] hover:bg-[rgba(222,58,59,0.5)]' : 'bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100'
         }" data-id="${q.id}">🗑️ Xóa đề</button>
         </div>
@@ -484,7 +493,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const title = btn.getAttribute('data-title');
         const week = btn.getAttribute('data-week');
         const month = btn.getAttribute('data-month');
-        showQuizQuestions(qId, title, week, month);
+        const streakDay = btn.getAttribute('data-streak');
+        showQuizQuestions(qId, title, week, month, streakDay);
       });
     });
 
@@ -502,11 +512,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  async function showQuizQuestions(quizId, title, weekLabel, monthLabel) {
+  async function showQuizQuestions(quizId, title, weekLabel, monthLabel, streakDay) {
     currentExpandedQuizId = quizId;
     currentExpandedQuizMonth = monthLabel;
     currentExpandedQuizWeek = weekLabel;
     currentExpandedQuizTitle = title;
+    currentExpandedQuizStreakDay = streakDay;
     if (selectedQuizSubtitle) selectedQuizSubtitle.textContent = `Tháng ${monthLabel} • Tuần ${weekLabel}`;
     if (selectedQuizTitle) selectedQuizTitle.textContent = title;
     if (quizQuestionsBox) quizQuestionsBox.classList.remove('hidden');
@@ -623,6 +634,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('form_edit_quiz_title').value = currentExpandedQuizTitle;
       document.getElementById('form_edit_quiz_month').value = currentExpandedQuizMonth;
       document.getElementById('form_edit_quiz_week').value = currentExpandedQuizWeek;
+      
+      const streakField = document.getElementById('edit_quiz_streak_fields');
+      const streakInput = document.getElementById('form_edit_quiz_streak_day');
+      if (currentQuizMode === 'streak') {
+        if (streakField) streakField.classList.remove('hidden');
+        if (streakInput) streakInput.value = currentExpandedQuizStreakDay || '';
+      } else {
+        if (streakField) streakField.classList.add('hidden');
+        if (streakInput) streakInput.value = '';
+      }
+      
       modalEditQuiz.classList.remove('hidden');
     });
   }
@@ -638,12 +660,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       const title = document.getElementById('form_edit_quiz_title').value.trim();
       const month = parseInt(document.getElementById('form_edit_quiz_month').value) || 1;
       const week = parseInt(document.getElementById('form_edit_quiz_week').value) || 1;
+      
+      const streakInputVal = document.getElementById('form_edit_quiz_streak_day')?.value;
+      const streakDay = (currentQuizMode === 'streak' && streakInputVal) ? parseInt(streakInputVal) : null;
 
-      const result = await db.adminUpdateQuiz(qId, { title, month_no: month, week_no: week });
+      const result = await db.adminUpdateQuiz(qId, { title, month_no: month, week_no: week, streak_day: streakDay });
       if (result.success) {
         modalEditQuiz.classList.add('hidden');
         fetchAndRenderQuizzes();
-        showQuizQuestions(qId, title, week, month);
+        showQuizQuestions(qId, title, week, month, streakDay);
       } else {
         alert('Lỗi cập nhật đề thi: ' + result.message);
       }

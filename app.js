@@ -181,7 +181,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (lbLink) lbLink.href = '/leaderboard.html?mode=streak';
         
         const streakInfo = await db.getUserStreakStatus(user.id);
-        const maxDays = 5;
+        const maxDays = await db.getMaxStreakDays();
+        console.log('[APP] streakInfo:', streakInfo, 'maxDays:', maxDays, typeof maxDays);
         let timelineHtml = '';
         for (let i = 1; i <= maxDays; i++) {
           let statusColor = 'bg-[#FFF8E7] text-[#4A240A] border-[#8B5A2B] opacity-70';

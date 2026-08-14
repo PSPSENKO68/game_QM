@@ -53,6 +53,7 @@ export async function bootstrapDatabase() {
     await supabase.from('settings').upsert({ key: 'max_plays_per_day', value: '3' });
     await supabase.from('settings').upsert({ key: 'randomize_questions', value: 'OFF' });
     await supabase.from('settings').upsert({ key: 'wheel_status', value: 'OFF' });
+    await supabase.from('settings').upsert({ key: 'max_streak_days', value: '5' });
 
     console.log('✅ Đã khởi tạo Super Admin thành công!');
     return { success: true, reason: 'created' };
@@ -414,6 +415,27 @@ export const db = {
   async updateMaxStealsPerDay(limit) {
     const { error } = await supabase.from('settings').upsert({ key: 'max_steals_per_day', value: String(parseInt(limit) || 3) });
     return { success: !error, message: error?.message };
+  },
+
+  async getMaxStreakDays() {
+    const { data, error } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'max_streak_days');
+    console.log('[getMaxStreakDays] data:', data, 'error:', error);
+    if (!error && data && data.length > 0) return parseInt(data[0].value) || 5;
+    return 5;
+  },
+
+  async updateMaxStreakDays(limit) {
+    const val = String(parseInt(limit) || 5);
+    console.log('[updateMaxStreakDays] saving:', val);
+    const { error } = await supabase
+      .from('settings')
+      .upsert({ key: 'max_streak_days', value: val });
+    console.log('[updateMaxStreakDays] result error:', error);
+    if (error) return { success: false, message: error.message };
+    return { success: true };
   },
 
   async getStealsToday(userId) {

@@ -122,7 +122,13 @@
             <!-- Streak Game Mode Status -->
             <div class="card-wood p-4 flex flex-col gap-2">
               <p class="text-xs font-bold text-[#FFD700]">Trạng thái Game Giữ Chuỗi</p>
-              <p class="text-[10px] text-[#FFF8E7] flex-1">Bật/Tắt chế độ Giữ Chuỗi.</p>
+              <p class="text-[10px] text-[#FFF8E7] flex-1">Bật/Tắt và Cấu hình Số ngày chuỗi.</p>
+              
+              <div class="flex items-center gap-1 mt-1">
+                <label class="text-[10px] text-[#FFF8E7] w-14 font-bold">Tổng ngày:</label>
+                <input type="number" id="input_max_streak_days" min="1" max="30" class="w-14 p-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded text-center text-[10px] font-bold focus:outline-none" />
+              </div>
+
               <div class="flex items-center gap-2 mt-2">
                 <select id="input_streak_game_mode" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
                   <option value="ON">🟢 ĐANG MỞ (ON)</option>
@@ -686,6 +692,21 @@
             <label for="form_edit_quiz_week" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tuần số</label>
             <input type="number" id="form_edit_quiz_week" required
               class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-center focus:outline-none" />
+          </div>
+        </div>
+
+        <!-- Chế độ Giữ Chuỗi: luôn hiển thị để có thể chuyển đổi -->
+        <div class="border-t-2 border-dashed border-[rgba(139,90,43,0.3)] pt-3">
+          <label class="flex items-center gap-2 cursor-pointer mb-2">
+            <input type="checkbox" id="form_edit_quiz_is_streak"
+              class="w-4 h-4 rounded border-2 border-rose-600 accent-rose-600" />
+            <span class="text-xs font-bold text-rose-600">Đây là Quiz Giữ Chuỗi</span>
+          </label>
+          <div id="edit_quiz_streak_fields" class="hidden">
+            <label for="form_edit_quiz_streak_day" class="block text-xs font-bold text-rose-600 mb-1">Ngày Giữ Chuỗi (1, 2, 3...)</label>
+            <input type="number" id="form_edit_quiz_streak_day" min="1"
+              class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-rose-600 rounded-lg text-xs font-bold text-rose-700 focus:outline-none"
+              placeholder="Ví dụ: 1" />
           </div>
         </div>
 
