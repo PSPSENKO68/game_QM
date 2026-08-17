@@ -3,7 +3,7 @@
  * Pulls current session result logs, validates retry limits, and guides navigation back to active play.
  */
 
-import { db } from './supabase.js';
+import { db, formatTimeSpent } from './supabase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Authenticate check
@@ -163,21 +163,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     const defCorrect = sessionStorage.getItem('steal_result_def_correct') || 0;
     const defTime = sessionStorage.getItem('steal_result_def_time') || 0;
     
+    const normAtkTime = Number(atkTime) < 500 ? Number(atkTime) * 1000 : Number(atkTime);
+    const normDefTime = Number(defTime) < 500 ? Number(defTime) * 1000 : Number(defTime);
+
+    const formattedAtkTime = formatTimeSpent(normAtkTime);
+    const formattedDefTime = formatTimeSpent(normDefTime);
+
     let reasonHTML = '';
     if (isWin) {
       if (Number(atkCorrect) > Number(defCorrect)) {
         reasonHTML = `Thắng do bạn trả lời đúng nhiều hơn (${atkCorrect} vs ${defCorrect} câu).`;
       } else {
-        let diff = Math.abs(Number(defTime) - Number(atkTime));
-        reasonHTML = `Bạn trả lời nhanh hơn đối thủ ${diff}s với ${atkCorrect} câu đúng.`;
+        let diffMs = Math.abs(normDefTime - normAtkTime);
+        let diffSec = (diffMs / 1000).toFixed(3);
+        reasonHTML = `Bạn trả lời nhanh hơn đối thủ ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       }
     } else {
       if (Number(atkCorrect) < Number(defCorrect)) {
         reasonHTML = `Thua do bạn trả lời đúng ít hơn (${atkCorrect} vs ${defCorrect} câu).`;
-      } else if (Number(atkCorrect) === Number(defCorrect) && Number(atkTime) > Number(defTime)) {
-        reasonHTML = `Thua do bạn trả lời chậm hơn (${atkTime}s vs ${defTime}s) với cùng ${atkCorrect} câu đúng.`;
+      } else if (Number(atkCorrect) === Number(defCorrect) && normAtkTime > normDefTime) {
+        let diffMs = Math.abs(normAtkTime - normDefTime);
+        let diffSec = (diffMs / 1000).toFixed(3);
+        reasonHTML = `Thua do bạn trả lời chậm hơn ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       } else {
-        reasonHTML = `Thành tích của bạn không vượt qua đối thủ.`;
+        reasonHTML = `Thành tích của bạn không vượt qua đối thủ (${formattedAtkTime} vs ${formattedDefTime}).`;
       }
     }
 

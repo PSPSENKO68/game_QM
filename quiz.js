@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   let correctCount = 0;
   let hasSelected = false;
   
-  let totalTimeSpent = 0;
+  let totalTimeSpent = 0; // Milliseconds
+  let questionStartTime = 0;
   let wrongAnswersDetails = [];
   
   // Timer state
@@ -148,6 +149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (timerInterval) clearInterval(timerInterval);
     currentMaxTime = currentQuestion.time_limit || 15;
     currentRemainingTime = currentMaxTime;
+    questionStartTime = performance.now(); // Mốc thời gian chính xác mili-giây lúc câu hỏi xuất hiện
+
     const sparkContainer = document.getElementById('spark_container');
     if (countdownTimer) {
       countdownTimer.textContent = currentRemainingTime;
@@ -231,6 +234,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     hasSelected = true;
     if (timerInterval) clearInterval(timerInterval);
 
+    // Calculate exact time spent in milliseconds for this question
+    const elapsedMs = Math.max(0, Math.round(performance.now() - questionStartTime));
+    const maxMs = currentMaxTime * 1000;
+    const timeSpentForThisQuestion = Math.min(elapsedMs, maxMs);
+    totalTimeSpent += timeSpentForThisQuestion;
+
     answersContainer.classList.add('opacity-80');
 
     const isCorrect = selectedButton ? (selectedButton.getAttribute('data-correct') === 'true') : false;
@@ -247,21 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (isCorrect) {
       // Correct flow
       correctCount += 1;
-      
-      // Speed Bonus Logic (Tạm thời vô hiệu hóa theo yêu cầu)
       let bonusEarned = 0;
-      const timeSpent = currentMaxTime - currentRemainingTime;
-      totalTimeSpent += (timeSpent > 0 ? timeSpent : 0);
-
-      /* 
-      if (timeSpent <= currentMaxTime / 3) {
-        bonusEarned = Math.round(basePoint * 0.5); // Tier 1 (50%)
-      } else if (timeSpent <= (currentMaxTime * 2) / 3) {
-        bonusEarned = Math.round(basePoint * 0.2); // Tier 2 (20%)
-      } else {
-        bonusEarned = Math.round(basePoint * 0.1); // Tier 3 (10%)
-      }
-      */
 
       currentScore += basePoint;
       bonusScore += bonusEarned;
@@ -287,8 +282,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       // Incorrect flow
       let selectedText = "";
-      const timeSpent = currentMaxTime - currentRemainingTime;
-      totalTimeSpent += (timeSpent > 0 ? timeSpent : 0);
 
       if (selectedButton) {
         selectedButton.classList.add('ring-4', 'ring-rose-400');
