@@ -69,9 +69,15 @@ Hệ thống sử dụng các bảng chính sau:
 
 ### 1. Yêu cầu hệ thống
 - Máy tính đã cài đặt **Node.js** (Phiên bản 16 trở lên).
+- Git hoặc GitHub CLI (`gh`).
 
-### 2. Cài đặt các thư viện phụ thuộc
-Mở terminal tại thư mục gốc của dự án và chạy lệnh sau:
+### 2. Tải mã nguồn và cài đặt thư viện phụ thuộc
+Mở terminal và chạy lệnh sau để clone repo:
+```bash
+gh repo clone PSPSENKO68/game_QM
+cd game_QM
+```
+Sau đó, cài đặt thư viện phụ thuộc:
 ```bash
 npm install
 ```
