@@ -570,16 +570,13 @@ export const db = {
       return { success: false, message: result?.message || 'Lỗi thách đấu' };
     }
 
-    // Chế độ 1: Tích lũy
-    // Tìm điểm cao nhất TRONG CHU KỲ của user TRƯỚC KHI lưu lượt này
-    const bounds = await this.getCurrentCycleBounds();
+    // Tìm điểm cao nhất CỦA BỘ ĐỀ NÀY của user TRƯỚC KHI lưu lượt này
     const { data: maxRecord } = await supabase
       .from('play_history')
       .select('score')
       .eq('user_id', userId)
+      .eq('quiz_id', quizId)
       .eq('mode', 1)
-      .gte('played_at', bounds.start)
-      .lte('played_at', bounds.end)
       .order('score', { ascending: false })
       .limit(1);
     
