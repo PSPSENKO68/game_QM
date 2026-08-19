@@ -102,6 +102,20 @@ function parseXLSX(arrayBuffer) {
   return window.XLSX.utils.sheet_to_json(worksheet, { defval: '' });
 }
 
+// ─── Helper: Format time spent (ms or s) to decimal string (e.g. 14.285s) ───
+export function formatTimeSpent(val) {
+  if (val === null || val === undefined || isNaN(val)) return '0.000s';
+  const num = Number(val);
+  if (num <= 0) return '0.000s';
+  let seconds = num;
+  if (Number.isInteger(num) && num < 500) {
+    seconds = num;
+  } else if (num >= 500) {
+    seconds = num / 1000;
+  }
+  return `${seconds.toFixed(3)}s`;
+}
+
 // ─── Export accounts.csv ─────────────────────────────────────────────────────
 export async function exportAccountsAsCSV() {
   const { data: users, error } = await supabase
@@ -131,6 +145,8 @@ export async function exportAccountsAsCSV() {
 
 // ─── Main Database API ────────────────────────────────────────────────────────
 export const db = {
+  formatTimeSpent,
+
 
   // ── 1. AUTH ──────────────────────────────────────────────────────────────
   async login(phoneOrCode, pin) {
@@ -629,10 +645,14 @@ export const db = {
     const defenderBest = await db.getBestPlayToday(defenderId);
     
     const defCorrect = defenderBest ? parseInt(defenderBest.correct_count) || 0 : 0;
-    const defTime = defenderBest ? parseInt(defenderBest.time_spent) || 999999 : 999999;
+    const rawDefTime = defenderBest ? parseFloat(defenderBest.time_spent) || 999999999 : 999999999;
     
     const atkCorrect = parseInt(attackerCorrectCount) || 0;
-    const atkTime = parseInt(attackerTimeSpent) || 0;
+    const rawAtkTime = parseFloat(attackerTimeSpent) || 0;
+
+    // Chuẩn hóa về mili-giây nếu dữ liệu cũ lưu bằng giây (< 500)
+    const defTime = (rawDefTime < 500) ? rawDefTime * 1000 : rawDefTime;
+    const atkTime = (rawAtkTime < 500) ? rawAtkTime * 1000 : rawAtkTime;
 
     let isSuccess = false;
     if (atkCorrect > defCorrect) {
@@ -648,7 +668,7 @@ export const db = {
       defender_id: defenderId,
       is_success: isSuccess,
       attacker_correct_count: attackerCorrectCount,
-      attacker_time_spent: attackerTimeSpent,
+      attacker_time_spent: atkTime,
       defender_correct_count: defCorrect,
       defender_time_spent: defTime
     });

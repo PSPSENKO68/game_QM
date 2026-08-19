@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (bestPlay) {
         document.getElementById('self_correct').textContent = bestPlay.correct_count || 0;
         document.getElementById('self_wrong').textContent = bestPlay.wrong_count || 0;
-        document.getElementById('self_time').textContent = `${bestPlay.time_spent || 0}s`;
+        document.getElementById('self_time').textContent = db.formatTimeSpent(bestPlay.time_spent);
         document.getElementById('self_stats_row').classList.remove('hidden');
       }
       

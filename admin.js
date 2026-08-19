@@ -1238,7 +1238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <span class="text-[rgba(139,90,43,0.3)] mx-1">/</span>
           <span class="text-[#DE3A3B] font-bold">${row.wrong_count || 0}</span>
         </td>
-        <td class="py-3 px-4 text-center text-[#8B5A2B] font-semibold">${row.time_spent || 0}s</td>
+        <td class="py-3 px-4 text-center text-[#8B5A2B] font-semibold">${db.formatTimeSpent(row.time_spent)}</td>
         <td class="py-3 px-4 text-center">
           <button class="btn-view-wrong px-2.5 py-1 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] hover:bg-[#E9C691] rounded-lg text-[10px] font-bold transition cursor-pointer" data-wrong='${JSON.stringify(row.wrong_answers || []).replace(/'/g, "&#39;")}'>Chi tiết</button>
         </td>
@@ -1288,7 +1288,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     historyData.forEach(row => {
-      totalTime += (parseInt(row.time_spent) || 0);
+      const val = parseFloat(row.time_spent) || 0;
+      const ms = (val > 0 && val < 500) ? val * 1000 : val;
+      totalTime += ms;
       const wrongs = row.wrong_answers || [];
       wrongs.forEach(w => {
         const qText = (w.question || '').trim();
@@ -1299,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
 
-    const avgTime = Math.round(totalTime / totalPlays) || 0;
+    const avgTime = totalPlays > 0 ? db.formatTimeSpent(totalTime / totalPlays) : '0.000s';
 
     let statsHtml = `
       <div class="grid grid-cols-2 gap-4 mb-4">
@@ -1309,7 +1311,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
         <div class="card-wood p-4 rounded-2xl flex flex-col items-center justify-center">
           <span class="text-[10px] uppercase font-bold text-[#FFD700] tracking-wider">Thời gian TB / lượt</span>
-          <span class="text-3xl font-black text-[#FFF8E7] font-['Space_Grotesk']">${avgTime}s</span>
+          <span class="text-3xl font-black text-[#FFF8E7] font-['Space_Grotesk']">${avgTime}</span>
         </div>
       </div>
       <div class="bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-2xl p-5">
