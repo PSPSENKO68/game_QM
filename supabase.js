@@ -108,6 +108,7 @@ export function formatTimeSpent(val) {
   const num = Number(val);
   if (num <= 0) return '0.000s';
   let seconds = num;
+  if (num >= 999999000) return 'Chưa có';
   if (Number.isInteger(num) && num < 500) {
     seconds = num;
   } else if (num >= 500) {
@@ -646,10 +647,12 @@ export const db = {
     const atkTime = (rawAtkTime < 500) ? rawAtkTime * 1000 : rawAtkTime;
 
     let isSuccess = false;
-    if (atkCorrect > defCorrect) {
-      isSuccess = true;
-    } else if (atkCorrect === defCorrect) {
-      if (atkTime <= defTime) isSuccess = true;
+    if (atkCorrect > 0) { // Phải đúng ít nhất 1 câu mới được tính là thắng
+      if (atkCorrect > defCorrect) {
+        isSuccess = true;
+      } else if (atkCorrect === defCorrect) {
+        if (atkTime <= defTime) isSuccess = true;
+      }
     }
 
     // 4. Lưu lịch sử
