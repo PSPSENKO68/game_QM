@@ -188,21 +188,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     let reasonHTML = '';
     if (isWin) {
       if (Number(atkCorrect) > Number(defCorrect)) {
-        reasonHTML = `Thắng do bạn trả lời đúng nhiều hơn (${atkCorrect} vs ${defCorrect} câu).`;
+        reasonHTML = `Bạn trả lời đúng nhiều hơn người bị thách đấu (${atkCorrect} vs ${defCorrect} câu).`;
       } else {
         let diffMs = Math.abs(normDefTime - normAtkTime);
         let diffSec = (diffMs / 1000).toFixed(3);
-        reasonHTML = `Bạn trả lời nhanh hơn đối thủ ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+        reasonHTML = `Bạn trả lời nhanh hơn người bị thách đấu ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       }
     } else {
       if (Number(atkCorrect) < Number(defCorrect)) {
-        reasonHTML = `Thua do bạn trả lời đúng ít hơn (${atkCorrect} vs ${defCorrect} câu).`;
+        reasonHTML = `Bạn trả lời đúng ít hơn người bị thách đấu (${atkCorrect} vs ${defCorrect} câu).`;
       } else if (Number(atkCorrect) === Number(defCorrect) && normAtkTime > normDefTime) {
         let diffMs = Math.abs(normAtkTime - normDefTime);
         let diffSec = (diffMs / 1000).toFixed(3);
-        reasonHTML = `Thua do bạn trả lời chậm hơn ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+        reasonHTML = `Bạn trả lời chậm hơn người bị thách đấu ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       } else {
-        reasonHTML = `Thành tích của bạn không vượt qua đối thủ (${formattedAtkTime} vs ${formattedDefTime}).`;
+        reasonHTML = `Thành tích của bạn không vượt qua người bị thách đấu (${formattedAtkTime} vs ${formattedDefTime}).`;
       }
     }
 
