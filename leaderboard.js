@@ -152,6 +152,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('self_correct').textContent = bestPlay.correct_count || 0;
         document.getElementById('self_wrong').textContent = bestPlay.wrong_count || 0;
         document.getElementById('self_time').textContent = db.formatTimeSpent(bestPlay.time_spent);
+        
+        const maxSteals = await db.getMaxStealsPerDay();
+        const usedSteals = await db.getStealsToday(currentUser.id);
+        const selfStealsEl = document.getElementById('self_steals');
+        if (selfStealsEl) selfStealsEl.textContent = `${usedSteals}/${maxSteals}`;
+        
         document.getElementById('self_stats_row').classList.remove('hidden');
       }
       
