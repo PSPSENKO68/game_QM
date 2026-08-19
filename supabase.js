@@ -1337,6 +1337,27 @@ export const db = {
       return row;
     });
 
+    if (userStats.length > 0) {
+      const avgRow = {
+        'STT': '',
+        'Tài khoản': '',
+        'Họ Tên': 'ĐIỂM TRUNG BÌNH',
+        'Phòng Ban': '',
+        'Tổng Số Câu Đúng': Math.round(userStats.reduce((sum, u) => sum + u.totalCorrect, 0) / userStats.length),
+        'Tổng Thời Gian': db.formatTimeSpent(Math.floor(userStats.reduce((sum, u) => sum + u.totalTime, 0) / userStats.length))
+      };
+
+      quizzes.forEach((quiz, idx) => {
+        const sumScore = userStats.reduce((sum, u) => sum + (u.cycleScores[idx] || 0), 0);
+        avgRow[`Chặng: ${quiz.title}`] = Math.round(sumScore / userStats.length);
+      });
+
+      avgRow['Tổng Điểm'] = Math.round(userStats.reduce((sum, u) => sum + u.totalScore, 0) / userStats.length);
+      avgRow['Trạng Thái'] = '';
+      
+      rows.push(avgRow);
+    }
+
     const ws = window.XLSX.utils.json_to_sheet(rows);
     const wb = window.XLSX.utils.book_new();
     window.XLSX.utils.book_append_sheet(wb, ws, 'Báo Cáo Chặng');
