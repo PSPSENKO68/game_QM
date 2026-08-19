@@ -258,12 +258,38 @@ document.addEventListener('DOMContentLoaded', async () => {
           mode1PlaysStatus.classList.add('text-rose-400');
         }
 
+        const cycleDaysRaw = await db.getSettingValue('mode1_cycle_days');
+        const cycleDays = parseInt(cycleDaysRaw) || 1;
+
         btnMode1.addEventListener('click', () => {
           if (playsToday >= userLimit) {
-            showGlobalAlert('Hết lượt chơi', `Bạn đã sử dụng hết ${userLimit} lượt chơi hôm nay.`);
+            showGlobalAlert('Hết lượt chơi', `Bạn đã sử dụng hết ${userLimit} lượt cày cuốc trong chu kỳ này.`);
             return;
           }
-          window.location.href = '/quiz.html?mode=1';
+          
+          const modalRules = document.getElementById('modal_rules');
+          if (modalRules) {
+            document.getElementById('rules_max_plays').textContent = userLimit;
+            document.getElementById('rules_cycle_days').textContent = cycleDays;
+            modalRules.classList.remove('hidden');
+
+            const btnCancel = document.getElementById('btn_cancel_rules');
+            const btnStart = document.getElementById('btn_start_quiz_after_rules');
+
+            const closeModal = () => {
+              modalRules.classList.add('hidden');
+              btnCancel.removeEventListener('click', closeModal);
+            };
+
+            btnCancel.addEventListener('click', closeModal);
+            
+            btnStart.onclick = () => {
+              window.location.href = '/quiz.html?mode=1';
+            };
+          } else {
+             // Fallback
+             window.location.href = '/quiz.html?mode=1';
+          }
         });
 
         // Limit Mode 2

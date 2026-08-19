@@ -265,6 +265,23 @@
     </div>
   </div>
 
+  <!-- Rules Modal -->
+  <div id="modal_rules" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#8B5A2B] text-center">
+      <h3 class="text-xl font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Luật Chơi Cày Cuốc</h3>
+      <p class="text-[13px] font-semibold text-[#8B5A2B] mb-2 leading-relaxed">Nếu trả lời đúng <span class="text-[#D32F2F] font-bold">+10 điểm/câu</span> và bạn có tối đa <span id="rules_max_plays" class="text-[#D32F2F] font-bold">...</span> lượt cày cuốc/chặng.</p>
+      <p class="text-[13px] font-semibold text-[#8B5A2B] mb-6">1 chặng diễn ra trong <span id="rules_cycle_days" class="text-[#D32F2F] font-bold">...</span> ngày.</p>
+      <div class="flex gap-3">
+        <button id="btn_cancel_rules" class="btn-pirate-yellow text-[#2B1607] font-bold py-3 px-4 rounded-xl text-sm flex-1 cursor-pointer">
+          Đóng
+        </button>
+        <button id="btn_start_quiz_after_rules" class="btn-pirate text-white font-bold py-3 px-4 rounded-xl text-sm flex-1 cursor-pointer">
+          Chơi Ngay
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Lucky Wheel Modal -->
   <div id="modal_lucky_wheel"
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
