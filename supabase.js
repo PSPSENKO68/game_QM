@@ -1252,16 +1252,21 @@ export const db = {
     const users = await db.adminGetUsers();
     
     // Get cycle boundaries configuration
-    const cycleStartStr = await this.getSettingValue('mode1_cycle_start') || new Date().toISOString();
-    const cycleStart = new Date(cycleStartStr);
-    cycleStart.setHours(0, 0, 0, 0);
-    
     let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
     if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
 
-    // Get all play history for mode 1 (Cày cuốc)
-    const { data: playHistory } = await supabase.from('play_history').select('*').eq('mode', 1);
+    // Get all play history for mode 1 (Cày cuốc) - older records might have mode = null
+    const { data: playHistory } = await supabase.from('play_history').select('*').or('mode.eq.1,mode.is.null');
     const history = playHistory || [];
+
+    // To prevent dropping historical data if admin just reset the config, 
+    // we find the absolute earliest play date in the system to act as the Genesis cycle start.
+    let earliestDate = new Date();
+    if (history.length > 0) {
+      earliestDate = new Date(Math.min(...history.map(h => new Date(h.played_at).getTime())));
+    }
+    earliestDate.setHours(0, 0, 0, 0);
+    const cycleStart = earliestDate;
 
     let maxCycleIndex = 0;
 
