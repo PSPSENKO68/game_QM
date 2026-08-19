@@ -280,12 +280,19 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           // Lấy cấu hình hệ số và hiển thị popup
           const multipliers = await db.getStealMultipliers();
+          const basePoints = await db.getStealBasePoints();
           
           const elWinMult = document.getElementById('modal_win_multiplier');
           if (elWinMult) elWinMult.textContent = multipliers.win;
           
           const elLoseMult = document.getElementById('modal_lose_multiplier');
           if (elLoseMult) elLoseMult.textContent = multipliers.lose;
+
+          const elWinBase = document.getElementById('modal_win_base');
+          if (elWinBase) elWinBase.textContent = basePoints.win;
+
+          const elLoseBase = document.getElementById('modal_lose_base');
+          if (elLoseBase) elLoseBase.textContent = basePoints.lose;
           
           const elStealsCount = document.getElementById('modal_steals_count');
           if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
