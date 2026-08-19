@@ -1327,7 +1327,7 @@ export const db = {
       };
 
       quizzes.forEach((quiz, idx) => {
-        row[`Điểm Chặng ${idx + 1}`] = u.cycleScores[idx] || 0;
+        row[`Chặng: ${quiz.title}`] = u.cycleScores[idx] || 0;
       });
 
       row['Tổng Điểm'] = u.totalScore;
