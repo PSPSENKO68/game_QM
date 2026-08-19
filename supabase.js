@@ -1252,63 +1252,51 @@ export const db = {
     const users = await db.adminGetUsers();
     
     // Get cycle boundaries configuration
-    let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
-    if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
+    const quizzes = await db.adminGetQuizzes();
+    // Sort quizzes by created_at ascending to determine Chặng 1, Chặng 2...
+    quizzes.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
     // Fetch all history to avoid PostgREST syntax errors, filter in JS
     const { data: allHistory, error: historyErr } = await supabase.from('play_history').select('*');
     if (historyErr) console.error('Error fetching history:', historyErr);
     
-    // Filter mode 1 or null (older records)
-    const history = (allHistory || []).filter(h => h.mode === 1 || h.mode === null || h.mode === undefined);
-
-    let earliestDate = new Date();
-    const validDates = history
-      .map(h => new Date(h.played_at).getTime())
-      .filter(t => !isNaN(t));
-      
-    if (validDates.length > 0) {
-      earliestDate = new Date(Math.min(...validDates));
-    }
-    earliestDate.setHours(0, 0, 0, 0);
-    const cycleStart = earliestDate;
-
-    let maxCycleIndex = 0;
+    // Don't filter by mode because all play_history records are quiz plays
+    const history = allHistory || [];
 
     const userStats = users.filter(u => u.role !== 'owner').map(user => {
-      const userHistory = history.filter(h => h.user_id === user.id && !isNaN(new Date(h.played_at).getTime()) && new Date(h.played_at) >= cycleStart);
+      const userHistory = history.filter(h => h.user_id === user.id && !isNaN(new Date(h.played_at).getTime()));
       
-      const cyclePlays = {}; 
+      const quizPlays = {}; 
       userHistory.forEach(play => {
-        const playedAt = new Date(play.played_at);
-        const diffTime = playedAt.getTime() - cycleStart.getTime();
-        const cycleIndex = Math.floor(diffTime / (1000 * 3600 * 24 * cycleDays));
-        
-        if (cycleIndex >= 0) {
-          if (!cyclePlays[cycleIndex]) cyclePlays[cycleIndex] = [];
-          cyclePlays[cycleIndex].push(play);
-          if (cycleIndex > maxCycleIndex) maxCycleIndex = cycleIndex;
-        }
+        const quizId = play.quiz_id;
+        if (!quizPlays[quizId]) quizPlays[quizId] = [];
+        quizPlays[quizId].push(play);
       });
 
       let totalCorrect = 0;
       let totalTime = 0;
       let totalScore = 0;
-      const cycleScores = {};
+      const cycleScores = {}; // Key will be the index of the quiz in the sorted quizzes array
 
-      for (const idx in cyclePlays) {
-        const plays = cyclePlays[idx];
-        plays.sort((a, b) => {
-          if (b.score !== a.score) return b.score - a.score;
-          return a.time_spent - b.time_spent;
-        });
-        
-        const bestPlay = plays[0];
-        cycleScores[idx] = bestPlay.score || 0;
-        totalCorrect += (bestPlay.correct_count || 0);
-        totalTime += (bestPlay.time_spent || 0);
-        totalScore += (bestPlay.score || 0);
-      }
+      quizzes.forEach((quiz, idx) => {
+        const plays = quizPlays[quiz.id] || [];
+        if (plays.length > 0) {
+          plays.sort((a, b) => {
+            const scoreA = parseInt(a.score) || 0;
+            const scoreB = parseInt(b.score) || 0;
+            if (scoreB !== scoreA) return scoreB - scoreA;
+            return (parseInt(a.time_spent) || 0) - (parseInt(b.time_spent) || 0);
+          });
+          
+          const bestPlay = plays[0];
+          cycleScores[idx] = parseInt(bestPlay.score) || 0;
+          totalCorrect += parseInt(bestPlay.correct_count) || 0;
+          totalTime += parseInt(bestPlay.time_spent) || 0;
+          totalScore += parseInt(bestPlay.score) || 0;
+        } else {
+          cycleScores[idx] = 0;
+        }
+      });
 
       return {
         id: user.id,
@@ -1338,9 +1326,9 @@ export const db = {
         'Tổng Thời Gian': db.formatTimeSpent(u.totalTime)
       };
 
-      for (let c = 0; c <= maxCycleIndex; c++) {
-        row[`Điểm Vòng ${c + 1}`] = u.cycleScores[c] || 0;
-      }
+      quizzes.forEach((quiz, idx) => {
+        row[`Điểm Chặng ${idx + 1}`] = u.cycleScores[idx] || 0;
+      });
 
       row['Tổng Điểm'] = u.totalScore;
       row['Trạng Thái'] = u.is_active ? 'Hoạt động' : 'Tạm khóa';
