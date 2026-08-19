@@ -169,8 +169,9 @@ export const db = {
     return { success: true, user: data };
   },
 
-  async quickLogin(fullName) {
+  async quickLogin(fullName, department = 'Khách') {
     const name = fullName.trim();
+    const dept = department.trim();
     // Try to find if this name already exists (case-insensitive)
     const { data: existingUsers, error: searchError } = await supabase
       .from('users')
@@ -183,6 +184,13 @@ export const db = {
       if (!user.is_active) {
         return { success: false, message: 'Tài khoản đã bị khóa.' };
       }
+      
+      // Update department if it changed
+      if (user.department !== dept) {
+        await supabase.from('users').update({ department: dept }).eq('id', user.id);
+        user.department = dept;
+      }
+      
       return { success: true, user };
     }
 
@@ -197,7 +205,7 @@ export const db = {
         phone_number: guestPhone,
         employee_code: guestPhone,
         full_name: name,
-        department: 'Khách',
+        department: dept,
         pin: '0000',
         role: 'user',
         is_active: true

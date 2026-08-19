@@ -22,7 +22,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   // DOM Elements - Quick Play
   const quickForm = document.getElementById('quick_play_form');
   const quickNameInput = document.getElementById('quick_fullname');
+  const quickDeptInput = document.getElementById('quick_department');
   const btnSubmitQuick = document.getElementById('btn_submit_quick');
+  
+  // Force uppercase on input
+  if (quickNameInput) {
+    quickNameInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+  }
+  if (quickDeptInput) {
+    quickDeptInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+    });
+  }
   
   // DOM Elements - Admin Login
   const adminForm = document.getElementById('admin_login_form');
@@ -38,17 +51,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       e.preventDefault();
       hideAlerts();
 
-      const fullName = quickNameInput.value.trim();
+      const fullName = quickNameInput.value.trim().toUpperCase();
+      const department = quickDeptInput.value.trim().toUpperCase();
 
-      if (!fullName) {
-        showError('Vui lòng nhập Họ và Tên của bạn.');
+      if (!fullName || !department) {
+        showError('Vui lòng nhập Họ Tên và Bộ phận của bạn.');
         return;
       }
 
       setLoading(btnSubmitQuick, true, 'VÀO RỪNG NGAY');
 
       try {
-        const result = await db.quickLogin(fullName);
+        const result = await db.quickLogin(fullName, department);
         if (result.success) {
           sessionStorage.setItem('current_user', JSON.stringify(result.user));
           window.location.replace('/index.html');
