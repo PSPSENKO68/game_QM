@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     const currentQuestion = questions[currentIndex];
-    const basePoint = currentQuestion.point || 10;
+    const basePoint = 10; // Cố định 10 điểm theo yêu cầu
 
     if (isCorrect) {
       // Correct flow

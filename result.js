@@ -194,8 +194,8 @@ document.addEventListener('DOMContentLoaded', async () => {
            reasonHTML = `Bạn trả lời đúng ${atkCorrect} câu, trong khi người bị thách đấu chưa có thành tích.`;
         } else {
            let diffMs = Math.abs(normDefTime - normAtkTime);
-           let diffSec = (diffMs / 1000).toFixed(3);
-           reasonHTML = `Bạn trả lời nhanh hơn người bị thách đấu ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+           let diffSec = formatTimeSpent(diffMs);
+           reasonHTML = `Bạn trả lời nhanh hơn người bị thách đấu ${diffSec} (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
         }
       }
     } else {
@@ -203,8 +203,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         reasonHTML = `Bạn trả lời đúng ít hơn người bị thách đấu (${atkCorrect} vs ${defCorrect} câu).`;
       } else if (Number(atkCorrect) === Number(defCorrect) && normAtkTime > normDefTime) {
         let diffMs = Math.abs(normAtkTime - normDefTime);
-        let diffSec = (diffMs / 1000).toFixed(3);
-        reasonHTML = `Bạn trả lời chậm hơn người bị thách đấu ${diffSec}s (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+        let diffSec = formatTimeSpent(diffMs);
+        reasonHTML = `Bạn trả lời chậm hơn người bị thách đấu ${diffSec} (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       } else {
         if (normDefTime >= 999999000) {
            reasonHTML = `Bạn cần trả lời đúng ít nhất 1 câu để thách đấu thành công (Bạn đúng 0 câu).`;

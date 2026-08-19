@@ -104,9 +104,9 @@ function parseXLSX(arrayBuffer) {
 
 // ─── Helper: Format time spent (ms or s) to decimal string (e.g. 14.285s) ───
 export function formatTimeSpent(val) {
-  if (val === null || val === undefined || isNaN(val)) return '0.000s';
+  if (val === null || val === undefined || isNaN(val)) return "0s000'";
   const num = Number(val);
-  if (num <= 0) return '0.000s';
+  if (num <= 0) return "0s000'";
   let seconds = num;
   if (num >= 999999000) return 'Chưa có';
   if (Number.isInteger(num) && num < 500) {
@@ -114,7 +114,9 @@ export function formatTimeSpent(val) {
   } else if (num >= 500) {
     seconds = num / 1000;
   }
-  return `${seconds.toFixed(3)}s`;
+  const str = seconds.toFixed(3);
+  const parts = str.split('.');
+  return `${parts[0]}s${parts[1]}'`;
 }
 
 // ─── Export accounts.csv ─────────────────────────────────────────────────────
