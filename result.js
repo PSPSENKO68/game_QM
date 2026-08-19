@@ -254,14 +254,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.location.href = '/leaderboard.html?action=steal';
           }
         } else {
-          const playsToday = await db.getPlaysToday(user.id);
-          const globalLimit = await db.getDailyLimit();
-          const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
-
-          if (playsToday >= maxPlays) {
-            document.getElementById('retry_limit_title').textContent = 'Hết lượt chơi hôm nay';
-            document.getElementById('retry_limit_desc').textContent = 'Bạn đã sử dụng hết lượt chơi hôm nay. Vui lòng quay lại vào ngày mai để tiếp tục chinh phục điểm cao!';
+          const playsToday = await db.getPlaysInCurrentCycle(user.id);
+          const globalLimit = await db.getCycleLimit();
+          const userLimit = typeof user.max_plays === 'number' ? user.max_plays : globalLimit;
+          if (playsToday >= userLimit) {
+            document.getElementById('retry_limit_title').textContent = 'Hết lượt cày cuốc';
+            document.getElementById('retry_limit_desc').textContent = 'Bạn đã sử dụng hết lượt cày cuốc trong thời gian quy định. Hệ thống sẽ sớm tự động hồi lại lượt mới!';
             retryLimitModal.classList.remove('hidden');
+            btnRetryQuiz.disabled = false;
+            btnRetryQuiz.innerHTML = initialText;
+            return;
           } else {
             window.location.href = '/quiz.html?mode=1';
           }

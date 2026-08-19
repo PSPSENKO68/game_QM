@@ -294,31 +294,47 @@ export const db = {
     return new Date().getDay() === 0;
   },
 
-  async getPlaysToday(userId) {
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+  async getPlaysInCurrentCycle(userId) {
+    const cycleStartStr = await this.getSettingStatus('mode1_cycle_start') || new Date().toISOString();
+    const cycleStart = new Date(cycleStartStr);
+    cycleStart.setHours(0, 0, 0, 0);
+    
+    let cycleDays = parseInt(await this.getSettingStatus('mode1_cycle_days'));
+    if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
+    
+    const now = new Date();
+    const msDiff = now.getTime() - cycleStart.getTime();
+    let daysDiff = Math.floor(msDiff / (1000 * 60 * 60 * 24));
+    if (daysDiff < 0) daysDiff = 0; 
+    
+    const currentCycleIndex = Math.floor(daysDiff / cycleDays);
+    const currentCycleStart = new Date(cycleStart.getTime());
+    currentCycleStart.setDate(currentCycleStart.getDate() + (currentCycleIndex * cycleDays));
+    currentCycleStart.setHours(0, 0, 0, 0);
+    
+    const currentCycleEnd = new Date(currentCycleStart.getTime());
+    currentCycleEnd.setDate(currentCycleEnd.getDate() + cycleDays - 1);
+    currentCycleEnd.setHours(23, 59, 59, 999);
 
     const { count, error } = await supabase
       .from('play_history')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('played_at', todayStart.toISOString())
-      .lte('played_at', todayEnd.toISOString());
+      .gte('played_at', currentCycleStart.toISOString())
+      .lte('played_at', currentCycleEnd.toISOString());
 
     if (error) {
-      console.error('getPlaysToday error:', error);
+      console.error('getPlaysInCurrentCycle error:', error);
       return 0;
     }
     return count || 0;
   },
 
-  async getDailyLimit() {
+  async getCycleLimit() {
     const { data, error } = await supabase
       .from('settings')
       .select('value')
-      .eq('key', 'max_plays_per_day')
+      .eq('key', 'mode1_max_plays')
       .single();
     if (!error && data) return parseInt(data.value) || 3;
     return 3;

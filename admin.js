@@ -1030,7 +1030,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
 
   // Load Settings
-  if (inputModule1Status) db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
+  if (inputModule1Status) {
+    db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
+    const inputMode1MaxPlays = document.getElementById('input_mode1_max_plays');
+    const inputMode1CycleDays = document.getElementById('input_mode1_cycle_days');
+    db.getSettingStatus('mode1_max_plays').then(val => { if(val && inputMode1MaxPlays) inputMode1MaxPlays.value = val; });
+    db.getSettingStatus('mode1_cycle_days').then(val => { if(val && inputMode1CycleDays) inputMode1CycleDays.value = val; });
+  }
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
   if (inputRandomizeQuestions) db.getRandomizeQuestionsStatus().then(isOn => inputRandomizeQuestions.value = isOn ? 'ON' : 'OFF');
   if (inputWheelStatus) db.getWheelStatus().then(isOn => inputWheelStatus.value = isOn ? 'ON' : 'OFF');
@@ -1051,9 +1057,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Save Settings
   if (btnSaveModule1Status && inputModule1Status) {
     btnSaveModule1Status.addEventListener('click', async () => {
-      const result = await db.updateModule1Status(inputModule1Status.value);
-      if (result.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}`);
-      else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
+      const inputMode1MaxPlays = document.getElementById('input_mode1_max_plays');
+      const inputMode1CycleDays = document.getElementById('input_mode1_cycle_days');
+      const maxPlays = inputMode1MaxPlays ? inputMode1MaxPlays.value : "3";
+      const cycleDays = inputMode1CycleDays ? inputMode1CycleDays.value : "3";
+      
+      const r1 = await db.updateModule1Status(inputModule1Status.value);
+      const r2 = await db.updateSettingStatus('mode1_max_plays', maxPlays);
+      const r3 = await db.updateSettingStatus('mode1_cycle_days', cycleDays);
+      const r4 = await db.updateSettingStatus('mode1_cycle_start', new Date().toISOString());
+      
+      if (r1.success && r2.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}\nChu kỳ: ${maxPlays} lượt / ${cycleDays} ngày.\n(Chu kỳ tính từ thời điểm lưu)`);
+      else showAdminAlert('Lỗi', r1.message || 'Không thể lưu.');
     });
   }
 

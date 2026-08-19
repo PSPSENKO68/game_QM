@@ -58,12 +58,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Tính giới hạn lượt chơi: ưu tiên max_plays riêng của user, fallback về setting chung
-    const playsNum = await db.getPlaysToday(user.id);
-    const globalLimit = await db.getDailyLimit();
-    const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
-
-    userPlaysToday.textContent = `${playsNum}/${maxPlays}`;
-    if (playsNum >= maxPlays) {
+    const playsNum = await db.getPlaysInCurrentCycle(user.id);
+    const globalLimit = await db.getCycleLimit();
+    const userLimit = typeof user.max_plays === 'number' ? user.max_plays : globalLimit;
+    
+    if (playsNum >= userLimit) {
+      alert('Bạn đã sử dụng hết lượt cày cuốc trong thời gian quy định. Hệ thống sẽ sớm tự động hồi lại lượt mới!');
+    }
+    
+    userPlaysToday.textContent = `${playsNum}/${userLimit}`;
+    if (playsNum >= userLimit) {
       userPlaysToday.classList.add('text-rose-600', 'font-extrabold');
     }
     userProfileCard.classList.remove('hidden');
@@ -243,18 +247,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         sessionStorage.setItem('current_quiz_id', activeQuiz.id);
 
         // Limit Mode 1
-        const playsToday = await db.getPlaysToday(user.id);
-        const globalLimit = await db.getDailyLimit();
-        const maxPlays = (user.max_plays !== null && user.max_plays !== undefined) ? user.max_plays : globalLimit;
-        mode1PlaysStatus.textContent = `${playsToday}/${maxPlays} LƯỢT`;
+        const playsToday = await db.getPlaysInCurrentCycle(user.id);
+        const globalLimit = await db.getCycleLimit();
+        const userLimit = typeof user.max_plays === 'number' ? user.max_plays : globalLimit;
+        
+        mode1PlaysStatus.textContent = `${playsToday}/${userLimit} LƯỢT`;
 
-        if (playsToday >= maxPlays) {
+        if (playsToday >= userLimit) {
+          alert('Bạn đã sử dụng hết lượt cày cuốc trong thời gian quy định. Hệ thống sẽ sớm tự động hồi lại lượt mới!');
           mode1PlaysStatus.classList.add('text-rose-400');
         }
 
         btnMode1.addEventListener('click', () => {
-          if (playsToday >= maxPlays) {
-            showGlobalAlert('Hết lượt chơi', `Bạn đã sử dụng hết ${maxPlays} lượt chơi hôm nay.`);
+          if (playsToday >= userLimit) {
+            showGlobalAlert('Hết lượt chơi', `Bạn đã sử dụng hết ${userLimit} lượt chơi hôm nay.`);
             return;
           }
           window.location.href = '/quiz.html?mode=1';
