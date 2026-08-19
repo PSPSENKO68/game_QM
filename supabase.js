@@ -720,6 +720,47 @@ export const db = {
       console.error('getLeaderboard error:', error);
       return [];
     }
+
+    if (data && data.length > 0) {
+      // Lấy thêm best_time của từng user trong ngày hôm nay
+      const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+      const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
+      
+      const { data: playsData } = await supabase
+        .from('play_history')
+        .select('user_id, correct_count, time_spent')
+        .gte('played_at', todayStart.toISOString())
+        .lte('played_at', todayEnd.toISOString());
+
+      if (playsData && playsData.length > 0) {
+        const userBestPlays = {};
+        playsData.forEach(play => {
+          const uid = play.user_id;
+          if (!userBestPlays[uid]) {
+            userBestPlays[uid] = play;
+          } else {
+            const curr = userBestPlays[uid];
+            if (play.correct_count > curr.correct_count) {
+              userBestPlays[uid] = play;
+            } else if (play.correct_count === curr.correct_count && play.time_spent < curr.time_spent) {
+              userBestPlays[uid] = play;
+            }
+          }
+        });
+        
+        data.forEach(u => {
+          const best = userBestPlays[u.id];
+          u.best_time = best ? best.time_spent : 999999999;
+          u.best_correct = best ? best.correct_count : 0;
+        });
+      } else {
+        data.forEach(u => {
+          u.best_time = 999999999;
+          u.best_correct = 0;
+        });
+      }
+    }
+
     return data || [];
   },
 

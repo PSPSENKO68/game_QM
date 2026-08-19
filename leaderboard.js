@@ -216,9 +216,10 @@ document.addEventListener('DOMContentLoaded', async () => {
               <span class="break-words leading-tight">${playerName}</span>
               ${selfBadge}
             </div>
-            <p class="text-[11px] text-[#8B5A2B] font-bold mt-1 flex flex-wrap gap-2">
+            <p class="text-[11px] text-[#8B5A2B] font-bold mt-1 flex flex-wrap gap-2 items-center">
               <span>${playerDept || '—'}</span>
-              ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1 rounded">MEGA: ${playerMega}</span>` : ''}
+              ${(player.best_time && player.best_time < 999999000) ? `<span class="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded shadow-sm border border-emerald-100 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${db.formatTimeSpent(player.best_time)}</span>` : `<span class="text-[#8B5A2B]/60 bg-white/50 px-1.5 py-0.5 rounded flex items-center gap-1 border border-[#8B5A2B]/10"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Chưa có</span>`}
+              ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1.5 py-0.5 rounded shadow-sm border border-rose-100">MEGA: ${playerMega}</span>` : ''}
             </p>
           </div>
         </div>
