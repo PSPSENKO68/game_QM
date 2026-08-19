@@ -1255,15 +1255,20 @@ export const db = {
     let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
     if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
 
-    // Get all play history for mode 1 (Cày cuốc) - older records might have mode = null
-    const { data: playHistory } = await supabase.from('play_history').select('*').or('mode.eq.1,mode.is.null');
-    const history = playHistory || [];
+    // Fetch all history to avoid PostgREST syntax errors, filter in JS
+    const { data: allHistory, error: historyErr } = await supabase.from('play_history').select('*');
+    if (historyErr) console.error('Error fetching history:', historyErr);
+    
+    // Filter mode 1 or null (older records)
+    const history = (allHistory || []).filter(h => h.mode === 1 || h.mode === null || h.mode === undefined);
 
-    // To prevent dropping historical data if admin just reset the config, 
-    // we find the absolute earliest play date in the system to act as the Genesis cycle start.
     let earliestDate = new Date();
-    if (history.length > 0) {
-      earliestDate = new Date(Math.min(...history.map(h => new Date(h.played_at).getTime())));
+    const validDates = history
+      .map(h => new Date(h.played_at).getTime())
+      .filter(t => !isNaN(t));
+      
+    if (validDates.length > 0) {
+      earliestDate = new Date(Math.min(...validDates));
     }
     earliestDate.setHours(0, 0, 0, 0);
     const cycleStart = earliestDate;
@@ -1271,7 +1276,7 @@ export const db = {
     let maxCycleIndex = 0;
 
     const userStats = users.filter(u => u.role !== 'owner').map(user => {
-      const userHistory = history.filter(h => h.user_id === user.id && new Date(h.played_at) >= cycleStart);
+      const userHistory = history.filter(h => h.user_id === user.id && !isNaN(new Date(h.played_at).getTime()) && new Date(h.played_at) >= cycleStart);
       
       const cyclePlays = {}; 
       userHistory.forEach(play => {
