@@ -195,6 +195,23 @@
             </div>
           </div>
 
+          <!-- Randomize Questions Settings -->
+          <div class="grid grid-cols-1 gap-4 mb-2">
+            <div class="card-wood p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div class="flex-1">
+                <p class="text-xs font-bold text-[#FFD700]">Tùy chọn: Xáo trộn câu hỏi</p>
+                <p class="text-[10px] text-[#FFF8E7] mt-1">Khi bật, các câu hỏi trong đề sẽ được xáo ngẫu nhiên thứ tự mỗi khi người chơi tham gia.</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <select id="input_randomize_questions" class="w-auto p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
+                  <option value="ON">🟢 BẬT (ON)</option>
+                  <option value="OFF">🔴 TẮT (OFF)</option>
+                </select>
+                <button id="btn_save_randomize_questions" class="btn-pirate px-4 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU CẤU HÌNH</button>
+              </div>
+            </div>
+          </div>
+
           <!-- Users search and filters -->
           <div id="user_list_wrapper" class="overflow-x-auto border-2 border-[#8B5A2B] rounded-2xl bg-[rgba(255,255,255,0.5)]">
             <table class="w-full text-left border-collapse text-xs">
@@ -242,22 +259,7 @@
             </button>
           </div>
           
-          <!-- Randomize Questions Settings -->
-          <div class="grid grid-cols-1 gap-4 mb-2 hidden">
-            <div class="card-wood p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <div class="flex-1">
-                <p class="text-xs font-bold text-[#FFD700]">Tùy chọn: Xáo trộn câu hỏi</p>
-                <p class="text-[10px] text-[#FFF8E7] mt-1">Khi bật, các câu hỏi trong đề sẽ được xáo ngẫu nhiên thứ tự mỗi khi người chơi tham gia.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <select id="input_randomize_questions" class="w-auto p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none">
-                  <option value="ON">🟢 BẬT (ON)</option>
-                  <option value="OFF">🔴 TẮT (OFF)</option>
-                </select>
-                <button id="btn_save_randomize_questions" class="btn-pirate px-4 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer shrink-0">LƯU CẤU HÌNH</button>
-              </div>
-            </div>
-          </div>
+
 
           <!-- Filter Bar for Quizzes -->
           <div class="flex items-center gap-4 card-wood p-4 mb-2">
