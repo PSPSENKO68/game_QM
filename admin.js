@@ -1034,8 +1034,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
     const inputMode1MaxPlays = document.getElementById('input_mode1_max_plays');
     const inputMode1CycleDays = document.getElementById('input_mode1_cycle_days');
-    db.getSettingStatus('mode1_max_plays').then(val => { if(val && inputMode1MaxPlays) inputMode1MaxPlays.value = val; });
-    db.getSettingStatus('mode1_cycle_days').then(val => { if(val && inputMode1CycleDays) inputMode1CycleDays.value = val; });
+    db.getSettingValue('mode1_max_plays').then(val => { if(val && inputMode1MaxPlays) inputMode1MaxPlays.value = val; });
+    db.getSettingValue('mode1_cycle_days').then(val => { if(val && inputMode1CycleDays) inputMode1CycleDays.value = val; });
   }
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
   if (inputRandomizeQuestions) db.getRandomizeQuestionsStatus().then(isOn => inputRandomizeQuestions.value = isOn ? 'ON' : 'OFF');

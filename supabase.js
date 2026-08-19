@@ -295,11 +295,11 @@ export const db = {
   },
 
   async getCurrentCycleBounds() {
-    const cycleStartStr = await this.getSettingStatus('mode1_cycle_start') || new Date().toISOString();
+    const cycleStartStr = await this.getSettingValue('mode1_cycle_start') || new Date().toISOString();
     const cycleStart = new Date(cycleStartStr);
     cycleStart.setHours(0, 0, 0, 0);
     
-    let cycleDays = parseInt(await this.getSettingStatus('mode1_cycle_days'));
+    let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
     if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
     
     const now = new Date();
@@ -354,10 +354,15 @@ export const db = {
     return { success: true };
   },
 
-  async getSettingStatus(key) {
+  async getSettingValue(key) {
     const { data, error } = await supabase.from('settings').select('value').eq('key', key).limit(1);
-    if (!error && data && data.length > 0) return data[0].value === 'ON';
-    return false;
+    if (!error && data && data.length > 0) return data[0].value;
+    return null;
+  },
+
+  async getSettingStatus(key) {
+    const val = await this.getSettingValue(key);
+    return val === 'ON';
   },
 
   async updateSettingStatus(key, statusStr) {
