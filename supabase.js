@@ -329,49 +329,32 @@ export const db = {
     return { success: true };
   },
 
-  async getModule1Status() {
-    const { data, error } = await supabase.from('settings').select('value').eq('key', 'module1_status').single();
-    if (!error && data) return data.value === 'ON';
+  async getSettingStatus(key) {
+    const { data, error } = await supabase.from('settings').select('value').eq('key', key).limit(1);
+    if (!error && data && data.length > 0) return data[0].value === 'ON';
     return false;
   },
 
-  async updateModule1Status(statusStr) {
-    const { error } = await supabase.from('settings').upsert({ key: 'module1_status', value: statusStr });
-    return { success: !error, message: error?.message };
+  async updateSettingStatus(key, statusStr) {
+    const { data, error } = await supabase.from('settings').update({ value: statusStr }).eq('key', key).select();
+    if (!error && (!data || data.length === 0)) {
+       const { error: insertError } = await supabase.from('settings').insert({ key, value: statusStr });
+       if (insertError) return { success: false, message: insertError.message };
+    }
+    return { success: true };
   },
 
-  async getModule2Status() {
-    const { data, error } = await supabase.from('settings').select('value').eq('key', 'module2_status').single();
-    if (!error && data) return data.value === 'ON';
-    return false;
-  },
+  async getModule1Status() { return this.getSettingStatus('module1_status'); },
+  async updateModule1Status(statusStr) { return this.updateSettingStatus('module1_status', statusStr); },
 
-  async updateModule2Status(statusStr) {
-    const { error } = await supabase.from('settings').upsert({ key: 'module2_status', value: statusStr });
-    return { success: !error, message: error?.message };
-  },
+  async getModule2Status() { return this.getSettingStatus('module2_status'); },
+  async updateModule2Status(statusStr) { return this.updateSettingStatus('module2_status', statusStr); },
 
-  async getRandomizeQuestionsStatus() {
-    const { data, error } = await supabase.from('settings').select('value').eq('key', 'randomize_questions').single();
-    if (!error && data) return data.value === 'ON';
-    return false;
-  },
+  async getRandomizeQuestionsStatus() { return this.getSettingStatus('randomize_questions'); },
+  async updateRandomizeQuestionsStatus(statusStr) { return this.updateSettingStatus('randomize_questions', statusStr); },
 
-  async updateRandomizeQuestionsStatus(statusStr) {
-    const { error } = await supabase.from('settings').upsert({ key: 'randomize_questions', value: statusStr });
-    return { success: !error, message: error?.message };
-  },
-
-  async getWheelStatus() {
-    const { data, error } = await supabase.from('settings').select('value').eq('key', 'wheel_status').single();
-    if (!error && data) return data.value === 'ON';
-    return false;
-  },
-
-  async updateWheelStatus(statusStr) {
-    const { error } = await supabase.from('settings').upsert({ key: 'wheel_status', value: statusStr });
-    return { success: !error, message: error?.message };
-  },
+  async getWheelStatus() { return this.getSettingStatus('wheel_status'); },
+  async updateWheelStatus(statusStr) { return this.updateSettingStatus('wheel_status', statusStr); },
 
   async getActiveStreakQuiz() {
     const { data, error } = await supabase
