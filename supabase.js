@@ -1252,7 +1252,8 @@ export const db = {
     const users = await db.adminGetUsers();
     
     // Get cycle boundaries configuration
-    const quizzes = await db.adminGetQuizzes();
+    const allQuizzes = await db.adminGetQuizzes();
+    const quizzes = allQuizzes.filter(q => q.streak_day == null);
     // Sort quizzes by created_at ascending to determine Chặng 1, Chặng 2...
     quizzes.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
