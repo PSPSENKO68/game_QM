@@ -1244,38 +1244,104 @@ export const db = {
 
   // ── 13. EXPORT BÁO CÁO ĐIỂM SỐ (XLSX) ──────────────────────────────────
   async adminExportScoresXLSX(period = 'total') {
-    const aggregated = await db.adminGetAggregatedScores();
     if (!window.XLSX) {
       alert('SheetJS chưa được tải. Vui lòng tải lại trang.');
       return;
     }
 
-    const scoreField = period === 'week' ? 'week_score'
-      : period === 'month' ? 'month_score'
-        : period === 'quarter' ? 'quarter_score'
-          : 'total_score';
+    const users = await db.adminGetUsers();
+    
+    // Get cycle boundaries configuration
+    const cycleStartStr = await this.getSettingValue('mode1_cycle_start') || new Date().toISOString();
+    const cycleStart = new Date(cycleStartStr);
+    cycleStart.setHours(0, 0, 0, 0);
+    
+    let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
+    if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
 
-    const rows = aggregated
-      .filter(u => u.role !== 'owner')
-      .sort((a, b) => (b[scoreField] || 0) - (a[scoreField] || 0))
-      .map((u, i) => ({
+    // Get all play history for mode 1 (Cày cuốc)
+    const { data: playHistory } = await supabase.from('play_history').select('*').eq('mode', 1);
+    const history = playHistory || [];
+
+    let maxCycleIndex = 0;
+
+    const userStats = users.filter(u => u.role !== 'owner').map(user => {
+      const userHistory = history.filter(h => h.user_id === user.id && new Date(h.played_at) >= cycleStart);
+      
+      const cyclePlays = {}; 
+      userHistory.forEach(play => {
+        const playedAt = new Date(play.played_at);
+        const diffTime = playedAt.getTime() - cycleStart.getTime();
+        const cycleIndex = Math.floor(diffTime / (1000 * 3600 * 24 * cycleDays));
+        
+        if (cycleIndex >= 0) {
+          if (!cyclePlays[cycleIndex]) cyclePlays[cycleIndex] = [];
+          cyclePlays[cycleIndex].push(play);
+          if (cycleIndex > maxCycleIndex) maxCycleIndex = cycleIndex;
+        }
+      });
+
+      let totalCorrect = 0;
+      let totalTime = 0;
+      let totalScore = 0;
+      const cycleScores = {};
+
+      for (const idx in cyclePlays) {
+        const plays = cyclePlays[idx];
+        plays.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.time_spent - b.time_spent;
+        });
+        
+        const bestPlay = plays[0];
+        cycleScores[idx] = bestPlay.score || 0;
+        totalCorrect += (bestPlay.correct_count || 0);
+        totalTime += (bestPlay.time_spent || 0);
+        totalScore += (bestPlay.score || 0);
+      }
+
+      return {
+        id: user.id,
+        employee_code: user.employee_code,
+        full_name: user.full_name,
+        department: user.department,
+        is_active: user.is_active,
+        totalCorrect,
+        totalTime,
+        totalScore,
+        cycleScores
+      };
+    });
+
+    userStats.sort((a, b) => {
+      if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+      return a.totalTime - b.totalTime;
+    });
+
+    const rows = userStats.map((u, i) => {
+      const row = {
         'STT': i + 1,
         'Tài khoản': u.employee_code,
         'Họ Tên': u.full_name,
         'Phòng Ban': u.department,
-        'Điểm Tuần': u.week_score || 0,
-        'Điểm Tháng': u.month_score || 0,
-        'Điểm Quý': u.quarter_score || 0,
-        'Tổng Điểm': u.total_score || 0,
-        'Trạng Thái': u.is_active ? 'Hoạt động' : 'Tạm khóa'
-      }));
+        'Tổng Số Câu Đúng': u.totalCorrect,
+        'Tổng Thời Gian': db.formatTimeSpent(u.totalTime)
+      };
+
+      for (let c = 0; c <= maxCycleIndex; c++) {
+        row[`Điểm Vòng ${c + 1}`] = u.cycleScores[c] || 0;
+      }
+
+      row['Tổng Điểm'] = u.totalScore;
+      row['Trạng Thái'] = u.is_active ? 'Hoạt động' : 'Tạm khóa';
+      
+      return row;
+    });
 
     const ws = window.XLSX.utils.json_to_sheet(rows);
     const wb = window.XLSX.utils.book_new();
-    window.XLSX.utils.book_append_sheet(wb, ws, 'Báo Cáo Điểm');
-
-    const periodLabel = period === 'week' ? 'Tuan' : period === 'month' ? 'Thang' : period === 'quarter' ? 'Quy' : 'ToanPhan';
-    window.XLSX.writeFile(wb, `BaoCaoDiem_${periodLabel}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    window.XLSX.utils.book_append_sheet(wb, ws, 'Báo Cáo Chặng');
+    window.XLSX.writeFile(wb, `BaoCaoDiemChang_${new Date().toISOString().slice(0, 10)}.xlsx`);
   },
 
   // ── 10. ADMIN: LỊCH SỬ THI ĐẤU VÀ THỐNG KÊ ──────────────────────────────
