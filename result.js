@@ -185,6 +185,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formattedAtkTime = formatTimeSpent(normAtkTime);
     const formattedDefTime = formatTimeSpent(normDefTime);
 
+    const formatMs = (ms) => {
+      const seconds = ms / 1000;
+      const str = seconds.toFixed(3);
+      const parts = str.split('.');
+      return `${parts[0]}s${parts[1]}'`;
+    };
+
     let reasonHTML = '';
     if (isWin) {
       if (Number(atkCorrect) > Number(defCorrect)) {
@@ -194,8 +201,8 @@ document.addEventListener('DOMContentLoaded', async () => {
            reasonHTML = `Bạn trả lời đúng ${atkCorrect} câu, trong khi người bị thách đấu chưa có thành tích.`;
         } else {
            let diffMs = Math.abs(normDefTime - normAtkTime);
-           let diffSec = formatTimeSpent(diffMs);
-           reasonHTML = `Bạn trả lời nhanh hơn người bị thách đấu ${diffSec} (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+           let diffSec = formatMs(diffMs);
+           reasonHTML = `Bạn trả lời nhanh hơn người bị thách đấu ${diffSec} (bạn ${formattedAtkTime} vs họ ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
         }
       }
     } else {
@@ -203,13 +210,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         reasonHTML = `Bạn trả lời đúng ít hơn người bị thách đấu (${atkCorrect} vs ${defCorrect} câu).`;
       } else if (Number(atkCorrect) === Number(defCorrect) && normAtkTime > normDefTime) {
         let diffMs = Math.abs(normAtkTime - normDefTime);
-        let diffSec = formatTimeSpent(diffMs);
-        reasonHTML = `Bạn trả lời chậm hơn người bị thách đấu ${diffSec} (${formattedAtkTime} vs ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
+        let diffSec = formatMs(diffMs);
+        reasonHTML = `Bạn trả lời chậm hơn người bị thách đấu ${diffSec} (bạn ${formattedAtkTime} vs họ ${formattedDefTime}) với cùng ${atkCorrect} câu đúng.`;
       } else {
         if (normDefTime >= 999999000) {
            reasonHTML = `Bạn cần trả lời đúng ít nhất 1 câu để thách đấu thành công (Bạn đúng 0 câu).`;
         } else {
-           reasonHTML = `Thành tích của bạn không vượt qua người bị thách đấu (${formattedAtkTime} vs ${formattedDefTime}).`;
+           reasonHTML = `Thành tích của bạn không vượt qua người bị thách đấu (bạn ${formattedAtkTime} vs họ ${formattedDefTime}).`;
         }
       }
     }
