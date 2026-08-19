@@ -270,6 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           const modalRules = document.getElementById('modal_rules');
           if (modalRules) {
             document.getElementById('rules_max_plays').textContent = userLimit;
+            document.getElementById('rules_max_plays_2').textContent = userLimit;
             document.getElementById('rules_cycle_days').textContent = cycleDays;
             modalRules.classList.remove('hidden');
 
