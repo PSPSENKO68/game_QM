@@ -294,7 +294,7 @@ export const db = {
     return new Date().getDay() === 0;
   },
 
-  async getPlaysInCurrentCycle(userId) {
+  async getCurrentCycleBounds() {
     const cycleStartStr = await this.getSettingStatus('mode1_cycle_start') || new Date().toISOString();
     const cycleStart = new Date(cycleStartStr);
     cycleStart.setHours(0, 0, 0, 0);
@@ -315,13 +315,19 @@ export const db = {
     const currentCycleEnd = new Date(currentCycleStart.getTime());
     currentCycleEnd.setDate(currentCycleEnd.getDate() + cycleDays - 1);
     currentCycleEnd.setHours(23, 59, 59, 999);
+    
+    return { start: currentCycleStart.toISOString(), end: currentCycleEnd.toISOString() };
+  },
+
+  async getPlaysInCurrentCycle(userId) {
+    const bounds = await this.getCurrentCycleBounds();
 
     const { count, error } = await supabase
       .from('play_history')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .gte('played_at', currentCycleStart.toISOString())
-      .lte('played_at', currentCycleEnd.toISOString());
+      .gte('played_at', bounds.start)
+      .lte('played_at', bounds.end);
 
     if (error) {
       console.error('getPlaysInCurrentCycle error:', error);
@@ -560,21 +566,21 @@ export const db = {
     }
 
     // Chế độ 1: Tích lũy
-    // Tìm điểm cao nhất TRONG NGÀY của user TRƯỚC KHI lưu lượt này
-    const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
+    // Tìm điểm cao nhất TRONG CHU KỲ của user TRƯỚC KHI lưu lượt này
+    const bounds = await this.getCurrentCycleBounds();
     const { data: maxRecord } = await supabase
       .from('play_history')
       .select('score')
       .eq('user_id', userId)
-      .gte('played_at', todayStart.toISOString())
-      .lte('played_at', todayEnd.toISOString())
+      .eq('mode', 1)
+      .gte('played_at', bounds.start)
+      .lte('played_at', bounds.end)
       .order('score', { ascending: false })
       .limit(1);
     
-    const currentDailyMax = (maxRecord && maxRecord.length > 0) ? parseInt(maxRecord[0].score) : 0;
+    const currentCycleMax = (maxRecord && maxRecord.length > 0) ? parseInt(maxRecord[0].score) : 0;
     const newScore = parseInt(score) || 0;
-    const scoreDiff = newScore > currentDailyMax ? (newScore - currentDailyMax) : 0;
+    const scoreDiff = newScore > currentCycleMax ? (newScore - currentCycleMax) : 0;
 
     const record = {
       id: genId('h'),
