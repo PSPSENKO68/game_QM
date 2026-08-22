@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
         <div class="text-right flex items-center justify-end pl-2 shrink-0">
-          <span class="text-[20px] font-black shrink-0 whitespace-nowrap" style="color: ${rank <= 3 ? '#FF4500' : '#FFF8E7'}; text-shadow: 2px 2px 0 #331A08, -1px -1px 0 #331A08, 1px -1px 0 #331A08, -1px 1px 0 #331A08, 1px 1px 0 #331A08;">${playerDisplayScore}</span>
+          <span class="text-[20px] font-black text-[#FFF8E7] shrink-0 whitespace-nowrap" style="text-shadow: 2px 2px 0 #331A08, -1px -1px 0 #331A08, 1px -1px 0 #331A08, -1px 1px 0 #331A08, 1px 1px 0 #331A08;">${playerDisplayScore}</span>
           ${actionHtml}
         </div>
       `;
