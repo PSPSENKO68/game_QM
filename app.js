@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         `;
         btnMode2.href = "javascript:void(0)";
-        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện sẽ bắt đầu sau thời gian đếm ngược 24h'); }, {capture: true});
+        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
       }
 
       // Tải Active Quiz
