@@ -87,6 +87,35 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.replace('/index.html');
       return;
     }
+  } else if (mode === 'streak') {
+    const streakQuiz = await db.getActiveStreakQuiz();
+    if (!streakQuiz) {
+      window.location.replace('/index.html');
+      return;
+    }
+  }
+
+  // 3. Strict Limit Validation (Prevents bypassing via URL)
+  if (mode === 1) {
+    const playsToday = await db.getPlaysInCurrentCycle(user.id);
+    const globalLimit = await db.getCycleLimit();
+    const userLimit = typeof user.max_plays === 'number' ? user.max_plays : globalLimit;
+    if (playsToday >= userLimit) {
+      alert(`Bạn đã sử dụng hết ${userLimit} lượt cày cuốc trong chu kỳ này. Không thể vào thi!`);
+      window.location.replace('/index.html');
+      return;
+    }
+  } else if (mode === 2) {
+    const stealsToday = await db.getStealsToday(user.id);
+    const maxSteals = await db.getMaxStealsPerDay();
+    if (stealsToday >= maxSteals) {
+      alert('Bạn đã hết lượt thách đấu trong ngày! Không thể vào thi!');
+      window.location.replace('/index.html');
+      return;
+    }
+  } 
+  
+  if (mode === 2) {
     if (quizWeekBadge) {
       quizWeekBadge.textContent = `⚔️ THÁCH ĐẤU: ${targetUser.full_name}`;
       quizWeekBadge.classList.replace('bg-orange-50', 'bg-rose-50');
