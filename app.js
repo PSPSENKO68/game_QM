@@ -237,8 +237,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         gameOnState.classList.remove('hidden');
 
       const btnMode2 = document.getElementById('btn_mode_2');
-      if (!isModule1On && btnMode1) btnMode1.classList.add('hidden');
-      if (!isModule2On && btnMode2) btnMode2.classList.add('hidden');
+      if (!isModule1On && btnMode1) {
+        btnMode1.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+        btnMode1.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Cày Cuốc đang tạm thời bị khóa.'); }, {capture: true});
+      }
+      if (!isModule2On && btnMode2) {
+        btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+        btnMode2.href = "javascript:void(0)";
+        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Thách Đấu đang tạm thời bị khóa.'); }, {capture: true});
+      }
 
       // Tải Active Quiz
       const activeQuiz = await db.getActiveQuiz();
