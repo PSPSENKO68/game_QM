@@ -7,7 +7,7 @@
   <title>Quản Trị — Đấu Trí Đăng Đỉnh</title>
   <link rel="stylesheet" href="/style.css" />
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&display=swap" />
+    href="https://fonts.googleapis.com/css2?family=Podkova:wght@400;500;600;700;800&display=swap" />
 </head>
 
 <body class="text-slate-800 min-h-screen flex flex-col justify-between">  <!-- Top Design Strip Brand -->
@@ -21,7 +21,7 @@
           <img src="/logo/logo.png" alt="Quiz Logo" class="w-full h-full object-cover" />
         </div>
         <div>
-          <h1 class="text-lg font-black font-['Space_Grotesk'] text-[#FFD700] uppercase pk-text-stroke leading-tight">BẢNG QUẢN TRỊ ADMIN</h1>
+          <h1 class="text-lg font-black font-['Podkova'] text-[#FFD700] uppercase pk-text-stroke leading-tight">BẢNG QUẢN TRỊ ADMIN</h1>
           <p class="text-xs text-[#FFF8E7] font-bold">ĐẤU TRÍ ĐĂNG ĐỈNH</p>
         </div>
       </div>
@@ -85,7 +85,7 @@
           class="admin-view card-map p-6 flex flex-col gap-6">
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Danh Sách Nhân Viên</h2>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Podkova']">Danh Sách Nhân Viên</h2>
               <p class="text-xs text-[#593113]">Tổng hợp danh hiệu và chỉ số tài khoản tham dự thi</p>
             </div>
             <div class="flex items-center gap-2">
@@ -258,7 +258,7 @@
 
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quản Lý Đề Thi & Câu Hỏi</h2>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Podkova']">Quản Lý Đề Thi & Câu Hỏi</h2>
               <p class="text-xs text-[#593113]">Mỗi quiz tối thiểu 10 câu hỏi để đảm bảo tính thử thách ngẫu nhiên</p>
             </div>
             <button id="btn_open_quiz_modal"
@@ -328,7 +328,7 @@
         <section id="section_import"
           class="admin-view card-map p-6 flex flex-col gap-6 hidden">
           <div>
-            <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Nhập Liệu Nhanh từ file Excel / CSV</h2>
+            <h2 class="text-xl font-bold text-[#4A240A] font-['Podkova']">Nhập Liệu Nhanh từ file Excel / CSV</h2>
             <p class="text-xs text-[#593113]">Sao chép dữ liệu bảng tính của bạn dán thẳng vào đây hoặc upload file để
               nạp hàng trăm câu hỏi hoặc user tức thì</p>
           </div>
@@ -460,7 +460,7 @@
 
           <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
             <div>
-              <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Lịch Sử Thi Đấu</h2>
+              <h2 class="text-xl font-bold text-[#4A240A] font-['Podkova']">Lịch Sử Thi Đấu</h2>
               <p class="text-xs text-[#593113] mt-1">Xem chi tiết các lượt chơi của nhân sự</p>
             </div>
             <button id="btn_refresh_history"
@@ -532,7 +532,7 @@
   <div id="modal_user"
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4" id="modal_user_title">Thêm Nhân Viên
+      <h3 class="text-base font-black font-['Podkova'] text-[#4A240A] mb-4" id="modal_user_title">Thêm Nhân Viên
       </h3>
       <form id="form_user" class="space-y-4">
         <input type="hidden" id="form_user_id" />
@@ -582,7 +582,7 @@
           <label for="form_user_score" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tổng điểm tích lũy
             (Điểm)</label>
           <input type="number" id="form_user_score" min="0"
-            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-[#DE3A3B] font-['Space_Grotesk'] focus:outline-none"
+            class="block w-full p-2.5 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold text-[#DE3A3B] font-['Podkova'] focus:outline-none"
             placeholder="0" />
         </div>
 
@@ -620,7 +620,7 @@
   <div id="modal_quiz"
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#8B5A2B]">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Tạo Đề Thi Mới</h3>
+      <h3 class="text-base font-black font-['Podkova'] text-[#4A240A] mb-4">Tạo Đề Thi Mới</h3>
       <form id="form_quiz" class="space-y-4">
         <div>
           <label for="form_quiz_title" class="block text-xs font-bold text-[#8B5A2B] mb-1">Tiêu đề đề thi</label>
@@ -683,7 +683,7 @@
   <div id="modal_edit_quiz"
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-2 border-[#8B5A2B]">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Chỉnh Sửa Thông Tin Đề Thi</h3>
+      <h3 class="text-base font-black font-['Podkova'] text-[#4A240A] mb-4">Chỉnh Sửa Thông Tin Đề Thi</h3>
       <form id="form_edit_quiz" class="space-y-4">
         <input type="hidden" id="form_edit_quiz_id" />
         <div>
@@ -740,7 +740,7 @@
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div
       class="card-map rounded-3xl p-6 max-w-md w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[90vh]">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-4">Thêm câu hỏi vào đề</h3>
+      <h3 class="text-base font-black font-['Podkova'] text-[#4A240A] mb-4">Thêm câu hỏi vào đề</h3>
       <form id="form_question" class="space-y-4">
         <input type="hidden" id="form_question_quiz_id" />
 
@@ -819,7 +819,7 @@
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div
       class="card-map rounded-3xl p-6 max-w-md w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[90vh]">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A] mb-1">✏️ Sửa câu hỏi</h3>
+      <h3 class="text-base font-black font-['Podkova'] text-[#4A240A] mb-1">✏️ Sửa câu hỏi</h3>
       <p class="text-[11px] text-[#593113] mb-4">Chỉnh sửa nội dung câu hỏi, đáp án và đánh dấu đáp án đúng.</p>
       <form id="form_edit_question" class="space-y-4">
         <input type="hidden" id="edit_question_id" />
@@ -897,7 +897,7 @@
   <div id="admin_alert_modal"
     class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
     <div class="card-wood rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-      <h3 class="text-base font-black font-['Space_Grotesk'] text-[#FFD700] mb-2 text-center" id="admin_alert_title">Thành công!</h3>
+      <h3 class="text-base font-black font-['Podkova'] text-[#FFD700] mb-2 text-center" id="admin_alert_title">Thành công!</h3>
       <p class="text-xs text-[#FFF8E7] mb-6 text-center leading-relaxed" id="admin_alert_content"></p>
       <button id="btn_close_admin_alert"
         class="w-full btn-pirate text-white font-bold py-2.5 px-6 rounded-xl transition text-xs cursor-pointer">
@@ -913,7 +913,7 @@
     <div
       class="card-map rounded-3xl p-6 max-w-lg w-full shadow-2xl border-2 border-[#8B5A2B] overflow-y-auto max-h-[80vh]">
       <div class="flex justify-between items-center mb-4 border-b-2 border-dashed border-[rgba(139,90,43,0.3)] pb-3">
-        <h3 class="text-base font-black font-['Space_Grotesk'] text-[#4A240A]">Chi Tiết Các Câu Trả Lời Sai</h3>
+        <h3 class="text-base font-black font-['Podkova'] text-[#4A240A]">Chi Tiết Các Câu Trả Lời Sai</h3>
         <button id="btn_close_wrong_answers"
           class="text-[#8B5A2B] hover:text-[#4A240A] font-bold p-2 cursor-pointer">✕</button>
       </div>
