@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         history.forEach(record => {
           const isWin = !record.is_success; // Tức là người thủ thắng (kẻ địch thua)
           const statusHtml = isWin 
-            ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">Phòng Thủ THÀNH CÔNG</span>'
-            : '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">Bị cướp THẤT BẠI</span>';
+            ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">THÀNH CÔNG</span>'
+            : '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">THẤT BẠI</span>';
             
           const attackerName = record.attacker ? record.attacker.full_name : 'Người ẩn danh';
           const attackerDept = record.attacker ? record.attacker.department : '';
@@ -70,6 +70,16 @@ document.addEventListener('DOMContentLoaded', async () => {
           const timeLabel = new Date(record.created_at).toLocaleString('vi-VN', { 
             month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
           });
+
+          const formatTime = (ms) => {
+            const m = parseInt(ms) || 0;
+            const sec = Math.floor(m / 1000);
+            const milli = String(m % 1000).padStart(3, '0');
+            return `${sec}s${milli}'`;
+          };
+
+          const atkTime = formatTime(record.attacker_time_spent);
+          const defTime = formatTime(record.defender_time_spent);
 
           const div = document.createElement('div');
           div.className = 'border-b-2 border-dashed border-[#8B5A2B]/20 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0';
@@ -85,8 +95,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               </div>
             </div>
             <div class="flex justify-between items-center text-[10px] bg-white/50 p-1.5 rounded">
-              <span class="text-[#DE3A3B] font-bold">Kẻ địch: ${record.attacker_correct_count || 0} câu (${record.attacker_time_spent || 0}s)</span>
-              <span class="text-emerald-600 font-bold">Bạn: ${record.defender_correct_count || 0} câu (${record.defender_time_spent || 0}s)</span>
+              <span class="text-[#DE3A3B] font-bold">Kẻ địch: ${record.attacker_correct_count || 0} câu (${atkTime})</span>
+              <span class="text-emerald-600 font-bold">Bạn: ${record.defender_correct_count || 0} câu (${defTime})</span>
             </div>
           `;
           defenseHistoryList.appendChild(div);
