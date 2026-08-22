@@ -1394,26 +1394,36 @@ export const db = {
   },
 
   async adminGetQuizParticipantCount() {
-    // Gom nhóm user_id duy nhất cho mỗi bộ đề
+    // Gom nhóm user_id duy nhất cho mỗi bộ đề và tính toán số lượt chơi, điểm trung bình
     const { data, error } = await supabase
       .from('play_history')
-      .select('quiz_id, user_id');
+      .select('quiz_id, user_id, score');
 
     if (error) return {};
 
-    const counts = {};
+    const stats = {};
     const seen = {};
 
     (data || []).forEach(row => {
-      if (!seen[row.quiz_id]) seen[row.quiz_id] = new Set();
+      if (!stats[row.quiz_id]) {
+        stats[row.quiz_id] = { totalPlays: 0, totalScore: 0 };
+        seen[row.quiz_id] = new Set();
+      }
       seen[row.quiz_id].add(row.user_id);
+      stats[row.quiz_id].totalPlays++;
+      stats[row.quiz_id].totalScore += (row.score || 0);
     });
 
-    for (const quizId in seen) {
-      counts[quizId] = seen[quizId].size;
+    const result = {};
+    for (const quizId in stats) {
+      result[quizId] = {
+        participants: seen[quizId].size,
+        plays: stats[quizId].totalPlays,
+        avgScore: stats[quizId].totalPlays > 0 ? Math.round(stats[quizId].totalScore / stats[quizId].totalPlays) : 0
+      };
     }
 
-    return counts;
+    return result;
   },
 
   // ── 11. GAME GIỮ CHUỖI (STREAK MODE) ──────────────────────────────

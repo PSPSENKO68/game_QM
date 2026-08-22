@@ -467,7 +467,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             </div>
           </div>
           <h3 class="font-extrabold text-sm leading-snug font-['Space_Grotesk']">${q.title}</h3>
-          <p class="text-[11px] mt-2 font-semibold opacity-80">${participantCounts[q.id] || 0} người tham gia</p>
+          <div class="mt-2.5 text-[11px] font-semibold opacity-80 space-y-1">
+            <p class="flex items-center gap-1.5"><span class="text-xs">👤</span> ${participantCounts[q.id]?.participants || 0} người tham gia</p>
+            <p class="flex items-center gap-1.5"><span class="text-xs">🎯</span> ${participantCounts[q.id]?.plays || 0} lượt trả lời</p>
+            <p class="flex items-center gap-1.5"><span class="text-xs">⭐</span> ${participantCounts[q.id]?.avgScore || 0} điểm trung bình</p>
+          </div>
         </div>
         <div class="flex items-center justify-between pt-4 border-t-2 border-dashed ${q.active ? 'border-[rgba(255,255,255,0.3)]' : 'border-[rgba(139,90,43,0.3)]'}">
           <button class="view-q-questions-btn px-3 py-1.5 border-2 text-[10px] font-bold rounded-xl transition cursor-pointer ${q.active ? 'bg-[rgba(255,255,255,0.15)] text-white border-white hover:bg-[rgba(255,255,255,0.25)]' : 'bg-[#F9F5F0] text-[#4A240A] border-[#8B5A2B] hover:bg-[#E9C691]'
