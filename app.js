@@ -245,14 +245,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode2.classList.add('cursor-not-allowed');
         btnMode2.innerHTML += `
           <div class="absolute inset-0 flex items-center justify-center z-10 rounded-2xl overflow-hidden pointer-events-none">
-             <!-- SVG Chains crossing from corners -->
-             <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-               <line x1="0" y1="0" x2="100%" y2="100%" stroke="#444" stroke-width="6" stroke-dasharray="10 4" stroke-linecap="round"/>
-               <line x1="0" y1="0" x2="100%" y2="100%" stroke="#222" stroke-width="2" stroke-dasharray="10 4" stroke-linecap="round"/>
-               
-               <line x1="100%" y1="0" x2="0" y2="100%" stroke="#444" stroke-width="6" stroke-dasharray="10 4" stroke-linecap="round"/>
-               <line x1="100%" y1="0" x2="0" y2="100%" stroke="#222" stroke-width="2" stroke-dasharray="10 4" stroke-linecap="round"/>
-             </svg>
+             <!-- Dây xích 1 -->
+             <div class="absolute w-[150%] flex justify-center text-3xl opacity-80" style="transform: rotate(12deg); letter-spacing: -4px;">
+                ⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️
+             </div>
+             <!-- Dây xích 2 -->
+             <div class="absolute w-[150%] flex justify-center text-3xl opacity-80" style="transform: rotate(-12deg); letter-spacing: -4px;">
+                ⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️⛓️
+             </div>
+             <!-- Ổ khóa -->
              <div class="relative flex items-center justify-center drop-shadow-2xl">
                 <span class="text-4xl z-10 drop-shadow-md">🔒</span>
              </div>
