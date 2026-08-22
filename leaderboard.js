@@ -249,11 +249,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const row = document.createElement('div');
       row.className = `rank-row ${isSelf ? 'is-self' : ''} ${rank === 1 ? 'is-top-1' : ''}`;
       row.innerHTML = `
-        <div class="flex items-center gap-3 flex-1 overflow-hidden">
+        <div class="flex items-center gap-3 flex-1">
           ${medalHtml}
           <div class="flex-1">
-            <div class="font-black text-[14px] text-[#2B1607] flex items-center gap-x-1.5 gap-y-1 drop-shadow-sm min-w-0">
-              <span class="truncate leading-tight flex-1 min-w-0">${playerName}</span>
+            <div class="font-black text-[14px] text-[#2B1607] flex items-center gap-x-1.5 gap-y-1 drop-shadow-sm whitespace-nowrap">
+              <span class="leading-tight">${playerName}</span>
               ${selfBadge}
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5 mt-1.5 items-center">
