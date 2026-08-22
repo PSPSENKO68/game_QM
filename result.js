@@ -93,22 +93,22 @@ document.addEventListener('DOMContentLoaded', async () => {
               if (strip) {
                 // Generate strip HTML
                 let stripHTML = '';
-                const itemWidth = 96; // matches w-24
+                const itemWidth = 128; // matches w-32
                 const winningIndex = 25;
                 
                 // Filler items before winner
                 for (let i = 0; i < winningIndex; i++) {
                   const rnd = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                  stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
+                  stripHTML += `<div class="w-32 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
                 }
                 
                 // Winning item
-                stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-[54px] font-black text-yellow-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] font-['Space_Grotesk'] pk-text-stroke">${megaCode}</div>`;
+                stripHTML += `<div class="w-32 shrink-0 flex justify-center items-center text-[54px] font-black text-yellow-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] font-['Space_Grotesk'] pk-text-stroke">${megaCode}</div>`;
                 
                 // Filler items after winner
                 for (let i = 0; i < 5; i++) {
                   const rnd = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                  stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
+                  stripHTML += `<div class="w-32 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
                 }
                 
                 strip.innerHTML = stripHTML;
