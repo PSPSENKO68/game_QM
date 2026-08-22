@@ -590,7 +590,7 @@ export const db = {
       return { success: false };
     }
 
-    // Chỉ cập nhật total_score nếu newScore cao hơn total_score hiện tại (Lấy điểm cao nhất)
+    // Tính năng mới: Lấy điểm cao nhất trong chu kỳ hiện tại để cộng dồn vào tổng điểm cá nhân
     if (mode !== 'streak') {
       const { data: userData } = await supabase
         .from('users')
@@ -598,10 +598,30 @@ export const db = {
         .eq('id', userId)
         .single();
       
-      const currentTotal = parseInt(userData?.total_score) || 0;
+      let currentTotal = parseInt(userData?.total_score) || 0;
       
-      if (newScore > currentTotal) {
-        await supabase.from('users').update({ total_score: newScore }).eq('id', userId);
+      // Lấy khoảng thời gian của chu kỳ hiện tại
+      const bounds = await this.getCurrentCycleBounds();
+      
+      // Lấy danh sách điểm các lượt chơi trong chu kỳ này, trừ lượt vừa lưu
+      const { data: cyclePlays } = await supabase
+        .from('play_history')
+        .select('score')
+        .eq('user_id', userId)
+        .gte('played_at', bounds.start)
+        .lte('played_at', bounds.end)
+        .neq('id', record.id);
+        
+      let oldMaxInCycle = 0;
+      if (cyclePlays && cyclePlays.length > 0) {
+        oldMaxInCycle = Math.max(...cyclePlays.map(p => parseInt(p.score) || 0));
+      }
+      
+      // Nếu điểm số lượt này vượt qua kỷ lục trước đó trong chu kỳ, cộng phần chênh lệch vào tổng điểm
+      if (newScore > oldMaxInCycle) {
+        const diff = newScore - oldMaxInCycle;
+        currentTotal += diff;
+        await supabase.from('users').update({ total_score: currentTotal }).eq('id', userId);
       }
     }
 
