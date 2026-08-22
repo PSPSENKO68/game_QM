@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const titleEl = document.querySelector('h2');
     if (titleEl) titleEl.textContent = 'CHỌN MỤC TIÊU SĂN MỒI';
     const subtitleEl = document.querySelector('p.text-\\[12px\\]');
-    if (subtitleEl) subtitleEl.textContent = 'Chọn một đối thủ để khiêu chiến và thách đấu';
+    if (subtitleEl) subtitleEl.textContent = 'Chọn đối thủ và rinh điểm về túi';
   }
 
   // --- Defense History Logic ---
