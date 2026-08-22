@@ -71,50 +71,79 @@ document.addEventListener('DOMContentLoaded', async () => {
           const msgEl = document.getElementById('mega_spinner_msg');
           const header = document.getElementById('celebration_header');
           const btnStartMega = document.getElementById('btn_start_mega');
-          const spinnerContainer = document.getElementById('mega_spinner_container');
+          const container = document.getElementById('mega_spinner_container');
           
-          if (modal && numberEl && btnStartMega) {
+          if (modal && btnStartMega && container) {
             modal.classList.remove('hidden');
             if (header) header.classList.add('hidden');
             
             btnStartMega.onclick = () => {
               btnStartMega.classList.add('hidden');
-              if (spinnerContainer) {
-                spinnerContainer.classList.remove('hidden');
-                // The flex class is already present, but we need to ensure it overrides hidden properly
-              }
-              
+              container.classList.remove('hidden');
+
+              // Play audio
+              const audio = document.getElementById('audio_mega');
               if (audio) {
+                audio.currentTime = 0;
                 audio.volume = 0.5;
-                audio.play().catch(e => console.log('Audio autoplay blocked', e));
+                audio.play().catch(e => console.log('Audio error:', e));
               }
 
-              let spins = 0;
-              const spinInterval = setInterval(() => {
-                 const r = Math.floor(Math.random() * 200) + 1;
-                 numberEl.textContent = String(r).padStart(3, '0');
-                 spins++;
-              }, 50);
-
-              // Stop after 4 seconds
-              setTimeout(() => {
-                clearInterval(spinInterval);
-                numberEl.textContent = megaCode;
-                if (msgEl) msgEl.classList.remove('opacity-0');
+              const strip = document.getElementById('mega_strip');
+              if (strip) {
+                // Generate strip HTML
+                let stripHTML = '';
+                const itemWidth = 96; // matches w-24
+                const winningIndex = 40;
                 
-                const btnMegaComplete = document.getElementById('btn_mega_complete');
-                if (btnMegaComplete) {
-                  btnMegaComplete.classList.remove('hidden');
-                  btnMegaComplete.onclick = () => {
-                    if (audio) {
-                      audio.pause();
-                      audio.currentTime = 0;
-                    }
-                    modal.classList.add('hidden');
-                    if (header) header.classList.remove('hidden');
-                  };
+                // Filler items before winner
+                for (let i = 0; i < winningIndex; i++) {
+                  const rnd = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                  stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
                 }
-              }, 4000);
+                
+                // Winning item
+                stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-[54px] font-black text-yellow-300 drop-shadow-[0_0_15px_rgba(255,215,0,0.8)] font-['Space_Grotesk'] pk-text-stroke">${megaCode}</div>`;
+                
+                // Filler items after winner
+                for (let i = 0; i < 5; i++) {
+                  const rnd = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                  stripHTML += `<div class="w-24 shrink-0 flex justify-center items-center text-5xl font-black text-white/40 font-['Space_Grotesk']">${rnd}</div>`;
+                }
+                
+                strip.innerHTML = stripHTML;
+
+                const containerWidth = container.offsetWidth;
+                const startX = (containerWidth / 2) - (itemWidth / 2);
+                
+                // Set initial position instantly
+                strip.style.transition = 'none';
+                strip.style.transform = `translateX(${startX}px)`;
+                
+                // Start the animation a brief moment later
+                setTimeout(() => {
+                  const targetX = (containerWidth / 2) - (winningIndex * itemWidth + itemWidth / 2);
+                  strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.3, 1.0)';
+                  strip.style.transform = `translateX(${targetX}px)`;
+                }, 50);
+
+                setTimeout(() => {
+                  if (msgEl) msgEl.classList.remove('opacity-0');
+                  
+                  const btnMegaComplete = document.getElementById('btn_mega_complete');
+                  if (btnMegaComplete) {
+                    btnMegaComplete.classList.remove('hidden');
+                    btnMegaComplete.onclick = () => {
+                      if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                      }
+                      modal.classList.add('hidden');
+                      if (header) header.classList.remove('hidden');
+                    };
+                  }
+                }, 3700);
+              }
             };
           }
         }

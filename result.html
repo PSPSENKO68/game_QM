@@ -143,10 +143,14 @@
         BẤM ĐỂ QUAY MEGA 🎰
       </button>
       
-      <div id="mega_spinner_container" class="hidden relative w-48 h-48 mb-8 rounded-full border-8 border-[#FFD700] bg-[#4A240A] flex items-center justify-center shadow-[0_0_50px_rgba(255,215,0,0.5)] overflow-hidden">
-        <div id="mega_spinner_bg" class="absolute inset-0 opacity-50 bg-[conic-gradient(from_0deg,transparent_0_340deg,rgba(255,215,0,0.8)_360deg)] animate-spin" style="animation-duration: 0.5s;"></div>
-        <div class="z-10 w-40 h-40 bg-[#2B1607] rounded-full border-4 border-[#C49A6C] flex items-center justify-center">
-          <span id="mega_spinner_number" class="text-6xl font-black text-white font-['Space_Grotesk'] pk-text-stroke">??</span>
+      <div id="mega_spinner_container" class="hidden relative w-full h-32 mb-8 rounded-2xl border-4 border-[#FFD700] bg-gradient-to-b from-[#2a1103] to-[#4A240A] shadow-[0_0_50px_rgba(255,215,0,0.5)] overflow-hidden">
+        <!-- Center highlighting/needle -->
+        <div class="absolute inset-y-0 left-1/2 w-1.5 bg-gradient-to-b from-rose-400 via-red-600 to-rose-400 shadow-[0_0_15px_rgba(220,38,38,1)] z-20 -translate-x-1/2"></div>
+        <div class="absolute inset-y-0 left-1/2 w-24 border-x-4 border-yellow-300/70 z-10 -translate-x-1/2 bg-yellow-300/20 shadow-[inset_0_0_30px_rgba(255,215,0,0.5)] pointer-events-none"></div>
+
+        <!-- The scrolling strip -->
+        <div id="mega_strip" class="absolute top-0 h-full flex items-center will-change-transform">
+          <div class="w-24 shrink-0 flex justify-center text-4xl font-black text-white/30 font-['Space_Grotesk']">??</div>
         </div>
       </div>
       
