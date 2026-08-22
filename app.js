@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!isModule2On && btnMode2) {
         btnMode2.classList.add('cursor-not-allowed');
         btnMode2.innerHTML += `
-          <div class="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px] z-10 rounded-2xl overflow-hidden">
+          <div class="absolute inset-0 flex items-center justify-center z-10 rounded-2xl overflow-hidden pointer-events-none">
              <!-- SVG Chains crossing from corners -->
              <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none">
                <line x1="0" y1="0" x2="100%" y2="100%" stroke="#444" stroke-width="6" stroke-dasharray="10 4" stroke-linecap="round"/>
