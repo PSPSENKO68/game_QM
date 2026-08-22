@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       const row = document.createElement('div');
-      row.className = `rank-row ${isSelf ? 'is-self' : ''}`;
+      row.className = `rank-row ${isSelf ? 'is-self' : ''} ${rank === 1 ? 'is-top-1' : ''}`;
       row.innerHTML = `
         <div class="flex items-center gap-3 flex-1 overflow-hidden">
           ${medalHtml}
