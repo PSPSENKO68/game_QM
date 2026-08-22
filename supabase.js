@@ -570,19 +570,7 @@ export const db = {
       return { success: false, message: result?.message || 'Lỗi thách đấu' };
     }
 
-    // Tìm điểm cao nhất CỦA BỘ ĐỀ NÀY của user TRƯỚC KHI lưu lượt này
-    const { data: maxRecord } = await supabase
-      .from('play_history')
-      .select('score')
-      .eq('user_id', userId)
-      .eq('quiz_id', quizId)
-      .eq('mode', 1)
-      .order('score', { ascending: false })
-      .limit(1);
-    
-    const currentCycleMax = (maxRecord && maxRecord.length > 0) ? parseInt(maxRecord[0].score) : 0;
     const newScore = parseInt(score) || 0;
-    const scoreDiff = newScore > currentCycleMax ? (newScore - currentCycleMax) : 0;
 
     const record = {
       id: genId('h'),
@@ -602,16 +590,19 @@ export const db = {
       return { success: false };
     }
 
-    // Chỉ cập nhật total_score nếu có phá kỷ lục trong ngày và KHÔNG phải game Streak
-    if (scoreDiff > 0 && mode !== 'streak') {
+    // Chỉ cập nhật total_score nếu newScore cao hơn total_score hiện tại (Lấy điểm cao nhất)
+    if (mode !== 'streak') {
       const { data: userData } = await supabase
         .from('users')
         .select('total_score')
         .eq('id', userId)
         .single();
+      
       const currentTotal = parseInt(userData?.total_score) || 0;
-      const newTotal = currentTotal + scoreDiff;
-      await supabase.from('users').update({ total_score: newTotal }).eq('id', userId);
+      
+      if (newScore > currentTotal) {
+        await supabase.from('users').update({ total_score: newScore }).eq('id', userId);
+      }
     }
 
     return { success: true };
