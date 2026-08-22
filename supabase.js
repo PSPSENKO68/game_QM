@@ -297,24 +297,21 @@ export const db = {
   async getCurrentCycleBounds() {
     const cycleStartStr = await this.getSettingValue('mode1_cycle_start') || new Date().toISOString();
     const cycleStart = new Date(cycleStartStr);
-    cycleStart.setHours(0, 0, 0, 0);
     
     let cycleDays = parseInt(await this.getSettingValue('mode1_cycle_days'));
     if (isNaN(cycleDays) || cycleDays < 1) cycleDays = 1;
     
     const now = new Date();
     const msDiff = now.getTime() - cycleStart.getTime();
-    let daysDiff = Math.floor(msDiff / (1000 * 60 * 60 * 24));
-    if (daysDiff < 0) daysDiff = 0; 
+    const cycleMs = cycleDays * 24 * 60 * 60 * 1000;
     
-    const currentCycleIndex = Math.floor(daysDiff / cycleDays);
-    const currentCycleStart = new Date(cycleStart.getTime());
-    currentCycleStart.setDate(currentCycleStart.getDate() + (currentCycleIndex * cycleDays));
-    currentCycleStart.setHours(0, 0, 0, 0);
+    let cycleIndex = 0;
+    if (msDiff > 0) {
+      cycleIndex = Math.floor(msDiff / cycleMs);
+    }
     
-    const currentCycleEnd = new Date(currentCycleStart.getTime());
-    currentCycleEnd.setDate(currentCycleEnd.getDate() + cycleDays - 1);
-    currentCycleEnd.setHours(23, 59, 59, 999);
+    const currentCycleStart = new Date(cycleStart.getTime() + (cycleIndex * cycleMs));
+    const currentCycleEnd = new Date(currentCycleStart.getTime() + cycleMs - 1);
     
     return { start: currentCycleStart.toISOString(), end: currentCycleEnd.toISOString() };
   },
