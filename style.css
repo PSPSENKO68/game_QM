@@ -22,10 +22,10 @@
   --pk-text-dark: #2B1607;
 
   /* Kahoot game button colors (giữ lại cho quiz choices nếu cần, nhưng sẽ tweak sáng hơn) */
-  --kahoot-red:    #E43A45;
-  --kahoot-blue:   #2584E8;
-  --kahoot-yellow: #F0B30E;
-  --kahoot-green:  #37A81E;
+  --kahoot-red:    #D12735;
+  --kahoot-blue:   #1A6ED1;
+  --kahoot-yellow: #D9A00B;
+  --kahoot-green:  #2D9117;
 }
 
 @layer utilities {

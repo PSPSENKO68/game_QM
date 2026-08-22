@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Generate strip HTML
                 let stripHTML = '';
                 const itemWidth = 96; // matches w-24
-                const winningIndex = 40;
+                const winningIndex = 25;
                 
                 // Filler items before winner
                 for (let i = 0; i < winningIndex; i++) {
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // Start the animation a brief moment later
                 setTimeout(() => {
                   const targetX = (containerWidth / 2) - (winningIndex * itemWidth + itemWidth / 2);
-                  strip.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.3, 1.0)';
+                  strip.style.transition = 'transform 4.5s cubic-bezier(0.15, 0.85, 0.3, 1.0)';
                   strip.style.transform = `translateX(${targetX}px)`;
                 }, 50);
 
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                       if (header) header.classList.remove('hidden');
                     };
                   }
-                }, 3700);
+                }, 4700);
               }
             };
           }

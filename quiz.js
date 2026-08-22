@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function loadQuestion(index) {
     hasSelected = false;
     feedbackBanner.classList.add('hidden');
-    answersContainer.classList.remove('opacity-50');
+    answersContainer.classList.remove('opacity-50', 'opacity-80');
 
     // Reset buttons styles to clean original Kahoot states
     Object.keys(optButtons).forEach(key => {
