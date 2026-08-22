@@ -158,7 +158,18 @@
         <button id="btn_mode_1"
           class="btn-pirate w-full py-4 px-4 flex items-center justify-between gap-2 uppercase tracking-wider">
           <div class="flex flex-col items-start text-left">
-            <span class="text-[16px]">CÀY CUỐC 🪙</span>
+            <span class="text-[16px] flex items-center gap-1">CÀY CUỐC <svg width="20" height="20" viewBox="0 0 24 24" fill="none" class="inline-block drop-shadow-md">
+              <defs>
+                <linearGradient id="goldGradHome" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFF500" />
+                  <stop offset="50%" stop-color="#FFB800" />
+                  <stop offset="100%" stop-color="#FF8A00" />
+                </linearGradient>
+              </defs>
+              <circle cx="12" cy="12" r="11" fill="url(#goldGradHome)" stroke="#A0522D" stroke-width="2"/>
+              <circle cx="12" cy="12" r="8" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+              <path d="M12 7l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#FFFFFF" opacity="0.9"/>
+            </svg></span>
             <span class="text-[10px] text-white/80 font-bold" id="mode1_plays_status">Đang tải...</span>
           </div>
           <span class="text-3xl drop-shadow-md">⚔️</span>

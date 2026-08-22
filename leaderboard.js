@@ -146,7 +146,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentUser && selfRankRow) {
       selfName.textContent = currentUser.full_name;
       selfDept.textContent = currentUser.department;
-      selfScore.textContent = isStreakMode ? `Chuỗi ${currentUserScore}` : `${currentUserScore}đ`;
+      const coinIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="inline-block ml-1 drop-shadow-md" style="transform: translateY(-2px);">
+        <defs>
+          <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFF500" />
+            <stop offset="50%" stop-color="#FFB800" />
+            <stop offset="100%" stop-color="#FF8A00" />
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="11" fill="url(#goldGrad)" stroke="#A0522D" stroke-width="2"/>
+        <circle cx="12" cy="12" r="8" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+        <path d="M12 7l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#FFFFFF" opacity="0.9"/>
+      </svg>`;
+      selfScore.innerHTML = isStreakMode ? `Chuỗi ${currentUserScore}` : `${currentUserScore} ${coinIcon}`;
       
       const freshUser = await db.getUserById(currentUser.id);
       if (freshUser && freshUser.mega_code) {
@@ -208,7 +220,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       let actionHtml = '';
       const playerScore = isStreakMode ? (player.maxStreakDay || 0) : (parseInt(player.total_score) || 0);
-      const playerDisplayScore = isStreakMode ? `Chuỗi ${playerScore}` : `${playerScore} 🪙`;
+      const coinIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="inline-block ml-1 drop-shadow-md" style="transform: translateY(-2px);">
+        <defs>
+          <linearGradient id="goldGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FFF500" />
+            <stop offset="50%" stop-color="#FFB800" />
+            <stop offset="100%" stop-color="#FF8A00" />
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="11" fill="url(#goldGrad2)" stroke="#A0522D" stroke-width="2"/>
+        <circle cx="12" cy="12" r="8" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+        <path d="M12 7l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#FFFFFF" opacity="0.9"/>
+      </svg>`;
+      const playerDisplayScore = isStreakMode ? `Chuỗi ${playerScore}` : `${playerScore} ${coinIcon}`;
       const playerId = isStreakMode ? player.user_id : player.id;
       const playerName = isStreakMode ? player.user.full_name : player.full_name;
       const playerDept = isStreakMode ? player.user.department : player.department;

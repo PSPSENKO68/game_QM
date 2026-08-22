@@ -163,7 +163,18 @@
             <p class="text-[11px] text-[#FFD700] font-bold mt-0.5 drop-shadow-md" id="self_dept">Đội Khai Thác</p>
           </div>
         </div>
-        <span class="text-[22px] font-black text-[#FFD700] font-['Space_Grotesk'] pk-text-stroke" id="self_score">0 🪙</span>
+        <span class="text-[22px] font-black text-[#FFD700] font-['Space_Grotesk'] pk-text-stroke flex items-center gap-1" id="self_score">0 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="inline-block drop-shadow-md">
+              <defs>
+                <linearGradient id="goldGradHTML" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFF500" />
+                  <stop offset="50%" stop-color="#FFB800" />
+                  <stop offset="100%" stop-color="#FF8A00" />
+                </linearGradient>
+              </defs>
+              <circle cx="12" cy="12" r="11" fill="url(#goldGradHTML)" stroke="#A0522D" stroke-width="2"/>
+              <circle cx="12" cy="12" r="8" fill="none" stroke="#FFFFFF" stroke-width="1" stroke-opacity="0.6"/>
+              <path d="M12 7l1.5 4.5h4.5l-3.5 2.5 1.5 4.5-4-3-4 3 1.5-4.5-3.5-2.5h4.5z" fill="#FFFFFF" opacity="0.9"/>
+            </svg></span>
       </div>
       <div id="self_stats_row" class="hidden pt-3 border-t border-dashed border-[#FFF8E7]/30 flex justify-between text-[11px] font-bold text-[#FFF8E7]">
         <div class="text-center">
