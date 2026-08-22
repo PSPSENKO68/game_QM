@@ -242,9 +242,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode1.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Cày Cuốc đang tạm thời bị khóa.'); }, {capture: true});
       }
       if (!isModule2On && btnMode2) {
-        btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+        btnMode2.classList.add('cursor-not-allowed');
+        btnMode2.innerHTML += `
+          <div class="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[1px] z-10 rounded-2xl">
+             <div class="relative flex items-center justify-center drop-shadow-2xl">
+                <span class="text-4xl absolute -rotate-45 opacity-80" style="text-shadow: 2px 2px 4px #000;">⛓️</span>
+                <span class="text-4xl absolute rotate-45 opacity-80" style="text-shadow: 2px 2px 4px #000;">⛓️</span>
+                <span class="text-5xl z-10 animate-pulse" style="filter: drop-shadow(0 0 10px rgba(255,215,0,0.8));">🔒</span>
+             </div>
+          </div>
+        `;
         btnMode2.href = "javascript:void(0)";
-        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Thách Đấu đang tạm thời bị khóa.'); }, {capture: true});
+        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện sẽ bắt đầu sau thời gian đếm ngược 24h'); }, {capture: true});
       }
 
       // Tải Active Quiz
