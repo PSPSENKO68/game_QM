@@ -323,8 +323,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnLuckyWheel.classList.remove('hidden');
     }
 
-    btnLuckyWheel.addEventListener('click', () => {
+    btnLuckyWheel.addEventListener('click', async () => {
       modalLuckyWheel.classList.remove('hidden');
+      // Tự động kiểm tra và khóa nút nếu đã quay
+      const freshUser = await db.getUserById(user.id);
+      if (freshUser && freshUser.has_spun_wheel) {
+        btnSpinWheel.textContent = 'ĐÃ QUAY XONG';
+        btnSpinWheel.disabled = true;
+        btnSpinWheel.classList.add('opacity-50', 'cursor-not-allowed');
+      }
     });
 
     btnCloseWheel.addEventListener('click', () => {
@@ -339,6 +346,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const freshUser = await db.getUserById(user.id);
       if (freshUser && freshUser.has_spun_wheel) {
         showGlobalAlert('Bạn đã quay rồi!', 'Mỗi người chỉ được quay vòng quay 1 lần duy nhất.');
+        btnSpinWheel.textContent = 'ĐÃ QUAY XONG';
+        btnSpinWheel.disabled = true;
+        btnSpinWheel.classList.add('opacity-50', 'cursor-not-allowed');
         return;
       }
 

@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           ${medalHtml}
           <div class="flex-1">
             <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1.5 gap-y-1 drop-shadow-sm">
-              <span class="whitespace-nowrap leading-tight">${playerName}</span>
+              <span class="break-words leading-tight flex-1 min-w-0">${playerName}</span>
               ${selfBadge}
             </div>
             <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5 mt-1.5 items-center">
