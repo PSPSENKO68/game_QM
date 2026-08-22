@@ -274,6 +274,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         mode1PlaysStatus.textContent = `${playsToday}/${userLimit} LƯỢT`;
 
+        // Countdown timer cho Cày Cuốc
+        const cycleBounds = await db.getCurrentCycleBounds();
+        const cycleEndTime = new Date(cycleBounds.end).getTime();
+        const countdownEl = document.getElementById('mode1_countdown');
+        if (countdownEl) {
+          countdownEl.classList.remove('hidden');
+          const updateTimer = () => {
+            const now = new Date().getTime();
+            const distance = cycleEndTime - now;
+            if (distance < 0) {
+              countdownEl.textContent = 'ĐANG LÀM MỚI...';
+              return;
+            }
+            const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            let timeStr = 'HỒI LƯỢT SAU ';
+            if (d > 0) timeStr += `${d} NGÀY `;
+            timeStr += `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            countdownEl.textContent = timeStr;
+          };
+          updateTimer();
+          setInterval(updateTimer, 1000);
+        }
         if (playsToday >= userLimit) {
           alert('Bạn đã sử dụng hết lượt cày cuốc trong thời gian quy định. Hệ thống sẽ sớm tự động hồi lại lượt mới!');
           mode1PlaysStatus.classList.add('text-rose-400');
