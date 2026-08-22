@@ -61,8 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         history.forEach(record => {
           const isWin = !record.is_success; // Tức là người thủ thắng (kẻ địch thua)
           const statusHtml = isWin 
-            ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">THÀNH CÔNG</span>'
-            : '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">THẤT BẠI</span>';
+            ? '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">Phòng thủ THÀNH CÔNG</span>'
+            : '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">Bị cướp THÀNH CÔNG</span>';
             
           const attackerName = record.attacker ? record.attacker.full_name : 'Người ẩn danh';
           const attackerDept = record.attacker ? record.attacker.department : '';
