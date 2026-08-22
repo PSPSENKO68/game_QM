@@ -1266,6 +1266,7 @@ export const db = {
       let totalTime = 0;
       let totalScore = 0;
       const cycleScores = {}; // Key will be the index of the quiz in the sorted quizzes array
+      const cycleTimes = {}; // Stores the time spent for each quiz
 
       quizzes.forEach((quiz, idx) => {
         const plays = quizPlays[quiz.id] || [];
@@ -1279,11 +1280,13 @@ export const db = {
           
           const bestPlay = plays[0];
           cycleScores[idx] = parseInt(bestPlay.score) || 0;
+          cycleTimes[idx] = parseInt(bestPlay.time_spent) || 0;
           totalCorrect += parseInt(bestPlay.correct_count) || 0;
           totalTime += parseInt(bestPlay.time_spent) || 0;
           totalScore += parseInt(bestPlay.score) || 0;
         } else {
           cycleScores[idx] = 0;
+          cycleTimes[idx] = 0;
         }
       });
 
@@ -1296,7 +1299,8 @@ export const db = {
         totalCorrect,
         totalTime,
         totalScore,
-        cycleScores
+        cycleScores,
+        cycleTimes
       };
     });
 
@@ -1317,6 +1321,7 @@ export const db = {
 
       quizzes.forEach((quiz, idx) => {
         row[`Chặng: ${quiz.title}`] = u.cycleScores[idx] || 0;
+        row[`Thời gian chặng: ${quiz.title}`] = db.formatTimeSpent(u.cycleTimes[idx] || 0);
       });
 
       row['Tổng Điểm'] = u.totalScore;
@@ -1338,6 +1343,8 @@ export const db = {
       quizzes.forEach((quiz, idx) => {
         const sumScore = userStats.reduce((sum, u) => sum + (u.cycleScores[idx] || 0), 0);
         avgRow[`Chặng: ${quiz.title}`] = Math.round(sumScore / userStats.length);
+        const sumTime = userStats.reduce((sum, u) => sum + (u.cycleTimes[idx] || 0), 0);
+        avgRow[`Thời gian chặng: ${quiz.title}`] = db.formatTimeSpent(Math.floor(sumTime / userStats.length));
       });
 
       avgRow['Tổng Điểm'] = Math.round(userStats.reduce((sum, u) => sum + u.totalScore, 0) / userStats.length);
