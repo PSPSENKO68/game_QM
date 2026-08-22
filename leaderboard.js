@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isStreakMode) {
     const titleEl = document.querySelector('h2');
     if (titleEl) titleEl.textContent = 'TOP LÂM TẶC GIỮ CHUỖI';
-    const subtitleEl = document.querySelector('p.text-xs');
+    const subtitleEl = document.querySelector('p.text-\\[12px\\]');
     if (subtitleEl) subtitleEl.textContent = 'Dựa trên chuỗi ngày sống sót cao nhất';
   } else if (isStealMode) {
     const titleEl = document.querySelector('h2');
     if (titleEl) titleEl.textContent = 'CHỌN MỤC TIÊU SĂN MỒI';
-    const subtitleEl = document.querySelector('p.text-xs');
+    const subtitleEl = document.querySelector('p.text-\\[12px\\]');
     if (subtitleEl) subtitleEl.textContent = 'Chọn một đối thủ để khiêu chiến và thách đấu';
   }
 
