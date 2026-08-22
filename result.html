@@ -7,7 +7,7 @@
   <title>Kết Quả Thi Đấu — Đấu Trí Đăng Đỉnh</title>
   <link rel="stylesheet" href="/style.css" />
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Podkova:wght@400;500;600;700;800&display=swap" />
+    href="https://fonts.googleapis.com/css2?family=Podkova:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" />
   <style>
     /* Modals */
     .modal-overlay {
@@ -59,7 +59,7 @@
       <div class="inline-flex items-center justify-center w-24 h-24 rounded-full bg-[#FFD700] border-4 border-[#2B1607] text-[#2B1607] shadow-xl mb-4 animate-float">
         <span class="text-[50px]">🪵</span>
       </div>
-      <h2 class="font-['Podkova'] text-[26px] font-black text-[#FFF8E7] tracking-tight uppercase pk-text-stroke">KẾT QUẢ TÍCH LŨY!</h2>
+      <h2 class="font-['Space_Grotesk'] text-[26px] font-black text-[#FFF8E7] tracking-tight uppercase pk-text-stroke">KẾT QUẢ TÍCH LŨY!</h2>
       <p class="text-[12px] text-[#FFF8E7] font-bold mt-1 uppercase tracking-wider" style="text-shadow: 1px 1px 1px #000;">TRẠM QM ĐÃ GHI NHẬN</p>
     </div>
 
@@ -73,7 +73,7 @@
       <div>
         <p class="text-[11px] uppercase tracking-widest font-black text-[#FFD700]">TỔNG ĐIỂM HIỆN TẠI</p>
         <div class="inline-block relative">
-          <p class="text-[54px] font-['Podkova'] font-black text-[#FFF8E7] mt-1 tracking-tight leading-none pk-text-stroke-gold" id="total_score_display">
+          <p class="text-[54px] font-['Space_Grotesk'] font-black text-[#FFF8E7] mt-1 tracking-tight leading-none pk-text-stroke-gold" id="total_score_display">
             <span class="inline-block animate-pulse text-white/50 text-2xl">đang tải...</span>
           </p>
           <div id="rank_badge" class="absolute -top-3 -right-8 bg-[#DE3A3B] text-white text-[12px] font-black px-2.5 py-0.5 rounded-lg shadow-lg border-2 border-[#2B1607] rotate-[15deg] opacity-0">
@@ -83,7 +83,7 @@
         
         <div class="mt-4 pt-3 border-t-2 border-dashed border-[#4A240A]">
           <p class="text-[10px] uppercase tracking-widest font-black text-[#FFF8E7] opacity-80">THU HOẠCH LƯỢT NÀY</p>
-          <p class="text-[26px] font-['Podkova'] font-black text-[#FFD700] mt-0.5 tracking-tight pk-text-stroke">
+          <p class="text-[26px] font-['Space_Grotesk'] font-black text-[#FFD700] mt-0.5 tracking-tight pk-text-stroke">
             +<span id="score_earned">0</span>
           </p>
         </div>
@@ -92,7 +92,7 @@
       <div class="grid grid-cols-1 gap-4 mt-5 pt-5 border-t-2 border-[#4A240A]">
         <div class="bg-[#4A240A] rounded-2xl p-3 text-center border-2 border-[#2B1607] shadow-inner">
           <p class="text-[10px] uppercase font-black text-[#D48847] tracking-wider">Số câu chính xác</p>
-          <p class="text-2xl font-black text-[#FFF8E7] mt-1 font-['Podkova'] drop-shadow-md" id="correct_counter">0/0</p>
+          <p class="text-2xl font-black text-[#FFF8E7] mt-1 font-['Space_Grotesk'] drop-shadow-md" id="correct_counter">0/0</p>
         </div>
       </div>
 
@@ -123,7 +123,7 @@
   <div id="retry_limit_modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay">
     <div class="card-map p-6 max-w-sm w-full shadow-2xl text-center">
       <div class="text-5xl mb-4 animate-shake mx-auto">🪓</div>
-      <h3 id="retry_limit_title" class="text-2xl font-black text-[#2B1607] mb-2 font-['Podkova'] uppercase tracking-wider drop-shadow-md">Hết
+      <h3 id="retry_limit_title" class="text-2xl font-black text-[#2B1607] mb-2 font-['Space_Grotesk'] uppercase tracking-wider drop-shadow-md">Hết
         lượt cưa hôm nay</h3>
       <p id="retry_limit_desc" class="text-[#4A2E15] text-[13px] mb-6 leading-relaxed font-bold">
         Xe gỗ của bạn đã đầy cho ngày hôm nay. Hãy nghỉ ngơi và quay lại vào ngày mai!
@@ -137,9 +137,9 @@
   <!-- MEGA Spinner Modal -->
   <div id="mega_spinner_modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay bg-[rgba(0,0,0,0.95)]">
     <div class="text-center flex flex-col items-center">
-      <h2 class="text-3xl font-black text-[#FFD700] mb-8 font-['Podkova'] uppercase pk-text-stroke drop-shadow-2xl">QUAY SỐ MEGA MAY MẮN!</h2>
+      <h2 class="text-3xl font-black text-[#FFD700] mb-8 font-['Space_Grotesk'] uppercase pk-text-stroke drop-shadow-2xl">QUAY SỐ MEGA MAY MẮN!</h2>
       
-      <button id="btn_start_mega" class="mb-8 px-8 py-4 bg-[#FFD700] hover:bg-yellow-400 text-[#2B1607] text-lg font-black font-['Podkova'] uppercase rounded-2xl transform transition-transform active:scale-95 shadow-[0_0_20px_rgba(255,215,0,0.6)] animate-pulse border-4 border-yellow-200">
+      <button id="btn_start_mega" class="mb-8 px-8 py-4 bg-[#FFD700] hover:bg-yellow-400 text-[#2B1607] text-lg font-black font-['Space_Grotesk'] uppercase rounded-2xl transform transition-transform active:scale-95 shadow-[0_0_20px_rgba(255,215,0,0.6)] animate-pulse border-4 border-yellow-200">
         BẤM ĐỂ QUAY MEGA 🎰
       </button>
       
@@ -149,7 +149,7 @@
 
         <!-- The scrolling strip -->
         <div id="mega_strip" class="absolute top-0 h-full flex items-center will-change-transform">
-          <div class="w-32 shrink-0 flex justify-center text-4xl font-black text-white/30 font-['Podkova']">??</div>
+          <div class="w-32 shrink-0 flex justify-center text-4xl font-black text-white/30 font-['Space_Grotesk']">??</div>
         </div>
       </div>
       
