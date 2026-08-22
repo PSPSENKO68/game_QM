@@ -255,12 +255,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1.5 gap-y-1 drop-shadow-sm">
               <span class="whitespace-nowrap leading-tight">${playerName}</span>
               ${selfBadge}
-              ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1.5 py-0.5 rounded shadow-sm border border-rose-100 text-[10px] shrink-0">MEGA: ${playerMega}</span>` : ''}
             </div>
-            <p class="text-[11px] text-[#8B5A2B] font-bold mt-1 flex flex-wrap gap-1.5 items-center">
-              <span class="truncate max-w-[80px]">${playerDept || '—'}</span>
-              ${(player.best_time && player.best_time < 999999000) ? `<span class="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded shadow-sm border border-emerald-100 flex items-center gap-1 shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${db.formatTimeSpent(player.best_time)}</span>` : `<span class="text-[#8B5A2B]/60 bg-white/50 px-1.5 py-0.5 rounded flex items-center gap-1 border border-[#8B5A2B]/10 shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Chưa có</span>`}
-            </p>
+            <div class="grid grid-cols-[auto_1fr] gap-x-2 gap-y-1.5 mt-1.5 items-center">
+              <span class="text-[11px] text-[#8B5A2B] font-bold">${playerDept || '—'}</span>
+              <div class="flex">
+                ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1.5 py-0.5 rounded shadow-sm border border-rose-100 text-[10px] shrink-0">MEGA: ${playerMega}</span>` : ''}
+              </div>
+              <div></div>
+              <div class="flex text-[11px] font-bold">
+                ${(player.best_time && player.best_time < 999999000) ? `<span class="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded shadow-sm border border-emerald-100 flex items-center gap-1 shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${db.formatTimeSpent(player.best_time)}</span>` : `<span class="text-[#8B5A2B]/60 bg-white/50 px-1.5 py-0.5 rounded flex items-center gap-1 border border-[#8B5A2B]/10 shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Chưa có</span>`}
+              </div>
+            </div>
           </div>
         </div>
         <div class="text-right flex items-center justify-end pl-2 shrink-0">
