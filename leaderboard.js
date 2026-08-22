@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           ${medalHtml}
           <div class="flex-1">
             <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1.5 gap-y-1 drop-shadow-sm">
-              <span class="break-words leading-tight">${playerName}</span>
+              <span class="whitespace-nowrap leading-tight">${playerName}</span>
               ${selfBadge}
               ${playerMega ? `<span class="text-[#DE3A3B] bg-rose-50 px-1.5 py-0.5 rounded shadow-sm border border-rose-100 text-[10px] shrink-0">MEGA: ${playerMega}</span>` : ''}
             </div>
