@@ -247,6 +247,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       leaderboardList.appendChild(row);
     });
     
+    // Tự động cuộn đến vị trí của mình
+    setTimeout(() => {
+      const selfRow = leaderboardList.querySelector('.is-self');
+      if (selfRow) {
+        selfRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 300);
+
     // Bind Steal buttons
     if (isStealMode) {
       // Helper function for custom alerts
