@@ -1108,8 +1108,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Add click listener for saving the video URL
   if (btnSaveTutorialVideo && inputTutorialVideo) {
     btnSaveTutorialVideo.addEventListener('click', async () => {
-      const url = inputTutorialVideo.value.trim();
-      // Optional: basic validation for youtube link could go here
+      let url = inputTutorialVideo.value.trim();
+      
+      // Auto convert normal youtube links to embed links
+      if (url) {
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\/shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+          url = 'https://www.youtube.com/embed/' + match[2];
+          inputTutorialVideo.value = url; // Update input field to show the new URL
+        }
+      }
+
       const result = await db.updateTutorialVideoUrl(url);
       if (result.success) showAdminAlert('Đã lưu ✅', `Link video: ${url || '(Trống)'}`);
       else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
