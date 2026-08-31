@@ -1150,46 +1150,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  const inputTutorialVideo = document.getElementById('input_tutorial_video');
-  const btnUploadTutorialVideo = document.getElementById('btn_upload_tutorial_video');
-  const uploadVideoProgress = document.getElementById('upload_video_progress');
-
-  if (btnUploadTutorialVideo && inputTutorialVideo) {
-    btnUploadTutorialVideo.addEventListener('click', async () => {
-      const file = inputTutorialVideo.files[0];
-      if (!file) {
-        showAdminAlert('Cảnh báo', 'Vui lòng chọn một file video để tải lên.');
-        return;
-      }
-      if (file.size > 50 * 1024 * 1024) {
-        showAdminAlert('Cảnh báo', 'Dung lượng file vượt quá 50MB. Vui lòng chọn file nhỏ hơn.');
-        return;
-      }
-      
-      btnUploadTutorialVideo.disabled = true;
-      btnUploadTutorialVideo.classList.add('opacity-50');
-      if (uploadVideoProgress) uploadVideoProgress.classList.remove('hidden');
-
-      const uploadResult = await db.uploadVideo(file);
-      
-      btnUploadTutorialVideo.disabled = false;
-      btnUploadTutorialVideo.classList.remove('opacity-50');
-      if (uploadVideoProgress) uploadVideoProgress.classList.add('hidden');
-
-      if (uploadResult.success) {
-        const saveResult = await db.updateTutorialVideoUrl(uploadResult.url);
-        if (saveResult.success) {
-          showAdminAlert('Đã lưu ✅', 'Video hướng dẫn đã được tải lên thành công.');
-          inputTutorialVideo.value = ''; // Reset input
-        } else {
-          showAdminAlert('Lỗi', 'Upload thành công nhưng không thể lưu vào cài đặt.');
-        }
-      } else {
-        showAdminAlert('Lỗi Upload', uploadResult.message || 'Có lỗi xảy ra khi tải video lên.');
-      }
-    });
-  }
-
   if (btnSaveWheelStatus && inputWheelStatus) {
     btnSaveWheelStatus.addEventListener('click', async () => {
       const result = await db.updateWheelStatus(inputWheelStatus.value);

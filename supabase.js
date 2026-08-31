@@ -380,14 +380,6 @@ export const db = {
     return { success: true };
   },
 
-  async getTutorialVideoUrl() {
-    return await this.getSettingValue('tutorial_video_url');
-  },
-  
-  async updateTutorialVideoUrl(url) {
-    return await this.updateSettingStatus('tutorial_video_url', url);
-  },
-
   async getModule1Status() { return this.getSettingStatus('module1_status'); },
   async updateModule1Status(statusStr) { return this.updateSettingStatus('module1_status', statusStr); },
 
@@ -1562,34 +1554,5 @@ export const db = {
       if (b.totalCorrect !== a.totalCorrect) return b.totalCorrect - a.totalCorrect;
       return a.totalTime - b.totalTime;
     });
-  },
-
-  // ─── TÍNH NĂNG UPLOAD VIDEO ──────────────────────────────────────────────
-  async uploadVideo(file) {
-    if (!file) return { success: false, message: 'Chưa chọn file.' };
-    
-    // Đổi tên file để tránh trùng lặp
-    const fileExt = file.name.split('.').pop();
-    const fileName = `tutorial_${Date.now()}.${fileExt}`;
-    const filePath = `videos/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('game_assets')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) {
-      console.error('Upload video error:', uploadError);
-      return { success: false, message: uploadError.message };
-    }
-
-    const { data } = supabase.storage.from('game_assets').getPublicUrl(filePath);
-    
-    if (data && data.publicUrl) {
-      return { success: true, url: data.publicUrl };
-    }
-    return { success: false, message: 'Không lấy được đường dẫn URL của video.' };
   }
 };
