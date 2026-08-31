@@ -340,6 +340,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const elLoseBase = document.getElementById('modal_lose_base');
           if (elLoseBase) elLoseBase.textContent = basePoints.lose;
+
+          const elWinTotal = document.getElementById('modal_win_total');
+          if (elWinTotal) elWinTotal.textContent = basePoints.win * multipliers.win;
+
+          const elLoseTotal = document.getElementById('modal_lose_total');
+          if (elLoseTotal) elLoseTotal.textContent = basePoints.lose * multipliers.lose;
           
           const elStealsCount = document.getElementById('modal_steals_count');
           if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
