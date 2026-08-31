@@ -239,6 +239,36 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
   // ── 1. USERS MANAGEMENT ──────────────────────────────────────────────────────
+  const btnDeleteAllUsers = document.getElementById('btn_delete_all_users');
+  if (btnDeleteAllUsers) {
+    btnDeleteAllUsers.addEventListener('click', async () => {
+      const pinCode = prompt('CẢNH BÁO NGUY HIỂM: Hành động này sẽ XÓA SẠCH toàn bộ tài khoản người chơi và điểm số (trừ tài khoản Admin).\nNhập mã PIN của bạn để xác nhận (ví dụ: 1234):');
+      if (pinCode === null) return; // Cancel
+      
+      const currentUser = JSON.parse(sessionStorage.getItem('current_user'));
+      if (pinCode !== currentUser.pin) {
+        alert('Mã PIN không chính xác! Hủy thao tác xóa.');
+        return;
+      }
+      
+      if (confirm('BẠN CÓ CHẮC CHẮN 100% MUỐN RESET GAME? Mọi dữ liệu không thể khôi phục!')) {
+        const originalText = btnDeleteAllUsers.innerHTML;
+        btnDeleteAllUsers.innerHTML = '⏳ Đang xóa toàn bộ...';
+        btnDeleteAllUsers.disabled = true;
+        
+        const res = await db.adminDeleteAllUsers();
+        if (res && res.success) {
+          alert('Đã xóa sạch toàn bộ người chơi thành công! Game đã được Reset.');
+        } else {
+          alert('Lỗi khi xóa: ' + (res?.message || 'Không rõ nguyên nhân'));
+        }
+        
+        btnDeleteAllUsers.innerHTML = originalText;
+        btnDeleteAllUsers.disabled = false;
+        fetchAndRenderUsers();
+      }
+    });
+  }
   async function fetchAndRenderUsers() {
     if (!usersTableBody) return;
     usersTableBody.innerHTML = `<tr><td colspan="9" class="p-6 text-center text-[#8B5A2B]">Đang nạp danh sách...</td></tr>`;

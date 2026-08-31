@@ -964,6 +964,22 @@ export const db = {
     return { success: true };
   },
 
+  async adminResetAllPoints() {
+    const { error } = await supabase.from('users').update({ total_score: 0 }).neq('role', 'owner');
+    if (error) return { success: false, message: error.message };
+    return { success: true };
+  },
+
+  async adminDeleteAllUsers() {
+    // Delete all users except owner. Note: ON DELETE CASCADE will handle related play_history and steal_history.
+    const { error } = await supabase.from('users').delete().neq('role', 'owner');
+    if (error) {
+      console.error('Delete all users error:', error);
+      return { success: false, message: error.message };
+    }
+    return { success: true };
+  },
+
   async adminDeleteUser(id) {
     const { error } = await supabase.from('users').delete().eq('id', id);
     if (error) return { success: false, message: error.message };
