@@ -618,11 +618,12 @@ export const db = {
       // Lấy khoảng thời gian của chu kỳ hiện tại
       const bounds = await this.getCurrentCycleBounds();
       
-      // Lấy danh sách điểm các lượt chơi trong chu kỳ này, trừ lượt vừa lưu
+      // Lấy danh sách điểm các lượt chơi của BỘ ĐỀ NÀY trong chu kỳ này, trừ lượt vừa lưu
       const { data: cyclePlays } = await supabase
         .from('play_history')
         .select('score')
         .eq('user_id', userId)
+        .eq('quiz_id', quizId)
         .gte('played_at', bounds.start)
         .lte('played_at', bounds.end)
         .neq('id', record.id);
