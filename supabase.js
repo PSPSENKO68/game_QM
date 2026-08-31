@@ -50,10 +50,10 @@ export async function bootstrapDatabase() {
     }
 
     // Seed cấu hình mặc định
-    await supabase.from('settings').upsert({ key: 'max_plays_per_day', value: '3' });
-    await supabase.from('settings').upsert({ key: 'randomize_questions', value: 'OFF' });
-    await supabase.from('settings').upsert({ key: 'wheel_status', value: 'OFF' });
-    await supabase.from('settings').upsert({ key: 'max_streak_days', value: '5' });
+    await supabase.from('settings').upsert({ key: 'max_plays_per_day', value: '3' }, { onConflict: 'key' });
+    await supabase.from('settings').upsert({ key: 'randomize_questions', value: 'OFF' }, { onConflict: 'key' });
+    await supabase.from('settings').upsert({ key: 'wheel_status', value: 'OFF' }, { onConflict: 'key' });
+    await supabase.from('settings').upsert({ key: 'max_streak_days', value: '5' }, { onConflict: 'key' });
 
     console.log('✅ Đã khởi tạo Super Admin thành công!');
     return { success: true, reason: 'created' };
