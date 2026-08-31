@@ -215,8 +215,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const formattedDefTime = formatTimeSpent(normDefTime);
 
     const formatMs = (ms) => {
-      const seconds = ms / 1000;
-      const str = seconds.toFixed(3);
+      const totalSeconds = ms / 1000;
+      if (totalSeconds >= 60) {
+        const m = Math.floor(totalSeconds / 60);
+        const s = Math.floor(totalSeconds % 60);
+        const msPart = Math.round((totalSeconds - Math.floor(totalSeconds)) * 1000);
+        return `${m}p${s}s${msPart.toString().padStart(3, '0')}'`;
+      }
+      const str = totalSeconds.toFixed(3);
       const parts = str.split('.');
       return `${parts[0]}s${parts[1]}'`;
     };
