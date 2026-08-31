@@ -59,11 +59,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      const hasVietnameseAccent = /[àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(fullName);
-      if (!hasVietnameseAccent) {
-        showError('Vui lòng nhập Họ và tên có dấu tiếng Việt!');
-        shakeForm(quickForm);
-        return;
+      // Danh sách ngoại lệ: Các tên người nước ngoài không có dấu tiếng Việt (viết HOA toàn bộ)
+      const allowedForeignNames = [
+        'JOHN SMITCH',
+        'ALEX',
+        'MICHAEL'
+      ];
+
+      // Nếu tên không nằm trong danh sách ngoại lệ thì mới kiểm tra dấu tiếng Việt
+      if (!allowedForeignNames.includes(fullName)) {
+        const hasVietnameseAccent = /[àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(fullName);
+        if (!hasVietnameseAccent) {
+          showError('Vui lòng nhập Họ và tên có dấu tiếng Việt!');
+          shakeForm(quickForm);
+          return;
+        }
       }
 
       setLoading(btnSubmitQuick, true, 'THAM GIA NGAY');
