@@ -356,8 +356,21 @@ document.addEventListener('DOMContentLoaded', async () => {
           
           if (msgContainer) {
             if (customStealMessage && customStealMessage.trim() !== '') {
-              msgContainer.textContent = customStealMessage.trim();
+              msgContainer.textContent = '';
               msgContainer.classList.remove('hidden');
+              
+              // Typewriter effect
+              const text = customStealMessage.trim();
+              let i = 0;
+              if (window.stealTypewriter) clearInterval(window.stealTypewriter);
+              window.stealTypewriter = setInterval(() => {
+                if (i < text.length) {
+                  msgContainer.textContent += text.charAt(i);
+                  i++;
+                } else {
+                  clearInterval(window.stealTypewriter);
+                }
+              }, 40); // 40ms per character
             } else {
               msgContainer.classList.add('hidden');
             }
@@ -370,6 +383,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           if (btnCancel) {
             btnCancel.onclick = () => {
+              if (window.stealTypewriter) clearInterval(window.stealTypewriter);
               modal.classList.add('hidden');
               btn.textContent = 'Thách Đấu ⚔️';
             };
