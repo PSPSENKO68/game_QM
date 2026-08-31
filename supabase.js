@@ -1383,12 +1383,15 @@ export const db = {
         totalCorrect,
         totalTime,
         totalScore,
+        actualTotalScore: parseInt(user.total_score) || 0,
+        stealPoints: (parseInt(user.total_score) || 0) - totalScore,
         cycleScores,
         cycleTimes
       };
     });
 
     userStats.sort((a, b) => {
+      if (b.actualTotalScore !== a.actualTotalScore) return b.actualTotalScore - a.actualTotalScore;
       if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
       return a.totalTime - b.totalTime;
     });
@@ -1408,7 +1411,9 @@ export const db = {
         row[`Thời gian chặng: ${quiz.title}`] = db.formatTimeSpent(u.cycleTimes[idx] || 0);
       });
 
-      row['Tổng Điểm'] = u.totalScore;
+      row['Tổng Điểm Cày Cuốc'] = u.totalScore;
+      row['Điểm Thách Đấu'] = u.stealPoints;
+      row['Tổng Điểm (Bảng Xếp Hạng)'] = u.actualTotalScore;
       row['Trạng Thái'] = u.is_active ? 'Hoạt động' : 'Tạm khóa';
       
       return row;
@@ -1431,7 +1436,9 @@ export const db = {
         avgRow[`Thời gian chặng: ${quiz.title}`] = db.formatTimeSpent(Math.floor(sumTime / userStats.length));
       });
 
-      avgRow['Tổng Điểm'] = Math.round(userStats.reduce((sum, u) => sum + u.totalScore, 0) / userStats.length);
+      avgRow['Tổng Điểm Cày Cuốc'] = Math.round(userStats.reduce((sum, u) => sum + u.totalScore, 0) / userStats.length);
+      avgRow['Điểm Thách Đấu'] = Math.round(userStats.reduce((sum, u) => sum + u.stealPoints, 0) / userStats.length);
+      avgRow['Tổng Điểm (Bảng Xếp Hạng)'] = Math.round(userStats.reduce((sum, u) => sum + u.actualTotalScore, 0) / userStats.length);
       avgRow['Trạng Thái'] = '';
       
       rows.push(avgRow);
