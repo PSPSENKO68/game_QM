@@ -59,6 +59,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
+      const hasVietnameseAccent = /[àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(fullName);
+      if (!hasVietnameseAccent) {
+        showError('Vui lòng nhập Họ và tên có dấu tiếng Việt!');
+        shakeForm(quickForm);
+        return;
+      }
+
       setLoading(btnSubmitQuick, true, 'THAM GIA NGAY');
 
       try {
