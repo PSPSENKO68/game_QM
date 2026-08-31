@@ -1089,6 +1089,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputStealWinBase = document.getElementById('input_steal_win_base');
   const inputStealLoseBase = document.getElementById('input_steal_lose_base');
   const inputMaxSteals = document.getElementById('input_max_steals');
+  const inputStealMessage = document.getElementById('input_steal_message');
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
 
   // Load Settings
@@ -1104,6 +1105,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputTutorialVideo = document.getElementById('input_tutorial_video');
   const btnSaveTutorialVideo = document.getElementById('btn_save_tutorial_video');
   if (inputTutorialVideo) db.getTutorialVideoUrl().then(url => inputTutorialVideo.value = url || '');
+  if (inputStealMessage) db.getSettingValue('steal_message').then(msg => inputStealMessage.value = msg || '');
 
   // Add click listener for saving the video URL
   if (btnSaveTutorialVideo && inputTutorialVideo) {
@@ -1189,6 +1191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const winBase = parseInt(inputStealWinBase.value);
       const loseBase = parseInt(inputStealLoseBase.value);
       const maxSteals = parseInt(inputMaxSteals.value);
+      const stealMsg = inputStealMessage ? inputStealMessage.value.trim() : '';
       
       if (isNaN(winVal) || winVal <= 0 || isNaN(loseVal) || loseVal <= 0 || 
           isNaN(winBase) || winBase <= 0 || isNaN(loseBase) || loseBase <= 0 || 
@@ -1199,6 +1202,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const r1 = await db.updateStealMultipliers(winVal, loseVal);
       const r2 = await db.updateStealBasePoints(winBase, loseBase);
       const r3 = await db.updateMaxStealsPerDay(maxSteals);
+      await db.updateSettingStatus('steal_message', stealMsg);
       
       if (r1.success && r2.success && r3.success) {
         showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Số lượt: ${maxSteals}`);

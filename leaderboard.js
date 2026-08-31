@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const module2Status = await db.getModule2Status();
   const isStealMode = module2Status || isActionSteal;
+  const customStealMessage = await db.getSettingValue('steal_message');
 
   const isStreakMode = urlParams.get('mode') === 'streak';
 
@@ -351,6 +352,17 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
 
           const modal = document.getElementById('steal_confirm_modal');
+          const msgContainer = document.getElementById('modal_steal_custom_message');
+          
+          if (msgContainer) {
+            if (customStealMessage && customStealMessage.trim() !== '') {
+              msgContainer.textContent = customStealMessage.trim();
+              msgContainer.classList.remove('hidden');
+            } else {
+              msgContainer.classList.add('hidden');
+            }
+          }
+
           if (modal) modal.classList.remove('hidden');
 
           const btnCancel = document.getElementById('btn_cancel_steal');
