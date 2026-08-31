@@ -372,8 +372,11 @@ export const db = {
   },
 
   async updateSettingStatus(key, statusStr) {
-    const { error } = await supabase.from('settings').upsert({ key, value: statusStr });
-    if (error) return { success: false, message: error.message };
+    const { error } = await supabase.from('settings').upsert({ key, value: statusStr }, { onConflict: 'key' });
+    if (error) {
+      console.error('Lỗi khi lưu cài đặt:', error);
+      return { success: false, message: error.message };
+    }
     return { success: true };
   },
 
