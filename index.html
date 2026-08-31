@@ -207,7 +207,10 @@
 
       <!-- Tutorial Video -->
       <button id="btn_open_tutorial" onclick="document.getElementById('modal_tutorial').classList.remove('hidden')"
-        class="btn-pirate-blue hidden w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition text-left" style="background: linear-gradient(to bottom, #2B8CBE, #0B4A6F); border-color: #0B4A6F;">
+        class="hidden w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition-all hover:scale-[1.02] active:scale-95 text-left relative overflow-hidden" 
+        style="background: linear-gradient(to bottom, #B53471, #833471); border: 2px solid #6F1E51; box-shadow: 0 4px 15px rgba(181, 52, 113, 0.4), inset 0 2px 0 rgba(255,255,255,0.2);">
+        <!-- Lớp phủ tạo hiệu ứng sáng bóng -->
+        <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         <div class="flex items-center gap-3">
           <div
             class="w-12 h-12 rounded-xl bg-white/20 border-2 border-white/50 flex items-center justify-center font-bold text-2xl shadow-sm text-white">
