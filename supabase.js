@@ -591,11 +591,12 @@ export const db = {
     if (mode !== 'streak') {
       const { data: userData } = await supabase
         .from('users')
-        .select('total_score')
+        .select('total_score, recoverable_points')
         .eq('id', userId)
         .single();
       
       let currentTotal = parseInt(userData?.total_score) || 0;
+      let recovPoints = parseInt(userData?.recoverable_points) || 0;
       
       // Lấy khoảng thời gian của chu kỳ hiện tại
       const bounds = await this.getCurrentCycleBounds();
@@ -614,11 +615,26 @@ export const db = {
         oldMaxInCycle = Math.max(...cyclePlays.map(p => parseInt(p.score) || 0));
       }
       
-      // Nếu điểm số lượt này vượt qua kỷ lục trước đó trong chu kỳ, cộng phần chênh lệch vào tổng điểm
+      let scoreUpdates = {};
+      let totalChanged = false;
+
+      // 1. Cộng điểm chênh lệch (nếu phá kỷ lục)
       if (newScore > oldMaxInCycle) {
         const diff = newScore - oldMaxInCycle;
         currentTotal += diff;
-        await supabase.from('users').update({ total_score: currentTotal }).eq('id', userId);
+        totalChanged = true;
+      }
+
+      // 2. Hồi phục điểm bị cướp (nếu điểm đạt >= kỷ lục cũ)
+      if (newScore >= oldMaxInCycle && recovPoints > 0) {
+        currentTotal += recovPoints;
+        scoreUpdates.recoverable_points = 0; // Đã hồi phục xong
+        totalChanged = true;
+      }
+
+      if (totalChanged) {
+        scoreUpdates.total_score = currentTotal;
+        await supabase.from('users').update(scoreUpdates).eq('id', userId);
       }
     }
 
@@ -708,12 +724,15 @@ export const db = {
     const basePoints = await db.getStealBasePoints();
 
     // 6. Cộng/Trừ điểm
-    const { data: usersData } = await supabase.from('users').select('id, total_score, has_shield').in('id', [attackerId, defenderId]);
+    const { data: usersData } = await supabase.from('users').select('id, total_score, has_shield, recoverable_points').in('id', [attackerId, defenderId]);
     const attackerData = usersData.find(u => u.id === attackerId);
     const defenderData = usersData.find(u => u.id === defenderId);
 
     const attackerTotal = parseInt(attackerData?.total_score) || 0;
     const defenderTotal = parseInt(defenderData?.total_score) || 0;
+    
+    const attackerRecov = parseInt(attackerData?.recoverable_points) || 0;
+    const defenderRecov = parseInt(defenderData?.recoverable_points) || 0;
 
     const winPoints = Math.round(basePoints.win * multipliers.win);
     const losePoints = Math.round(basePoints.lose * multipliers.lose);
@@ -728,11 +747,17 @@ export const db = {
         // Shield saves the day, defender loses 0 points, but shield breaks
         await supabase.from('users').update({ has_shield: false }).eq('id', defenderId);
       } else {
-        await supabase.from('users').update({ total_score: defenderTotal - winPoints }).eq('id', defenderId);
+        await supabase.from('users').update({ 
+          total_score: defenderTotal - winPoints,
+          recoverable_points: defenderRecov + winPoints
+        }).eq('id', defenderId);
       }
     } else {
       // Attacker loses: Attacker gets -losePoints (allow negative), Defender gets +losePoints
-      await supabase.from('users').update({ total_score: attackerTotal - losePoints }).eq('id', attackerId);
+      await supabase.from('users').update({ 
+        total_score: attackerTotal - losePoints,
+        recoverable_points: attackerRecov + losePoints
+      }).eq('id', attackerId);
       await supabase.from('users').update({ total_score: defenderTotal + losePoints }).eq('id', defenderId);
     }
 
