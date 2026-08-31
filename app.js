@@ -261,6 +261,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
       }
 
+      // Load Tutorial Video
+      const tutorialVideoUrl = await db.getTutorialVideoUrl();
+      const btnOpenTutorial = document.getElementById('btn_open_tutorial');
+      const tutorialVideoPlayer = document.getElementById('tutorial_video_player');
+      
+      if (tutorialVideoUrl && tutorialVideoUrl.trim() !== '') {
+        if (btnOpenTutorial) btnOpenTutorial.classList.remove('hidden');
+        if (tutorialVideoPlayer) {
+          tutorialVideoPlayer.src = tutorialVideoUrl;
+          tutorialVideoPlayer.load();
+        }
+      } else {
+        if (btnOpenTutorial) btnOpenTutorial.classList.add('hidden');
+      }
+
       // Tải Active Quiz
       const activeQuiz = await db.getActiveQuiz();
       if (activeQuiz) {
