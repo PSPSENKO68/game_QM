@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const department = quickDeptInput.value.trim().toUpperCase();
 
       if (!fullName || !department) {
-        showError('Vui lòng nhập Họ Tên và Bộ phận của bạn.');
+        showError('Vui lòng nhập Họ Tên và Bộ phận / Please enter Full Name and Department.');
         return;
       }
 
@@ -69,13 +69,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!allowedForeignNames.includes(fullName)) {
         const hasVietnameseAccent = /[àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]/i.test(fullName);
         if (!hasVietnameseAccent) {
-          showError('Vui lòng nhập Họ và tên có dấu tiếng Việt!');
+          showError('Vui lòng nhập Họ và tên có dấu / Please enter Full Name with Vietnamese accents!');
           shakeForm(quickForm);
           return;
         }
       }
 
-      setLoading(btnSubmitQuick, true, 'THAM GIA NGAY');
+      setLoading(btnSubmitQuick, true, 'THAM GIA NGAY / JOIN NOW');
 
       try {
         const result = await db.quickLogin(fullName, department);
@@ -88,9 +88,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } catch (err) {
         console.error(err);
-        showError('Lỗi kết nối đến cơ sở dữ liệu. Vui lòng thử lại.');
+        showError('Lỗi kết nối. Vui lòng thử lại / Connection error. Please try again.');
       } finally {
-        setLoading(btnSubmitQuick, false, 'THAM GIA NGAY');
+        setLoading(btnSubmitQuick, false, 'THAM GIA NGAY / JOIN NOW');
       }
     });
   }
@@ -104,11 +104,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const pin = adminPinInput.value.trim();
 
       if (!phone || !pin) {
-        showError('Vui lòng nhập đầy đủ Số điện thoại và mã PIN.');
+        showError('Vui lòng nhập SĐT và mã PIN / Please enter Phone and PIN.');
         return;
       }
 
-      setLoading(btnSubmitAdmin, true, 'ĐĂNG NHẬP ADMIN');
+      setLoading(btnSubmitAdmin, true, 'ĐĂNG NHẬP / LOGIN');
 
       try {
         const result = await db.login(phone, pin);
@@ -121,9 +121,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       } catch (err) {
         console.error(err);
-        showError('Lỗi kết nối đến cơ sở dữ liệu. Vui lòng thử lại.');
+        showError('Lỗi kết nối. Vui lòng thử lại / Connection error. Please try again.');
       } finally {
-        setLoading(btnSubmitAdmin, false, 'ĐĂNG NHẬP ADMIN');
+        setLoading(btnSubmitAdmin, false, 'ĐĂNG NHẬP / LOGIN');
       }
     });
   }
@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span>ĐANG XỬ LÝ...</span>
+        <span>ĐANG XỬ LÝ / PROCESSING...</span>
       `;
     } else {
       btn.disabled = false;
