@@ -108,7 +108,7 @@ body::after {
 
 /* Royal Gold Frame for Profile Card */
 .card-royal-gold {
-  background: linear-gradient(135deg, #4A240A 0%, #3B1C03 50%, #2A1201 100%);
+  background: linear-gradient(135deg, #1A4B84 0%, #0D2B52 50%, #06152D 100%);
   position: relative;
   box-shadow: 
     0 10px 30px -5px rgba(0,0,0,0.8),
