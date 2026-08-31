@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 } else {
                   clearInterval(window.stealTypewriter);
                 }
-              }, 40); // 40ms per character
+              }, 15); // 15ms per character
             } else {
               msgContainer.classList.add('hidden');
             }
