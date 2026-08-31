@@ -204,6 +204,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const sparkContainer = document.getElementById('spark_container');
+    const questionContainer = document.getElementById('question_container');
+    
     if (countdownTimer) {
       countdownTimer.textContent = formatTimer(currentRemainingTime);
       countdownTimer.className = 'absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors';
@@ -211,6 +213,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (sparkContainer) {
       sparkContainer.style.transform = `rotate(0deg)`;
       sparkContainer.style.opacity = '1';
+    }
+    if (questionContainer) {
+      questionContainer.classList.remove('danger-blink');
     }
 
     timerInterval = setInterval(() => {
@@ -222,9 +227,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         sparkContainer.style.transform = `rotate(${angle}deg)`;
       }
       
-      if (currentRemainingTime <= 5 && countdownTimer) {
-         countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
-         countdownTimer.classList.add('animate-pulse', 'bg-red-600', 'text-white');
+      if (currentRemainingTime <= 5) {
+         if (countdownTimer) {
+           countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
+           countdownTimer.classList.add('animate-pulse', 'bg-red-600', 'text-white');
+         }
+         if (questionContainer && !questionContainer.classList.contains('danger-blink')) {
+           questionContainer.classList.add('danger-blink');
+         }
       }
 
       if (currentRemainingTime <= 0) {
@@ -295,6 +305,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (hasSelected) return; // Prevent double trigger
     hasSelected = true;
     if (timerInterval) clearInterval(timerInterval);
+    
+    const questionContainer = document.getElementById('question_container');
+    if (questionContainer) questionContainer.classList.remove('danger-blink');
 
     // Calculate exact time spent in milliseconds for this question
     const elapsedMs = Math.max(0, Math.round(performance.now() - questionStartTime));
