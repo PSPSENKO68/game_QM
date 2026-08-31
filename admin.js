@@ -1101,6 +1101,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
   if (inputRandomizeQuestions) db.getRandomizeQuestionsStatus().then(isOn => inputRandomizeQuestions.value = isOn ? 'ON' : 'OFF');
+  const inputTutorialVideo = document.getElementById('input_tutorial_video');
+  const btnSaveTutorialVideo = document.getElementById('btn_save_tutorial_video');
+  if (inputTutorialVideo) db.getTutorialVideoUrl().then(url => inputTutorialVideo.value = url || '');
+
+  // Add click listener for saving the video URL
+  if (btnSaveTutorialVideo && inputTutorialVideo) {
+    btnSaveTutorialVideo.addEventListener('click', async () => {
+      const url = inputTutorialVideo.value.trim();
+      // Optional: basic validation for youtube link could go here
+      const result = await db.updateTutorialVideoUrl(url);
+      if (result.success) showAdminAlert('Đã lưu ✅', `Link video: ${url || '(Trống)'}`);
+      else showAdminAlert('Lỗi', result.message || 'Không thể lưu.');
+    });
+  }
   if (inputWheelStatus) db.getWheelStatus().then(isOn => inputWheelStatus.value = isOn ? 'ON' : 'OFF');
   if (inputStealWinMultiplier && inputStealLoseMultiplier) {
     db.getStealMultipliers().then(m => {

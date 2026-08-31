@@ -206,8 +206,8 @@
       </a>
 
       <!-- Tutorial Video -->
-      <button onclick="document.getElementById('modal_tutorial').classList.remove('hidden')"
-        class="btn-pirate-blue w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition text-left" style="background: linear-gradient(to bottom, #2B8CBE, #0B4A6F); border-color: #0B4A6F;">
+      <button id="btn_open_tutorial" onclick="document.getElementById('modal_tutorial').classList.remove('hidden')"
+        class="btn-pirate-blue hidden w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition text-left" style="background: linear-gradient(to bottom, #2B8CBE, #0B4A6F); border-color: #0B4A6F;">
         <div class="flex items-center gap-3">
           <div
             class="w-12 h-12 rounded-xl bg-white/20 border-2 border-white/50 flex items-center justify-center font-bold text-2xl shadow-sm text-white">
@@ -359,11 +359,10 @@
       
       <!-- Video Container -->
       <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner mb-4 relative">
-        <!-- Thay thế src bằng link video của bạn -->
-        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video Hướng Dẫn" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <iframe id="tutorial_video_player" class="absolute inset-0 w-full h-full" src="" title="Video Hướng Dẫn" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       </div>
 
-      <button onclick="document.getElementById('modal_tutorial').classList.add('hidden')"
+      <button onclick="document.getElementById('modal_tutorial').classList.add('hidden'); const v = document.getElementById('tutorial_video_player'); if(v) v.src = v.src;"
         class="btn-pirate-wood w-full py-3 rounded-xl font-black text-white text-[12px] uppercase shadow-md active:scale-95 transition-transform">
         ĐÓNG
       </button>

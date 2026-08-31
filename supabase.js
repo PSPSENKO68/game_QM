@@ -380,6 +380,14 @@ export const db = {
     return { success: true };
   },
 
+  async getTutorialVideoUrl() {
+    return await this.getSettingValue('tutorial_video_url');
+  },
+  
+  async updateTutorialVideoUrl(url) {
+    return await this.updateSettingStatus('tutorial_video_url', url);
+  },
+
   async getModule1Status() { return this.getSettingStatus('module1_status'); },
   async updateModule1Status(statusStr) { return this.updateSettingStatus('module1_status', statusStr); },
 
