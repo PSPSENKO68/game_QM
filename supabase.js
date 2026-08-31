@@ -114,6 +114,15 @@ export function formatTimeSpent(val) {
   } else if (num >= 500) {
     seconds = num / 1000;
   }
+  
+  if (seconds >= 60) {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    // Tính mili-giây, làm tròn để tránh sai số dấu phẩy động
+    const ms = Math.round((seconds - Math.floor(seconds)) * 1000);
+    return `${m}p${s}s${ms.toString().padStart(3, '0')}'`;
+  }
+
   const str = seconds.toFixed(3);
   const parts = str.split('.');
   return `${parts[0]}s${parts[1]}'`;
