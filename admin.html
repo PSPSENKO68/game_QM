@@ -761,9 +761,14 @@
               class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
           </div>
           <div>
-            <label for="form_question_time" class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (giây)</label>
-            <input type="number" id="form_question_time" required min="5" value="15"
-              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+            <label class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (Phút : Giây)</label>
+            <div class="flex items-center gap-2">
+              <input type="number" id="form_question_time_m" required min="0" value="0" placeholder="Phút"
+                class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none text-center" />
+              <span class="text-xs font-bold text-[#8B5A2B]">:</span>
+              <input type="number" id="form_question_time_s" required min="0" max="59" value="15" placeholder="Giây"
+                class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none text-center" />
+            </div>
           </div>
         </div>
 
@@ -841,9 +846,14 @@
               class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
           </div>
           <div>
-            <label for="edit_question_time" class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (giây)</label>
-            <input type="number" id="edit_question_time" required min="5"
-              class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none" />
+            <label class="block text-xs font-bold text-[#8B5A2B] mb-1">Thời gian (Phút : Giây)</label>
+            <div class="flex items-center gap-2">
+              <input type="number" id="edit_question_time_m" required min="0" placeholder="Phút"
+                class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none text-center" />
+              <span class="text-xs font-bold text-[#8B5A2B]">:</span>
+              <input type="number" id="edit_question_time_s" required min="0" max="59" placeholder="Giây"
+                class="block w-full p-2 bg-[rgba(255,255,255,0.7)] border-2 border-[#8B5A2B] rounded-lg text-xs font-bold focus:outline-none text-center" />
+            </div>
           </div>
         </div>
 

@@ -637,7 +637,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         editQuestionId.value = qId;
         editQuestionText.value = qText;
         document.getElementById('edit_question_point').value = qPoint;
-        document.getElementById('edit_question_time').value = qTime;
+        const parsedTime = parseInt(qTime || '15');
+        document.getElementById('edit_question_time_m').value = Math.floor(parsedTime / 60);
+        document.getElementById('edit_question_time_s').value = parsedTime % 60;
         const imgField = document.getElementById('edit_q_image');
         if (imgField) imgField.value = qImage;
 
@@ -775,7 +777,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('ans_text_3')?.value.trim() || '',
       ];
       const point = parseInt(document.getElementById('form_question_point').value || '10');
-      const timeLimit = parseInt(document.getElementById('form_question_time').value || '15');
+      const timeM = parseInt(document.getElementById('form_question_time_m').value || '0');
+      const timeS = parseInt(document.getElementById('form_question_time_s').value || '0');
+      const timeLimit = (timeM * 60) + timeS || 15;
       const qImage = document.getElementById('input_q_image')?.value.trim() || null;
       const correctRadio = document.querySelector('input[name="correct_answer_radio"]:checked');
       const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
@@ -819,7 +823,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('edit_ans_3')?.value.trim() || '',
       ];
       const point = parseInt(document.getElementById('edit_question_point')?.value || '10');
-      const timeLimit = parseInt(document.getElementById('edit_question_time')?.value || '15');
+      const timeM = parseInt(document.getElementById('edit_question_time_m')?.value || '0');
+      const timeS = parseInt(document.getElementById('edit_question_time_s')?.value || '0');
+      const timeLimit = (timeM * 60) + timeS || 15;
       const correctRadio = document.querySelector('input[name="edit_correct_radio"]:checked');
       const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
       const imageUrl = document.getElementById('edit_q_image')?.value.trim() || null;
