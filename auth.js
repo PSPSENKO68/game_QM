@@ -61,9 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Danh sách ngoại lệ: Các tên người nước ngoài không có dấu tiếng Việt (viết HOA toàn bộ)
       const allowedForeignNames = [
-        'JOHN SMITCH',
-        'ALEX',
-        'MICHAEL'
+        'YUYA HAMASAKI',
+        'YOSUKE NAKADA'
       ];
 
       // Nếu tên không nằm trong danh sách ngoại lệ thì mới kiểm tra dấu tiếng Việt
