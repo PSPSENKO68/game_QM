@@ -205,6 +205,20 @@
         </div>
       </a>
 
+      <!-- Tutorial Video -->
+      <button onclick="document.getElementById('modal_tutorial').classList.remove('hidden')"
+        class="btn-pirate-blue w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition text-left" style="background: linear-gradient(to bottom, #2B8CBE, #0B4A6F); border-color: #0B4A6F;">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-12 h-12 rounded-xl bg-white/20 border-2 border-white/50 flex items-center justify-center font-bold text-2xl shadow-sm text-white">
+            🎬</div>
+          <div class="text-left">
+            <h3 class="font-black text-white text-[16px]">Video Hướng Dẫn</h3>
+            <p class="text-[11px] text-white/80 font-bold" style="text-shadow: none;">Tìm hiểu luật chơi và thể lệ</p>
+          </div>
+        </div>
+      </button>
+
       <!-- Lucky Wheel -->
       <button id="btn_lucky_wheel"
         class="btn-pirate w-full rounded-2xl p-4 flex items-center justify-between group cursor-pointer transition hidden text-left">
@@ -330,6 +344,26 @@
         QUAY NGAY!
       </button>
       <button id="btn_close_wheel"
+        class="btn-pirate-wood w-full py-3 rounded-xl font-black text-white text-[12px] uppercase shadow-md active:scale-95 transition-transform">
+        ĐÓNG
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Tutorial Video -->
+  <div id="modal_tutorial"
+    class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm">
+    <div class="card-map p-4 max-w-3xl w-full rounded-3xl relative overflow-hidden flex flex-col items-center">
+      <h3 class="font-['Space_Grotesk'] font-black text-xl text-[#2B1607] mb-4 uppercase text-center">Video Hướng Dẫn
+      </h3>
+      
+      <!-- Video Container -->
+      <div class="w-full aspect-video bg-black rounded-xl overflow-hidden shadow-inner mb-4 relative">
+        <!-- Thay thế src bằng link video của bạn -->
+        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video Hướng Dẫn" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <button onclick="document.getElementById('modal_tutorial').classList.add('hidden')"
         class="btn-pirate-wood w-full py-3 rounded-xl font-black text-white text-[12px] uppercase shadow-md active:scale-95 transition-transform">
         ĐÓNG
       </button>
