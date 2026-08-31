@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
       }
 
-      setLoading(btnSubmitQuick, true, 'VÀO RỪNG NGAY');
+      setLoading(btnSubmitQuick, true, 'THAM GIA NGAY');
 
       try {
         const result = await db.quickLogin(fullName, department);
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error(err);
         showError('Lỗi kết nối đến cơ sở dữ liệu. Vui lòng thử lại.');
       } finally {
-        setLoading(btnSubmitQuick, false, 'VÀO RỪNG NGAY');
+        setLoading(btnSubmitQuick, false, 'THAM GIA NGAY');
       }
     });
   }
