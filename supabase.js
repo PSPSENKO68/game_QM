@@ -372,11 +372,8 @@ export const db = {
   },
 
   async updateSettingStatus(key, statusStr) {
-    const { data, error } = await supabase.from('settings').update({ value: statusStr }).eq('key', key).select();
-    if (!error && (!data || data.length === 0)) {
-       const { error: insertError } = await supabase.from('settings').insert({ key, value: statusStr });
-       if (insertError) return { success: false, message: insertError.message };
-    }
+    const { error } = await supabase.from('settings').upsert({ key, value: statusStr });
+    if (error) return { success: false, message: error.message };
     return { success: true };
   },
 
