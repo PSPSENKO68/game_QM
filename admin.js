@@ -474,8 +474,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         </div>
         <div class="flex items-center justify-between pt-4 border-t-2 border-dashed ${q.active ? 'border-[rgba(255,255,255,0.3)]' : 'border-[rgba(139,90,43,0.3)]'}">
-          <button class="view-q-questions-btn px-3 py-1.5 border-2 text-[10px] font-bold rounded-xl transition cursor-pointer ${q.active ? 'bg-[rgba(255,255,255,0.15)] text-white border-white hover:bg-[rgba(255,255,255,0.25)]' : 'bg-[#F9F5F0] text-[#4A240A] border-[#8B5A2B] hover:bg-[#E9C691]'
-        }" data-id="${q.id}" data-title="${q.title}" data-week="${q.week_no}" data-month="${q.month_no || 1}" data-streak="${q.streak_day || ''}">✏️ Chỉnh sửa</button>
+          <div class="flex gap-2">
+            <button class="view-q-questions-btn px-3 py-1.5 border-2 text-[10px] font-bold rounded-xl transition cursor-pointer ${q.active ? 'bg-[rgba(255,255,255,0.15)] text-white border-white hover:bg-[rgba(255,255,255,0.25)]' : 'bg-[#F9F5F0] text-[#4A240A] border-[#8B5A2B] hover:bg-[#E9C691]'
+          }" data-id="${q.id}" data-title="${q.title}" data-week="${q.week_no}" data-month="${q.month_no || 1}" data-streak="${q.streak_day || ''}">✏️ Chỉnh sửa</button>
+            <button class="reset-quiz-btn px-2 py-1.5 border-2 text-[10px] font-bold rounded-xl transition cursor-pointer ${q.active ? 'bg-[rgba(255,165,0,0.3)] text-white border-orange-400 hover:bg-[rgba(255,165,0,0.5)]' : 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+          }" data-id="${q.id}">🔄 Lịch sử</button>
+          </div>
           <button class="delete-quiz-btn px-2 py-1.5 text-[10px] font-bold rounded-xl transition flex items-center gap-1 cursor-pointer border-2 ${q.active ? 'bg-[rgba(222,58,59,0.3)] text-white border-[#DE3A3B] hover:bg-[rgba(222,58,59,0.5)]' : 'bg-rose-50 text-rose-600 border-rose-200 hover:bg-rose-100'
         }" data-id="${q.id}">🗑️ Xóa đề</button>
         </div>
@@ -509,6 +513,24 @@ document.addEventListener('DOMContentLoaded', async () => {
           await db.adminDeleteQuiz(qId);
           if (quizQuestionsBox && !quizQuestionsBox.classList.contains('hidden') && currentExpandedQuizId === qId) {
             quizQuestionsBox.classList.add('hidden');
+          }
+          fetchAndRenderQuizzes();
+        }
+      });
+    });
+
+    document.querySelectorAll('.reset-quiz-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const qId = btn.getAttribute('data-id');
+        if (confirm('Bạn có chắc chắn muốn XÓA SẠCH LỊCH SỬ CHƠI của bộ đề này không?\nToàn bộ lượt thi, số người tham gia và điểm trung bình sẽ bị đưa về 0 (nhưng bộ câu hỏi vẫn được giữ nguyên).')) {
+          const originalText = btn.innerHTML;
+          btn.innerHTML = '⏳ Đang reset...';
+          btn.disabled = true;
+          const res = await db.adminResetQuizHistory(qId);
+          if (res && res.success) {
+            alert('Đã reset lịch sử chơi thành công!');
+          } else {
+            alert('Lỗi: ' + (res?.message || 'Không thể reset'));
           }
           fetchAndRenderQuizzes();
         }

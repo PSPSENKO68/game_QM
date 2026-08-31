@@ -1036,6 +1036,15 @@ export const db = {
     return { success: true };
   },
 
+  async adminResetQuizHistory(quizId) {
+    const { error } = await supabase.from('play_history').delete().eq('quiz_id', quizId);
+    if (error) {
+      console.error('Reset quiz history error:', error);
+      return { success: false, message: error.message };
+    }
+    return { success: true };
+  },
+
   // ── 9. ADMIN: IMPORT QUIZ TỪ EXCEL/CSV ──────────────────────────────────
   /**
    * Import toàn bộ câu hỏi từ rows (mảng objects) vào quiz mới.
