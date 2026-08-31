@@ -251,7 +251,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       row.innerHTML = `
         <div class="flex items-center gap-3 flex-1 overflow-hidden">
           ${medalHtml}
-          <div class="flex-1">
+          <div class="flex-1 min-w-0">
             <div class="font-black text-[14px] text-[#2B1607] flex flex-wrap items-center gap-x-1.5 gap-y-1 drop-shadow-sm">
               <span class="break-words leading-tight flex-1 min-w-0">${playerName}</span>
               ${selfBadge}
