@@ -1172,12 +1172,15 @@ export const db = {
     });
     if (qErr) return { success: false, message: qErr.message };
 
-    const answerRows = answers.map((text, i) => ({
-      id: genId('a'),
-      question_id: questionId,
-      answer_text: text,
-      is_correct: i === parseInt(correctIndex)
-    }));
+    const answerRows = answers.map((text, i) => {
+      if (!text || text.trim() === '') return null;
+      return {
+        id: genId('a'),
+        question_id: questionId,
+        answer_text: text,
+        is_correct: i === parseInt(correctIndex)
+      };
+    }).filter(Boolean);
 
     const { error: aErr } = await supabase.from('answers').insert(answerRows);
     if (aErr) return { success: false, message: aErr.message };
@@ -1211,14 +1214,15 @@ export const db = {
     if (delErr) return { success: false, message: delErr.message };
 
     // 3. Insert lại đáp án mới
-    const answerRows = answers
-      .filter(t => t.trim())
-      .map((text, i) => ({
+    const answerRows = answers.map((text, i) => {
+      if (!text || text.trim() === '') return null;
+      return {
         id: genId('a'),
         question_id: questionId,
         answer_text: text.trim(),
         is_correct: i === parseInt(correctIndex)
-      }));
+      };
+    }).filter(Boolean);
 
     if (answerRows.length > 0) {
       const { error: aErr } = await supabase.from('answers').insert(answerRows);

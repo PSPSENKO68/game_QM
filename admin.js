@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const correctRadio = document.querySelector('input[name="correct_answer_radio"]:checked');
       const correctIdx = correctRadio ? parseInt(correctRadio.value) : 0;
 
-      const result = await db.adminCreateQuestion(qId, qText, answers.filter(Boolean), correctIdx, point, timeLimit, qImage);
+      const result = await db.adminCreateQuestion(qId, qText, answers, correctIdx, point, timeLimit, qImage);
       if (result.success) {
         document.getElementById('modal_question').classList.add('hidden');
         const currentQ = await db.adminGetQuizzes().then(qs => qs.find(q => q.id === currentExpandedQuizId));

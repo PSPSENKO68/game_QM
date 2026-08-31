@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const { btn, label } = optButtons[key];
       const answerData = shuffledAnswers[idx];
 
-      if (answerData) {
+      if (answerData && answerData.answer_text && answerData.answer_text.trim() !== '') {
         btn.classList.remove('hidden');
         label.textContent = answerData.answer_text;
         
