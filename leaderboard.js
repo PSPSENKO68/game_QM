@@ -116,8 +116,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
     const rankings = isStreakMode ? await db.getStreakLeaderboard() : await db.getLeaderboard();
 
-    leaderboardList.innerHTML = '';
-
     if (!rankings || rankings.length === 0) {
       leaderboardList.innerHTML = `
         <div class="py-12 text-center text-[#877A6E] text-xs font-semibold">
@@ -202,6 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Render danh sách - hiển thị tất cả người chơi
+    leaderboardList.innerHTML = '';
     const playersWithScore = rankings;
     let rankCounter = 1;
     playersWithScore.forEach((player, index) => {
