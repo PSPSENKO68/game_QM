@@ -249,21 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isMode2Locked = !isModule2On || (isModule1On && playsToday < minPlaysToUnlock);
       
       if (isMode2Locked && btnMode2) {
-        btnMode2.classList.add('cursor-not-allowed');
-        const chainSvg = `url("data:image/svg+xml,%3Csvg width='24' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='6' cy='6' r='4' fill='none' stroke='%23D1D5DB' stroke-width='2.5'/%3E%3Ccircle cx='14' cy='6' r='4' fill='none' stroke='%23D1D5DB' stroke-width='2.5'/%3E%3Cline x1='18' y1='6' x2='24' y2='6' stroke='%239CA3AF' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")`;
-        
-        btnMode2.innerHTML += `
-          <div class="absolute inset-0 flex items-center justify-center z-10 rounded-2xl overflow-hidden pointer-events-none">
-             <!-- Dây xích 1 -->
-             <div class="absolute w-[150%] h-[12px] opacity-90" style="transform: rotate(12deg); background-image: ${chainSvg}; background-repeat: repeat-x; background-position: center; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.6));"></div>
-             <!-- Dây xích 2 -->
-             <div class="absolute w-[150%] h-[12px] opacity-90" style="transform: rotate(-12deg); background-image: ${chainSvg}; background-repeat: repeat-x; background-position: center; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.6));"></div>
-             <!-- Ổ khóa -->
-             <div class="relative flex items-center justify-center">
-                <span class="text-4xl z-10" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));">🔒</span>
-             </div>
-          </div>
-        `;
+        btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
         btnMode2.href = "javascript:void(0)";
         
         if (!isModule2On) {
