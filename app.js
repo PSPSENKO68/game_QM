@@ -366,7 +366,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Limit Mode 2
         const stealsToday = await db.getStealsToday(user.id);
         const maxSteals = await db.getMaxStealsPerDay();
-        mode2StealsStatus.textContent = `${stealsToday}/${maxSteals} LƯỢT`;
+        if (maxSteals >= 999999) {
+          mode2StealsStatus.textContent = `VÔ HẠN LƯỢT THÁCH ĐẤU`;
+        } else {
+          mode2StealsStatus.textContent = `${stealsToday}/${maxSteals} LƯỢT`;
+        }
 
         if (stealsToday >= maxSteals) {
           mode2StealsStatus.classList.add('text-rose-400');
