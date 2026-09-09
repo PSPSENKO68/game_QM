@@ -249,7 +249,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const isMode2Locked = !isModule2On || (isModule1On && playsToday < minPlaysToUnlock);
       
       if (isMode2Locked && btnMode2) {
-        btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+        if (!isModule2On) {
+          btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
+        }
         btnMode2.href = "javascript:void(0)";
         
         if (!isModule2On) {
@@ -257,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           btnMode2.addEventListener('click', (e) => { 
             e.preventDefault(); e.stopPropagation(); 
-            showGlobalAlert('Đang khóa', `Bạn cần Cày Cuốc ít nhất ${minPlaysToUnlock} lượt hôm nay để thiết lập 'Bức tường phòng thủ' trước khi đi Thách Đấu!\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
+            showGlobalAlert('Thông báo', `Bạn cần Cày Cuốc ít nhất ${minPlaysToUnlock} lượt hôm nay để thiết lập 'Bức tường phòng thủ' trước khi đi Thách Đấu!\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
           }, {capture: true});
         }
       }
