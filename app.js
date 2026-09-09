@@ -241,7 +241,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode1.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
         btnMode1.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Cày Cuốc đang tạm thời bị khóa.'); }, {capture: true});
       }
-      if (!isModule2On && btnMode2) {
+      
+      const minPlaysRaw = await db.getSettingValue('min_plays_to_unlock_steal');
+      const minPlaysToUnlock = minPlaysRaw ? parseInt(minPlaysRaw) : 1;
+      const playsToday = await db.getPlaysInCurrentCycle(user.id);
+      
+      const isMode2Locked = !isModule2On || (isModule1On && playsToday < minPlaysToUnlock);
+      
+      if (isMode2Locked && btnMode2) {
         btnMode2.classList.add('cursor-not-allowed');
         const chainSvg = `url("data:image/svg+xml,%3Csvg width='24' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='6' cy='6' r='4' fill='none' stroke='%23D1D5DB' stroke-width='2.5'/%3E%3Ccircle cx='14' cy='6' r='4' fill='none' stroke='%23D1D5DB' stroke-width='2.5'/%3E%3Cline x1='18' y1='6' x2='24' y2='6' stroke='%239CA3AF' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E")`;
         
@@ -258,7 +265,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
         `;
         btnMode2.href = "javascript:void(0)";
-        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
+        
+        if (!isModule2On) {
+          btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
+        } else {
+          btnMode2.addEventListener('click', (e) => { 
+            e.preventDefault(); e.stopPropagation(); 
+            showGlobalAlert('Đang khóa', `Bạn cần Cày Cuốc ít nhất ${minPlaysToUnlock} lượt hôm nay để thiết lập 'Bức tường phòng thủ' trước khi đi Thách Đấu!\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
+          }, {capture: true});
+        }
       }
 
       // Load Tutorial Video

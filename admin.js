@@ -1090,6 +1090,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputStealLoseBase = document.getElementById('input_steal_lose_base');
   const inputMaxSteals = document.getElementById('input_max_steals');
   const inputStealMessage = document.getElementById('input_steal_message');
+  const inputMinPlaysToUnlock = document.getElementById('input_min_plays_to_unlock');
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
 
   // Load Settings
@@ -1109,6 +1110,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnSaveTutorialVideo = document.getElementById('btn_save_tutorial_video');
   if (inputTutorialVideo) db.getTutorialVideoUrl().then(url => inputTutorialVideo.value = url || '');
   if (inputStealMessage) db.getSettingValue('steal_message').then(msg => inputStealMessage.value = msg || '');
+  if (inputMinPlaysToUnlock) db.getSettingValue('min_plays_to_unlock_steal').then(val => { if (val) inputMinPlaysToUnlock.value = val; });
 
   // Add click listener for saving the video URL
   if (btnSaveTutorialVideo && inputTutorialVideo) {
@@ -1198,10 +1200,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const loseBase = parseInt(inputStealLoseBase.value);
       const maxSteals = parseInt(inputMaxSteals.value);
       const stealMsg = inputStealMessage ? inputStealMessage.value.trim() : '';
+      const minPlaysToUnlock = inputMinPlaysToUnlock ? parseInt(inputMinPlaysToUnlock.value) : 1;
       
       if (isNaN(winVal) || winVal <= 0 || isNaN(loseVal) || loseVal <= 0 || 
           isNaN(winBase) || winBase <= 0 || isNaN(loseBase) || loseBase <= 0 || 
-          isNaN(maxSteals) || maxSteals < 1) { 
+          isNaN(maxSteals) || maxSteals < 1 || isNaN(minPlaysToUnlock) || minPlaysToUnlock < 1) { 
         showAdminAlert('Lỗi', 'Thông số không hợp lệ'); return; 
       }
       
@@ -1209,9 +1212,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       const r2 = await db.updateStealBasePoints(winBase, loseBase);
       const r3 = await db.updateMaxStealsPerDay(maxSteals);
       await db.updateSettingStatus('steal_message', stealMsg);
+      const r5 = await db.updateSettingStatus('min_plays_to_unlock_steal', minPlaysToUnlock);
       
-      if (r1.success && r2.success && r3.success) {
-        showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Số lượt: ${maxSteals}`);
+      if (r1.success && r2.success && r3.success && r5) {
+        showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Số lượt: ${maxSteals}\nMở khóa: ${minPlaysToUnlock} lượt Cày cuốc`);
       } else {
         showAdminAlert('Lỗi', 'Không thể lưu cấu hình.');
       }
