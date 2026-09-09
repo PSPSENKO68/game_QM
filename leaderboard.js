@@ -356,7 +356,13 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (elLoseTotal) elLoseTotal.textContent = basePoints.lose * multipliers.lose;
           
           const elStealsCount = document.getElementById('modal_steals_count');
-          if (elStealsCount) elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
+          if (elStealsCount) {
+            if (maxSteals >= 999999) {
+              elStealsCount.textContent = 'Vô hạn';
+            } else {
+              elStealsCount.textContent = `${stealsToday}/${maxSteals}`;
+            }
+          }
 
           const modal = document.getElementById('steal_confirm_modal');
           const msgContainer = document.getElementById('modal_steal_custom_message');
