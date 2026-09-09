@@ -815,9 +815,7 @@ export const db = {
             userBestPlays[uid] = play;
           } else {
             const curr = userBestPlays[uid];
-            if (play.correct_count > curr.correct_count) {
-              userBestPlays[uid] = play;
-            } else if (play.correct_count === curr.correct_count && play.time_spent < curr.time_spent) {
+            if (play.time_spent < curr.time_spent) {
               userBestPlays[uid] = play;
             }
           }
