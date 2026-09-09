@@ -179,7 +179,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const maxSteals = await db.getMaxStealsPerDay();
         const usedSteals = await db.getStealsToday(currentUser.id);
         const selfStealsEl = document.getElementById('self_steals');
-        if (selfStealsEl) selfStealsEl.textContent = `${usedSteals}/${maxSteals}`;
+        if (selfStealsEl) {
+          if (maxSteals >= 999999) {
+            selfStealsEl.textContent = `Vô hạn`;
+            selfStealsEl.classList.add('text-[10px]');
+          } else {
+            selfStealsEl.textContent = `${usedSteals}/${maxSteals}`;
+          }
+        }
         
         document.getElementById('self_stats_row').classList.remove('hidden');
       }

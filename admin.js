@@ -1089,6 +1089,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const inputStealWinBase = document.getElementById('input_steal_win_base');
   const inputStealLoseBase = document.getElementById('input_steal_lose_base');
   const inputMaxSteals = document.getElementById('input_max_steals');
+  const checkboxInfiniteSteals = document.getElementById('checkbox_infinite_steals');
   const inputStealMessage = document.getElementById('input_steal_message');
   const inputMinPlaysToUnlock = document.getElementById('input_min_plays_to_unlock');
   const btnSaveMultiplier = document.getElementById('btn_save_multiplier');
@@ -1111,6 +1112,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (inputTutorialVideo) db.getTutorialVideoUrl().then(url => inputTutorialVideo.value = url || '');
   if (inputStealMessage) db.getSettingValue('steal_message').then(msg => inputStealMessage.value = msg || '');
   if (inputMinPlaysToUnlock) db.getSettingValue('min_plays_to_unlock_steal').then(val => { if (val) inputMinPlaysToUnlock.value = val; });
+
+  if (inputMaxSteals && checkboxInfiniteSteals) {
+    db.getMaxStealsPerDay().then(val => {
+      if (val >= 999999) {
+        checkboxInfiniteSteals.checked = true;
+        inputMaxSteals.value = 999999;
+        inputMaxSteals.disabled = true;
+        inputMaxSteals.classList.add('opacity-50');
+      } else {
+        checkboxInfiniteSteals.checked = false;
+        inputMaxSteals.value = val;
+        inputMaxSteals.disabled = false;
+        inputMaxSteals.classList.remove('opacity-50');
+      }
+    });
+
+    checkboxInfiniteSteals.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        inputMaxSteals.value = 999999;
+        inputMaxSteals.disabled = true;
+        inputMaxSteals.classList.add('opacity-50');
+      } else {
+        inputMaxSteals.value = 3;
+        inputMaxSteals.disabled = false;
+        inputMaxSteals.classList.remove('opacity-50');
+      }
+    });
+  }
 
   // Add click listener for saving the video URL
   if (btnSaveTutorialVideo && inputTutorialVideo) {
@@ -1215,7 +1244,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const r5 = await db.updateSettingStatus('min_plays_to_unlock_steal', minPlaysToUnlock);
       
       if (r1.success && r2.success && r3.success && r5) {
-        showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Số lượt: ${maxSteals}\nMở khóa: ${minPlaysToUnlock} lượt Cày cuốc`);
+        const stealLimitTxt = maxSteals >= 999999 ? "Vô hạn" : `${maxSteals} lượt/ngày`;
+        showAdminAlert('Đã lưu ✅', `Thắng: x${winVal}(${winBase}đ) | Thua: x${loseVal}(${loseBase}đ) | Giới hạn: ${stealLimitTxt}\nMở khóa: ${minPlaysToUnlock} lượt Cày cuốc`);
       } else {
         showAdminAlert('Lỗi', 'Không thể lưu cấu hình.');
       }
