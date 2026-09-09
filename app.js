@@ -259,7 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           btnMode2.addEventListener('click', (e) => { 
             e.preventDefault(); e.stopPropagation(); 
-            showGlobalAlert('Thông báo', `Bạn cần Cày Cuốc ít nhất ${minPlaysToUnlock} lượt hôm nay để thiết lập 'Bức tường phòng thủ' trước khi đi Thách Đấu!\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
+            showGlobalAlert('Thông báo', `Bạn cần hoàn thành chế độ cày cuốc để mở khóa tính năng thách đấu với bạn bè\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
           }, {capture: true});
         }
       }
