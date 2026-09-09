@@ -73,12 +73,12 @@
       <!-- Question Section -->
       <div id="question_container" class="card-map p-4 pt-8 md:p-6 flex flex-col justify-center min-h-[110px] relative mb-3 shrink-0 shadow-lg">
         <!-- Floating category/week badge -->
-        <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md" id="quiz_week_badge">
+        <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md z-50" id="quiz_week_badge">
           Tuần Này
         </div>
         
         <!-- Countdown timer badge (Bomb style) -->
-        <div class="absolute -top-5 right-2 w-12 h-12">
+        <div class="absolute -top-5 right-2 w-12 h-12 z-50">
           <div class="absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
             15
           </div>
@@ -124,7 +124,7 @@
       <div class="grid grid-cols-1 gap-3 overflow-y-auto custom-scrollbar flex-1 pb-16" id="answers_container" style="align-content: start;">
         <!-- Answer 1 (Red / Triangle) -->
         <button id="opt_red" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-red outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3 h-full">
+          <div class="flex items-center space-x-3">
             <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
               <div class="kahoot-triangle border-b-white scale-110"></div>
             </div>
@@ -134,7 +134,7 @@
 
         <!-- Answer 2 (Blue / Diamond) -->
         <button id="opt_blue" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-blue outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3 h-full">
+          <div class="flex items-center space-x-3">
             <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
               <div class="kahoot-diamond bg-white scale-110"></div>
             </div>
@@ -144,7 +144,7 @@
 
         <!-- Answer 3 (Yellow / Circle) -->
         <button id="opt_yellow" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-yellow outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3 h-full">
+          <div class="flex items-center space-x-3">
             <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
               <div class="kahoot-circle bg-white scale-110"></div>
             </div>
@@ -154,7 +154,7 @@
 
         <!-- Answer 4 (Green / Square) -->
         <button id="opt_green" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-green outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3 h-full">
+          <div class="flex items-center space-x-3">
             <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
               <div class="kahoot-square bg-white scale-110"></div>
             </div>
