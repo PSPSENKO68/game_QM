@@ -797,15 +797,14 @@ export const db = {
     }
 
     if (data && data.length > 0) {
-      // Lấy thêm best_time của từng user trong ngày hôm nay
-      const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
+      // Lấy thêm best_time của từng user trong chu kỳ hiện tại
+      const bounds = await this.getCurrentCycleBounds();
       
       const { data: playsData } = await supabase
         .from('play_history')
         .select('user_id, correct_count, time_spent')
-        .gte('played_at', todayStart.toISOString())
-        .lte('played_at', todayEnd.toISOString());
+        .gte('played_at', bounds.start)
+        .lte('played_at', bounds.end);
 
       if (playsData && playsData.length > 0) {
         const userBestPlays = {};
