@@ -397,3 +397,18 @@ body::after {
 .danger-blink {
   animation: dangerBlink 1s infinite !important;
 }
+
+/* Custom Scrollbar for Quiz */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(139, 90, 43, 0.4);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 90, 43, 0.7);
+}

@@ -41,7 +41,7 @@
       .kahoot-btn-base:active { transform: translateY(4px); box-shadow: inset 0 0 0 rgba(0,0,0,0.3); border-bottom-width: 4px; }
     </style>
   </head>
-  <body class="min-h-screen flex flex-col justify-between select-none">
+  <body class="h-[100dvh] overflow-hidden flex flex-col justify-between select-none bg-[#FFE194]">
 
     <!-- Top Header & Progress bar -->
     <header class="quiz-header py-3.5 px-4 sticky top-0 z-40">
@@ -68,10 +68,10 @@
     </header>
 
     <!-- Quiz Board area -->
-    <main class="w-full max-w-md mx-auto px-4 py-6 flex-1 flex flex-col justify-between animate-in">
+    <main class="w-full max-w-md mx-auto px-4 pt-6 pb-2 flex-1 flex flex-col justify-between animate-in overflow-hidden">
       
       <!-- Question Section -->
-      <div id="question_container" class="card-map p-6 flex-1 flex flex-col justify-center min-h-[130px] relative mb-5">
+      <div id="question_container" class="card-map p-6 flex flex-col justify-center min-h-[100px] max-h-[35vh] overflow-y-auto custom-scrollbar relative mb-3 shrink-0 shadow-lg">
         <!-- Floating category/week badge -->
         <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md" id="quiz_week_badge">
           Tuần Này
@@ -95,7 +95,7 @@
       </div>
 
       <!-- Current session score indicator (Centered Pill) -->
-      <div class="flex justify-center mb-5">
+      <div class="flex justify-center mb-3 shrink-0">
         <div id="score_pill" class="flex items-center justify-center gap-2 bg-[#4A240A] border-4 border-[#FFD700] px-6 py-2 rounded-full shadow-2xl min-w-[150px]">
           <span id="score_label" class="text-[12px] text-[#FFD700] uppercase tracking-widest font-black mt-0.5">ĐIỂM:</span>
           <span id="score_display" class="text-3xl font-black font-['Space_Grotesk'] text-[#FFF8E7] tracking-tight transition-transform drop-shadow-md">0</span>
@@ -103,7 +103,7 @@
       </div>
 
       <!-- Live Answer Choice Segment (Feedback alert overlay when chosen) -->
-      <div id="feedback_banner" class="hidden mb-4 p-4 rounded-3xl flex items-center justify-between overflow-hidden shadow-2xl border-4 border-[#2B1607] bg-[#FFF8E7]">
+      <div id="feedback_banner" class="hidden mb-3 p-4 rounded-3xl flex items-center justify-between overflow-hidden shadow-2xl border-4 border-[#2B1607] bg-[#FFF8E7] shrink-0">
         <div class="flex items-center gap-3">
           <div id="feedback_icon" class="w-12 h-12 rounded-full border-4 border-[#2B1607] flex items-center justify-center font-black text-2xl shadow-sm text-white">
             ✓
@@ -119,7 +119,7 @@
       </div>
 
       <!-- Grid of 4 colored Options cards (Kahoot shape pattern) -->
-      <div class="grid grid-cols-1 gap-3" id="answers_container">
+      <div class="grid grid-cols-1 gap-3 overflow-y-auto custom-scrollbar flex-1 pb-4" id="answers_container" style="align-content: start;">
         <!-- Answer 1 (Red / Triangle) -->
         <button id="opt_red" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-red outline-none cursor-pointer flex items-center space-x-3 group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
           <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
