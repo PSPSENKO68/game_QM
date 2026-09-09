@@ -41,7 +41,7 @@
       .kahoot-btn-base:active { transform: translateY(4px); box-shadow: inset 0 0 0 rgba(0,0,0,0.3); border-bottom-width: 4px; }
     </style>
   </head>
-  <body class="h-[100dvh] overflow-hidden flex flex-col justify-between select-none bg-[#FFE194]">
+  <body class="min-h-screen flex flex-col justify-between select-none">
 
     <!-- Top Header & Progress bar -->
     <header class="quiz-header py-3.5 px-4 sticky top-0 z-40">
@@ -57,15 +57,8 @@
         <!-- Current play index indicator -->
         <span class="font-['Space_Grotesk'] font-black text-white text-[16px] uppercase tracking-wider drop-shadow-md" id="question_counter">Câu 0/10</span>
 
-        <!-- Countdown timer (moved to header) -->
-        <div class="relative w-12 h-12 shrink-0 -my-2 mr-1">
-          <div class="absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
-            15
-          </div>
-          <div id="spark_container" class="absolute inset-0 pointer-events-none transition-transform duration-1000 ease-linear" style="transform: rotate(0deg);">
-            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-2xl animate-shake">💥</div>
-          </div>
-        </div>
+        <!-- Spacer for alignment -->
+        <div class="w-16"></div>
       </div>
 
       <!-- Linear progress bar container -->
@@ -75,28 +68,34 @@
     </header>
 
     <!-- Quiz Board area -->
-    <main class="w-full max-w-md mx-auto px-4 pt-6 pb-2 flex-1 flex flex-col justify-between animate-in min-h-0">
+    <main class="w-full max-w-md mx-auto px-4 py-6 flex-1 flex flex-col justify-between animate-in">
       
       <!-- Question Section -->
-      <div id="question_container" class="card-map p-4 pt-8 md:p-6 flex flex-col justify-center min-h-[110px] relative mb-3 shrink-0 shadow-lg">
+      <div id="question_container" class="card-map p-6 flex-1 flex flex-col justify-center min-h-[130px] relative mb-5">
         <!-- Floating category/week badge -->
-        <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md z-50" id="quiz_week_badge">
+        <div class="absolute -top-3 left-4 inline-flex px-3 py-1 bg-[#DE3A3B] border-2 border-[#4A240A] rounded-full text-[10px] text-white font-black uppercase tracking-wider shadow-md" id="quiz_week_badge">
           Tuần Này
         </div>
         
-
-
-        <div class="flex flex-col justify-center max-h-[30vh] overflow-y-auto custom-scrollbar px-2 -mx-2">
-          <img id="question_image" onerror="this.classList.add('hidden')" src="" alt="Hình ảnh câu hỏi" class="hidden w-full max-h-[200px] object-contain rounded-xl border-2 border-[#8B5A2B] mt-1 mb-2" />
-          
-          <p class="font-extrabold text-center text-[#2B1607] leading-relaxed text-[17px] md:text-[19px] block drop-shadow-sm mt-1" id="question_text">
-            Đang chuẩn bị câu hỏi...
-          </p>
+        <!-- Countdown timer badge (Bomb style) -->
+        <div class="absolute -top-5 right-2 w-12 h-12">
+          <div class="absolute inset-0 inline-flex items-center justify-center bg-black border-4 border-[#4A240A] rounded-full text-[#FFD700] font-black text-lg shadow-lg transition-colors" id="countdown_timer" style="box-shadow: inset -2px -2px 10px rgba(255,255,255,0.2);">
+            15
+          </div>
+          <div id="spark_container" class="absolute inset-0 pointer-events-none transition-transform duration-1000 ease-linear" style="transform: rotate(0deg);">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2 text-2xl animate-shake">💥</div>
+          </div>
         </div>
+
+        <img id="question_image" onerror="this.classList.add('hidden')" src="" alt="Hình ảnh câu hỏi" class="hidden w-full max-h-[200px] object-contain rounded-xl border-2 border-[#8B5A2B] mt-3" />
+        
+        <p class="font-extrabold text-center text-[#2B1607] leading-relaxed text-[17px] md:text-[19px] block drop-shadow-sm mt-3" id="question_text">
+          Đang chuẩn bị câu hỏi...
+        </p>
       </div>
 
       <!-- Current session score indicator (Centered Pill) -->
-      <div class="flex justify-center mb-3 shrink-0">
+      <div class="flex justify-center mb-5">
         <div id="score_pill" class="flex items-center justify-center gap-2 bg-[#4A240A] border-4 border-[#FFD700] px-6 py-2 rounded-full shadow-2xl min-w-[150px]">
           <span id="score_label" class="text-[12px] text-[#FFD700] uppercase tracking-widest font-black mt-0.5">ĐIỂM:</span>
           <span id="score_display" class="text-3xl font-black font-['Space_Grotesk'] text-[#FFF8E7] tracking-tight transition-transform drop-shadow-md">0</span>
@@ -104,7 +103,7 @@
       </div>
 
       <!-- Live Answer Choice Segment (Feedback alert overlay when chosen) -->
-      <div id="feedback_banner" class="hidden mb-3 p-4 rounded-3xl flex items-center justify-between overflow-hidden shadow-2xl border-4 border-[#2B1607] bg-[#FFF8E7] shrink-0">
+      <div id="feedback_banner" class="hidden mb-4 p-4 rounded-3xl flex items-center justify-between overflow-hidden shadow-2xl border-4 border-[#2B1607] bg-[#FFF8E7]">
         <div class="flex items-center gap-3">
           <div id="feedback_icon" class="w-12 h-12 rounded-full border-4 border-[#2B1607] flex items-center justify-center font-black text-2xl shadow-sm text-white">
             ✓
@@ -120,46 +119,38 @@
       </div>
 
       <!-- Grid of 4 colored Options cards (Kahoot shape pattern) -->
-      <div class="grid grid-cols-1 gap-3 overflow-y-auto custom-scrollbar flex-1 pb-16" id="answers_container" style="align-content: start;">
+      <div class="grid grid-cols-1 gap-3" id="answers_container">
         <!-- Answer 1 (Red / Triangle) -->
-        <div id="opt_red" role="button" tabindex="0" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-red outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
-              <div class="kahoot-triangle border-b-white scale-110"></div>
-            </div>
-            <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_red">...</span>
+        <button id="opt_red" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-red outline-none cursor-pointer flex items-center space-x-3 group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-triangle border-b-white scale-110"></div>
           </div>
-        </div>
+          <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_red">...</span>
+        </button>
 
         <!-- Answer 2 (Blue / Diamond) -->
-        <div id="opt_blue" role="button" tabindex="0" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-blue outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
-              <div class="kahoot-diamond bg-white scale-110"></div>
-            </div>
-            <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_blue">...</span>
+        <button id="opt_blue" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-blue outline-none cursor-pointer flex items-center space-x-3 group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-diamond bg-white scale-110"></div>
           </div>
-        </div>
+          <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_blue">...</span>
+        </button>
 
         <!-- Answer 3 (Yellow / Circle) -->
-        <div id="opt_yellow" role="button" tabindex="0" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-yellow outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
-              <div class="kahoot-circle bg-white scale-110"></div>
-            </div>
-            <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_yellow">...</span>
+        <button id="opt_yellow" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-yellow outline-none cursor-pointer flex items-center space-x-3 group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-circle bg-white scale-110"></div>
           </div>
-        </div>
+          <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_yellow">...</span>
+        </button>
 
         <!-- Answer 4 (Green / Square) -->
-        <div id="opt_green" role="button" tabindex="0" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-green outline-none cursor-pointer group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
-          <div class="flex items-center space-x-3">
-            <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
-              <div class="kahoot-square bg-white scale-110"></div>
-            </div>
-            <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_green">...</span>
+        <button id="opt_green" class="opt-btn kahoot-btn-base w-full min-h-[80px] text-left p-4 rounded-3xl text-white bg-kahoot-green outline-none cursor-pointer flex items-center space-x-3 group relative border-b-[6px] border-black/30 active:border-b-0 active:translate-y-[6px]">
+          <div class="flex-shrink-0 w-10 h-10 rounded-xl bg-white/20 border-2 border-white/30 flex items-center justify-center">
+            <div class="kahoot-square bg-white scale-110"></div>
           </div>
-        </div>
+          <span class="text-white font-black leading-snug text-[17px] pr-2 select-none drop-shadow-md" id="text_green">...</span>
+        </button>
       </div>
     </main>
 
