@@ -834,7 +834,24 @@ export const db = {
           u.best_correct = 0;
         });
       }
-    }
+      
+      // Sort here before closing the outer if block
+      data.sort((a, b) => {
+        const scoreA = parseFloat(a.total_score) || 0;
+        const scoreB = parseFloat(b.total_score) || 0;
+        if (scoreB !== scoreA) {
+          return scoreB - scoreA;
+        }
+        const timeA = parseFloat(a.best_time) || 999999999;
+        const timeB = parseFloat(b.best_time) || 999999999;
+        
+        console.log(`[DEBUG SORT] TIE! ${a.full_name} (${timeA}ms) VS ${b.full_name} (${timeB}ms) -> Winner: ${timeA < timeB ? a.full_name : b.full_name}`);
+        
+        if (timeA < timeB) return -1;
+        if (timeA > timeB) return 1;
+        return 0;
+      });
+    } // End of if (data && data.length > 0)
 
     return data || [];
   },
@@ -857,24 +874,16 @@ export const db = {
   },
 
   async getUserRank(userId) {
-    const { data } = await supabase
-      .from('users')
-      .select('id, total_score')
-      .eq('is_active', true)
-      .neq('role', 'owner')
-      .gt('total_score', 0)  // Chỉ xếp hạng người có điểm > 0
-      .order('total_score', { ascending: false });
+    const leaderboard = await this.getLeaderboard();
+    if (!leaderboard || leaderboard.length === 0) return null;
+    
+    // Tìm vị trí của user trong danh sách đã sắp xếp (bao gồm cả điểm và thời gian)
+    const rank = leaderboard.findIndex(u => u.id === userId);
+    if (rank < 0) return null; // Không có hạng
 
-    if (!data) return null;
-
-    // Kiểm tra user có trong danh sách rank không (phải có điểm > 0)
-    const rank = data.findIndex(u => u.id === userId);
-    if (rank < 0) return null; // Không có hạng (chưa có điểm)
-
-    // Xử lý đồng hạng: người đồng điểm có cùng hạng
-    const myScore = data[rank].total_score;
-    const firstWithSameScore = data.findIndex(u => u.total_score === myScore);
-    return firstWithSameScore + 1;
+    // Không dùng firstWithSameScore nữa vì giờ đã tính cả thời gian
+    // Hạng chính là index + 1
+    return rank + 1;
   },
 
   // ── 6. ADMIN: DASHBOARD ─────────────────────────────────────────────────
