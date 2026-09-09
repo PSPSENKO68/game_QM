@@ -321,6 +321,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         const cycleDaysRaw = await db.getSettingValue('mode1_cycle_days');
         const cycleDays = parseInt(cycleDaysRaw) || 1;
+        const basePointRaw = await db.getSettingValue('mode1_base_point');
+        const basePoint = parseInt(basePointRaw) || 10;
 
         btnMode1.addEventListener('click', () => {
           if (playsToday >= userLimit) {
@@ -333,6 +335,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('rules_max_plays').textContent = userLimit;
             document.getElementById('rules_max_plays_2').textContent = userLimit;
             document.getElementById('rules_cycle_days').textContent = cycleDays;
+            
+            const rulesBasePoint = document.getElementById('rules_base_point');
+            if (rulesBasePoint) rulesBasePoint.textContent = `+${basePoint} điểm/câu`;
+            
             modalRules.classList.remove('hidden');
 
             const btnCancel = document.getElementById('btn_cancel_rules');

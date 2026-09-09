@@ -1097,8 +1097,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     db.getModule1Status().then(isOn => inputModule1Status.value = isOn ? 'ON' : 'OFF');
     const inputMode1MaxPlays = document.getElementById('input_mode1_max_plays');
     const inputMode1CycleDays = document.getElementById('input_mode1_cycle_days');
+    const inputMode1BasePoint = document.getElementById('input_mode1_base_point');
+
     db.getSettingValue('mode1_max_plays').then(val => { if(val && inputMode1MaxPlays) inputMode1MaxPlays.value = val; });
     db.getSettingValue('mode1_cycle_days').then(val => { if(val && inputMode1CycleDays) inputMode1CycleDays.value = val; });
+    db.getSettingValue('mode1_base_point').then(val => { if(val && inputMode1BasePoint) inputMode1BasePoint.value = val; });
   }
   if (inputModule2Status) db.getModule2Status().then(isOn => inputModule2Status.value = isOn ? 'ON' : 'OFF');
   if (inputRandomizeQuestions) db.getRandomizeQuestionsStatus().then(isOn => inputRandomizeQuestions.value = isOn ? 'ON' : 'OFF');
@@ -1147,15 +1150,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnSaveModule1Status.addEventListener('click', async () => {
       const inputMode1MaxPlays = document.getElementById('input_mode1_max_plays');
       const inputMode1CycleDays = document.getElementById('input_mode1_cycle_days');
+      const inputMode1BasePoint = document.getElementById('input_mode1_base_point');
       const maxPlays = inputMode1MaxPlays ? inputMode1MaxPlays.value : "3";
       const cycleDays = inputMode1CycleDays ? inputMode1CycleDays.value : "3";
+      const basePoint = inputMode1BasePoint ? inputMode1BasePoint.value : "10";
       
       const r1 = await db.updateModule1Status(inputModule1Status.value);
       const r2 = await db.updateSettingStatus('mode1_max_plays', maxPlays);
       const r3 = await db.updateSettingStatus('mode1_cycle_days', cycleDays);
       const r4 = await db.updateSettingStatus('mode1_cycle_start', new Date().toISOString());
+      const r5 = await db.updateSettingStatus('mode1_base_point', basePoint);
       
-      if (r1.success && r2.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}\nChu kỳ: ${maxPlays} lượt / ${cycleDays} ngày.\n(Chu kỳ tính từ thời điểm lưu)`);
+      if (r1.success && r2.success && r5.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}\nChu kỳ: ${maxPlays} lượt / ${cycleDays} ngày.\nĐiểm/câu: ${basePoint} điểm\n(Chu kỳ tính từ thời điểm lưu)`);
       else showAdminAlert('Lỗi', r1.message || 'Không thể lưu.');
     });
   }
