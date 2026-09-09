@@ -112,7 +112,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  try {
+  async function loadLeaderboard() {
+    try {
     const rankings = isStreakMode ? await db.getStreakLeaderboard() : await db.getLeaderboard();
 
     leaderboardList.innerHTML = '';
@@ -428,5 +429,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
     }
+    }
   }
+
+  // Khởi chạy ngay khi load trang
+  await loadLeaderboard();
+
+  // Tự động làm mới dữ liệu mỗi 1 phút (60000ms)
+  setInterval(loadLeaderboard, 60000);
 });
