@@ -553,8 +553,45 @@
 
 
 
-
       </div>
+      <!-- VIEWPORT: LUCKY DRAW -->
+      <section id="section_lucky_draw" class="admin-view card-map p-6 flex flex-col gap-6 hidden">
+        <div>
+          <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quay Số Trúng Thưởng (Nhảy số MEGA)</h2>
+          <p class="text-xs text-[#593113]">Tính năng quay số nhanh ngẫu nhiên cho người chơi tham gia</p>
+        </div>
+
+        <div class="flex flex-col items-center justify-center p-8 bg-[rgba(255,255,255,0.5)] border-4 border-[#8B5A2B] rounded-3xl relative overflow-hidden min-h-[300px]">
+          <!-- Confetti container -->
+          <div id="confetti_container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
+          
+          <div class="z-10 text-center flex flex-col items-center gap-6">
+            <div id="lucky_mega_display" class="font-['Space_Grotesk'] text-7xl md:text-9xl font-black text-[#DE3A3B] drop-shadow-lg tracking-widest bg-white/80 px-8 py-4 rounded-3xl border-4 border-dashed border-[#DE3A3B] min-w-[300px] transition-transform duration-100">
+              000
+            </div>
+            <div id="lucky_winner_name" class="text-2xl font-bold text-[#4A240A] h-8 opacity-0 transition-opacity duration-500">
+              <!-- Tên người trúng thưởng -->
+            </div>
+            <div class="flex gap-4 mt-4">
+              <button id="btn_start_lucky_draw" class="btn-pirate px-10 py-4 text-white font-black text-xl rounded-2xl transition cursor-pointer shadow-xl hover:scale-105 active:scale-95">
+                🎰 BẮT ĐẦU QUAY
+              </button>
+              <button id="btn_reset_lucky_draw" class="px-6 py-4 bg-slate-200 text-slate-600 font-bold text-lg rounded-2xl transition cursor-pointer hover:bg-slate-300">
+                LÀM MỚI
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <h3 class="text-md font-bold text-[#4A240A] mb-3">Lịch Sử Người Trúng Giải</h3>
+          <div class="bg-[rgba(255,255,255,0.8)] border-2 border-dashed border-[#8B5A2B] rounded-2xl p-4 min-h-[100px]">
+            <ul id="lucky_winners_list" class="space-y-2">
+              <li class="text-xs italic text-slate-500 text-center">Chưa có ai trúng thưởng phiên này</li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -943,46 +980,6 @@
         class="w-full btn-pirate text-white font-bold py-2.5 px-6 rounded-xl transition text-xs cursor-pointer">
         Xác Nhận
       </button>
-    </div>
-
-    <!-- VIEWPORT: LUCKY DRAW -->
-    <section id="section_lucky_draw" class="admin-view card-map p-6 flex flex-col gap-6 hidden">
-      <div>
-        <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quay Số Trúng Thưởng (Nhảy số MEGA)</h2>
-        <p class="text-xs text-[#593113]">Tính năng quay số nhanh ngẫu nhiên cho người chơi tham gia</p>
-      </div>
-
-      <div class="flex flex-col items-center justify-center p-8 bg-[rgba(255,255,255,0.5)] border-4 border-[#8B5A2B] rounded-3xl relative overflow-hidden min-h-[300px]">
-        <!-- Confetti container -->
-        <div id="confetti_container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
-        
-        <div class="z-10 text-center flex flex-col items-center gap-6">
-          <div id="lucky_mega_display" class="font-['Space_Grotesk'] text-7xl md:text-9xl font-black text-[#DE3A3B] drop-shadow-lg tracking-widest bg-white/80 px-8 py-4 rounded-3xl border-4 border-dashed border-[#DE3A3B] min-w-[300px] transition-transform duration-100">
-            000
-          </div>
-          <div id="lucky_winner_name" class="text-2xl font-bold text-[#4A240A] h-8 opacity-0 transition-opacity duration-500">
-            <!-- Tên người trúng thưởng -->
-          </div>
-          <div class="flex gap-4 mt-4">
-            <button id="btn_start_lucky_draw" class="btn-pirate px-10 py-4 text-white font-black text-xl rounded-2xl transition cursor-pointer shadow-xl hover:scale-105 active:scale-95">
-              🎰 BẮT ĐẦU QUAY
-            </button>
-            <button id="btn_reset_lucky_draw" class="px-6 py-4 bg-slate-200 text-slate-600 font-bold text-lg rounded-2xl transition cursor-pointer hover:bg-slate-300">
-              LÀM MỚI
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-6">
-        <h3 class="text-md font-bold text-[#4A240A] mb-3">Lịch Sử Người Trúng Giải</h3>
-        <div class="bg-[rgba(255,255,255,0.8)] border-2 border-dashed border-[#8B5A2B] rounded-2xl p-4 min-h-[100px]">
-          <ul id="lucky_winners_list" class="space-y-2">
-            <li class="text-xs italic text-slate-500 text-center">Chưa có ai trúng thưởng phiên này</li>
-          </ul>
-        </div>
-      </div>
-    </section>
   </div>
 
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
