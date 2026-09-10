@@ -802,9 +802,15 @@ export const db = {
       
       const { data: playsData } = await supabase
         .from('play_history')
-        .select('user_id, correct_count, time_spent')
+        .select('user_id, correct_count, time_spent, played_at')
         .gte('played_at', bounds.start)
         .lte('played_at', bounds.end);
+
+      const { data: stealsData } = await supabase
+        .from('steal_history')
+        .select('attacker_id, created_at')
+        .gte('created_at', bounds.start)
+        .lte('created_at', bounds.end);
 
       if (playsData && playsData.length > 0) {
         const userBestPlays = {};
@@ -844,6 +850,21 @@ export const db = {
           u.best_correct = 0;
         });
       }
+
+      // Calculate earliest participation time for Tie-breaker 3
+      const userEarliestTime = {};
+      if (playsData) {
+        playsData.forEach(p => {
+          const t = new Date(p.played_at).getTime();
+          if (!userEarliestTime[p.user_id] || t < userEarliestTime[p.user_id]) userEarliestTime[p.user_id] = t;
+        });
+      }
+      if (stealsData) {
+        stealsData.forEach(s => {
+          const t = new Date(s.created_at).getTime();
+          if (!userEarliestTime[s.attacker_id] || t < userEarliestTime[s.attacker_id]) userEarliestTime[s.attacker_id] = t;
+        });
+      }
       
       // Sort here before closing the outer if block
       data.sort((a, b) => {
@@ -858,9 +879,10 @@ export const db = {
         if (timeA < timeB) return -1;
         if (timeA > timeB) return 1;
         
-        // Tie-breaker 3: Ai tạo tài khoản/tham gia trước thì xếp trên
-        const dateA = new Date(a.created_at || 0).getTime();
-        const dateB = new Date(b.created_at || 0).getTime();
+        // Tie-breaker 3: Ai bắt đầu chơi (cày cuốc/thách đấu) sớm hơn thì xếp trên
+        // Fallback về created_at của tài khoản nếu họ chưa chơi gì cả
+        const dateA = userEarliestTime[a.id] || new Date(a.created_at || 0).getTime();
+        const dateB = userEarliestTime[b.id] || new Date(b.created_at || 0).getTime();
         if (dateA < dateB) return -1;
         if (dateA > dateB) return 1;
         
