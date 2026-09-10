@@ -812,6 +812,21 @@ export const db = {
         .gte('created_at', bounds.start)
         .lte('created_at', bounds.end);
 
+      // Calculate earliest participation time for Tie-breaker 3 first
+      const userEarliestTime = {};
+      if (playsData) {
+        playsData.forEach(p => {
+          const t = new Date(p.played_at).getTime();
+          if (!userEarliestTime[p.user_id] || t < userEarliestTime[p.user_id]) userEarliestTime[p.user_id] = t;
+        });
+      }
+      if (stealsData) {
+        stealsData.forEach(s => {
+          const t = new Date(s.created_at).getTime();
+          if (!userEarliestTime[s.attacker_id] || t < userEarliestTime[s.attacker_id]) userEarliestTime[s.attacker_id] = t;
+        });
+      }
+
       if (playsData && playsData.length > 0) {
         const userBestPlays = {};
         let maxValidTime = 0;
@@ -840,29 +855,21 @@ export const db = {
             u.best_time = best.time_spent;
             u.best_correct = best.correct_count;
           } else {
-            u.best_time = maxValidTime > 0 ? maxValidTime : 999999999;
+            const hasParticipated = !!userEarliestTime[u.id];
+            if (hasParticipated) {
+              u.best_time = maxValidTime > 0 ? maxValidTime : 999999999;
+            } else {
+              u.best_time = 999999999;
+            }
             u.best_correct = 0;
           }
         });
       } else {
         data.forEach(u => {
+          const hasParticipated = !!userEarliestTime[u.id];
+          // Even if no playsData, maxValidTime is 0, so time is 999999999 anyway
           u.best_time = 999999999;
           u.best_correct = 0;
-        });
-      }
-
-      // Calculate earliest participation time for Tie-breaker 3
-      const userEarliestTime = {};
-      if (playsData) {
-        playsData.forEach(p => {
-          const t = new Date(p.played_at).getTime();
-          if (!userEarliestTime[p.user_id] || t < userEarliestTime[p.user_id]) userEarliestTime[p.user_id] = t;
-        });
-      }
-      if (stealsData) {
-        stealsData.forEach(s => {
-          const t = new Date(s.created_at).getTime();
-          if (!userEarliestTime[s.attacker_id] || t < userEarliestTime[s.attacker_id]) userEarliestTime[s.attacker_id] = t;
         });
       }
       
