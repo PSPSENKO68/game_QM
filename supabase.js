@@ -786,7 +786,7 @@ export const db = {
   async getLeaderboard() {
     const { data, error } = await supabase
       .from('users')
-      .select('id, employee_code, full_name, department, total_score, role, mega_code')
+      .select('id, employee_code, full_name, department, total_score, role, mega_code, created_at')
       .eq('is_active', true)
       .neq('role', 'owner')
       .order('total_score', { ascending: false });
@@ -858,7 +858,13 @@ export const db = {
         if (timeA < timeB) return -1;
         if (timeA > timeB) return 1;
         
-        // Tie-breaker 3: Alphabetical by name if both score and time are equal
+        // Tie-breaker 3: Ai tạo tài khoản/tham gia trước thì xếp trên
+        const dateA = new Date(a.created_at || 0).getTime();
+        const dateB = new Date(b.created_at || 0).getTime();
+        if (dateA < dateB) return -1;
+        if (dateA > dateB) return 1;
+        
+        // Tie-breaker 4: Alphabetical by name
         const nameA = (a.full_name || '').trim().toLowerCase();
         const nameB = (b.full_name || '').trim().toLowerCase();
         if (nameA < nameB) return -1;
