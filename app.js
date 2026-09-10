@@ -242,26 +242,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnMode1.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Đang khóa', 'Chế độ Cày Cuốc đang tạm thời bị khóa.'); }, {capture: true});
       }
       
-      const minPlaysRaw = await db.getSettingValue('min_plays_to_unlock_steal');
-      const minPlaysToUnlock = minPlaysRaw ? parseInt(minPlaysRaw) : 1;
-      const playsToday = await db.getPlaysInCurrentCycle(user.id);
-      
-      const isMode2Locked = !isModule2On || (isModule1On && playsToday < minPlaysToUnlock);
+      const isMode2Locked = !isModule2On;
       
       if (isMode2Locked && btnMode2) {
-        if (!isModule2On) {
-          btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
-        }
+        btnMode2.classList.add('opacity-50', 'cursor-not-allowed', 'grayscale');
         btnMode2.href = "javascript:void(0)";
-        
-        if (!isModule2On) {
-          btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
-        } else {
-          btnMode2.addEventListener('click', (e) => { 
-            e.preventDefault(); e.stopPropagation(); 
-            showGlobalAlert('Thông báo', `Bạn cần hoàn thành chế độ cày cuốc để mở khóa tính năng thách đấu với bạn bè\n\n(Đã hoàn thành: ${playsToday}/${minPlaysToUnlock})`); 
-          }, {capture: true});
-        }
+        btnMode2.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); showGlobalAlert('Sắp ra mắt', 'Sự kiện bắt đầu sau 24h'); }, {capture: true});
       }
 
       // Load Tutorial Video

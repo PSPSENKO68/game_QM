@@ -299,6 +299,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td class="p-3 font-bold text-[#4A240A]">${u.full_name}</td>
         <td class="p-3">${roleBadge}</td>
         <td class="p-3 text-[#8B5A2B] text-xs">${u.department || '—'}</td>
+        <td class="p-3 font-bold text-rose-600 text-[11px]">${u.mega_code || '—'}</td>
         <td class="p-3 font-mono text-[#8B5A2B] text-xs">••••</td>
         <td class="p-3 text-center">${limitDisplay}</td>
         <td class="p-3 text-center font-extrabold text-[#DE3A3B] font-['Space_Grotesk']">${u.total_score || 0}đ</td>
@@ -1495,6 +1496,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
 
     container.innerHTML = statsHtml;
+  }
+
+  // ── Search functionality ───────────────────────────────────────────────────────
+  const inputSearchUser = document.getElementById('input_search_user');
+  if (inputSearchUser) {
+    inputSearchUser.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase().trim();
+      const usersTableBody = document.getElementById('users_table_body');
+      if (!usersTableBody) return;
+      const rows = usersTableBody.querySelectorAll('tr');
+      rows.forEach(row => {
+        if (row.cells.length < 9) return; // Skip loading/empty rows
+        const acc = row.cells[0].textContent.toLowerCase();
+        const name = row.cells[1].textContent.toLowerCase();
+        const mega = row.cells[4].textContent.toLowerCase();
+        
+        if (acc.includes(searchTerm) || name.includes(searchTerm) || mega.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    });
   }
 
   // ── Initial render ───────────────────────────────────────────────────────────
