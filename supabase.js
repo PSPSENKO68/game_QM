@@ -808,6 +808,7 @@ export const db = {
 
       if (playsData && playsData.length > 0) {
         const userBestPlays = {};
+        let maxValidTime = 0;
         playsData.forEach(play => {
           const uid = play.user_id;
           if (!userBestPlays[uid]) {
@@ -820,10 +821,22 @@ export const db = {
           }
         });
         
+        // Find the absolute worst time
+        Object.values(userBestPlays).forEach(play => {
+          if (play.time_spent > maxValidTime) {
+            maxValidTime = play.time_spent;
+          }
+        });
+        
         data.forEach(u => {
           const best = userBestPlays[u.id];
-          u.best_time = best ? best.time_spent : 999999999;
-          u.best_correct = best ? best.correct_count : 0;
+          if (best) {
+            u.best_time = best.time_spent;
+            u.best_correct = best.correct_count;
+          } else {
+            u.best_time = maxValidTime > 0 ? maxValidTime : 999999999;
+            u.best_correct = 0;
+          }
         });
       } else {
         data.forEach(u => {
