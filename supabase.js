@@ -855,10 +855,15 @@ export const db = {
         const timeA = parseFloat(a.best_time) || 999999999;
         const timeB = parseFloat(b.best_time) || 999999999;
         
-        console.log(`[DEBUG SORT] TIE! ${a.full_name} (${timeA}ms) VS ${b.full_name} (${timeB}ms) -> Winner: ${timeA < timeB ? a.full_name : b.full_name}`);
-        
         if (timeA < timeB) return -1;
         if (timeA > timeB) return 1;
+        
+        // Tie-breaker 3: Alphabetical by name if both score and time are equal
+        const nameA = (a.full_name || '').trim().toLowerCase();
+        const nameB = (b.full_name || '').trim().toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        
         return 0;
       });
     } // End of if (data && data.length > 0)
