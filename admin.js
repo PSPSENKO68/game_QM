@@ -22,12 +22,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   const tabQuizzesBtn = document.getElementById('tab_quizzes_btn');
   const tabHistoryBtn = document.getElementById('tab_history_btn');
   const tabImportBtn = document.getElementById('tab_import_btn');
-      const adminDbMode = document.getElementById('admin_db_mode');
+  const tabLuckyBtn = document.getElementById('tab_lucky_btn');
+  const adminDbMode = document.getElementById('admin_db_mode');
   const sectionUsers = document.getElementById('section_users');
   const sectionQuizzes = document.getElementById('section_quizzes');
   const sectionHistory = document.getElementById('section_history');
   const sectionImport = document.getElementById('section_import');
-    
+  const sectionLuckyDraw = document.getElementById('section_lucky_draw');
   // User Modal
   const modalUser = document.getElementById('modal_user');
   const formUser = document.getElementById('form_user');
@@ -176,7 +177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     { btn: tabUsersBtn, section: sectionUsers },
     { btn: tabQuizzesBtn, section: sectionQuizzes },
     { btn: tabHistoryBtn, section: sectionHistory },
-    { btn: tabImportBtn, section: sectionImport }
+    { btn: tabImportBtn, section: sectionImport },
+    { btn: tabLuckyBtn, section: sectionLuckyDraw }
   ];
 
   tabConfigs.forEach(tab => {
