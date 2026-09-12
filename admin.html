@@ -572,7 +572,7 @@
               <!-- Tên người trúng thưởng -->
             </div>
             <div class="flex gap-4 mt-4">
-              <button id="btn_start_lucky_draw" onclick="if(window.startLuckyDrawGlobal) window.startLuckyDrawGlobal();" class="btn-pirate px-10 py-4 text-white font-black text-xl rounded-2xl transition cursor-pointer shadow-xl hover:scale-105 active:scale-95">
+              <button id="btn_start_lucky_draw" onclick="alert('Nút quay số đã nhận tín hiệu click!'); if(window.startLuckyDrawGlobal) window.startLuckyDrawGlobal(); else alert('CẢNH BÁO LỚN: Máy chủ chưa tải xong mã nguồn Javascript, vui lòng F5 lại trang!');" class="btn-pirate px-10 py-4 text-white font-black text-xl rounded-2xl transition cursor-pointer shadow-xl hover:scale-105 active:scale-95">
                 🎰 BẮT ĐẦU QUAY
               </button>
               <button id="btn_reset_lucky_draw" class="px-6 py-4 bg-slate-200 text-slate-600 font-bold text-lg rounded-2xl transition cursor-pointer hover:bg-slate-300">
