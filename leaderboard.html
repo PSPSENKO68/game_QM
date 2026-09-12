@@ -308,6 +308,25 @@
     </div>
   </div>
 
+  <!-- Custom Confirm Modal -->
+  <div id="custom_confirm_modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+    <div class="card-map rounded-3xl p-6 max-w-sm w-full shadow-2xl border-4 border-[#8B5A2B] relative overflow-hidden animate-in zoom-in duration-200">
+      <div class="relative z-10 text-center">
+        <div class="text-4xl mb-3">⚠️</div>
+        <h3 class="text-lg font-black font-['Space_Grotesk'] text-[#4A240A] mb-3 uppercase tracking-widest">CẢNH BÁO</h3>
+        <p id="custom_confirm_message" class="text-[13px] text-[#593113] font-bold mb-5 bg-[#FFF8E7] rounded-xl p-4 border-2 border-[#8B5A2B] shadow-inner"></p>
+        <div class="flex gap-3">
+          <button id="btn_cancel_custom_confirm" class="w-1/2 py-3 bg-slate-300 rounded-xl font-black text-slate-700 text-[12px] uppercase shadow-md active:scale-95 transition-transform">
+            Hủy Bỏ
+          </button>
+          <button id="btn_ok_custom_confirm" class="btn-pirate-yellow w-1/2 py-3 rounded-xl font-black text-[#2B1607] text-[12px] uppercase shadow-md active:scale-95 transition-transform">
+            Tiếp Tục
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="text-center py-4 text-[#FFF8E7] text-xs font-bold" style="text-shadow: 1px 1px 1px #000;">
     BẢNG VÀNG ĐƯỢC CẬP NHẬT LIÊN TỤC TỪ ADMIN QM
   </footer>

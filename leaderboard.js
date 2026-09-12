@@ -308,6 +308,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       };
 
+      // Helper function for custom confirms
+      const showCustomConfirm = (msg) => {
+        return new Promise((resolve) => {
+          const modal = document.getElementById('custom_confirm_modal');
+          const msgEl = document.getElementById('custom_confirm_message');
+          const btnCancel = document.getElementById('btn_cancel_custom_confirm');
+          const btnOk = document.getElementById('btn_ok_custom_confirm');
+          
+          if (modal && msgEl && btnCancel && btnOk) {
+            msgEl.textContent = msg;
+            modal.classList.remove('hidden');
+            
+            btnCancel.onclick = () => {
+              modal.classList.add('hidden');
+              resolve(false);
+            };
+            
+            btnOk.onclick = () => {
+              modal.classList.add('hidden');
+              resolve(true);
+            };
+          } else {
+            resolve(window.confirm(msg)); // Fallback
+          }
+        });
+      };
+
       document.querySelectorAll('.btn-steal').forEach(btn => {
         btn.addEventListener('click', async () => {
           const targetId = btn.getAttribute('data-id');
@@ -318,7 +345,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           const freshUser = await db.getUserById(currentUser.id);
           if (!freshUser || !freshUser.mega_code) {
-            const proceed = window.confirm('Bạn nên chơi cày cuốc trước để lưu thành tích cá nhân. Việc tự ý tham gia thách đấu trước cày cuốc, hệ thống sẽ tự động lấy thời gian của người chót bảng và gán vào thành tích của bạn. Bạn có chắc chắn muốn tiếp tục?');
+            const proceed = await showCustomConfirm('Bạn nên chơi cày cuốc trước để lưu thành tích cá nhân. Việc tự ý tham gia thách đấu trước cày cuốc, hệ thống sẽ tự động lấy thời gian của người chót bảng và gán vào thành tích của bạn. Bạn có chắc chắn muốn tiếp tục?');
             if (!proceed) {
               btn.textContent = 'Thách Đấu ⚔️';
               return;
