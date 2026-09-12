@@ -179,6 +179,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function loadQuestion(index) {
     hasSelected = false;
+    btnNextQuestion.disabled = false;
+    btnNextQuestion.textContent = "TIẾP TỤC ➔";
     feedbackBanner.classList.add('hidden');
     answersContainer.classList.remove('opacity-50', 'opacity-80');
 
@@ -409,10 +411,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Make feedback details visible
     feedbackBanner.classList.remove('hidden');
+
+    // Auto next question after 1.5s
+    if (currentIndex < questions.length - 1) {
+      btnNextQuestion.textContent = "ĐANG CHUYỂN...";
+    } else {
+      btnNextQuestion.textContent = "ĐANG LƯU...";
+    }
+    btnNextQuestion.disabled = true;
+
+    setTimeout(() => {
+      btnNextQuestion.disabled = false;
+      btnNextQuestion.click();
+    }, 1500);
   }
 
   // Handle "TIẾP TỤC" (Next question or finish)
   btnNextQuestion.addEventListener('click', async () => {
+    if (btnNextQuestion.disabled) return;
+    
+    if (currentIndex < questions.length - 1) {
+      btnNextQuestion.disabled = true;
+    }
+    
     currentIndex += 1;
 
     if (currentIndex < questions.length) {
