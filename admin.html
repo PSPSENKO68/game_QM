@@ -560,22 +560,36 @@
           <p class="text-xs text-[#593113]">Tính năng quay số nhanh ngẫu nhiên cho người chơi tham gia</p>
         </div>
 
-        <div class="flex flex-col items-center justify-center p-8 bg-[rgba(255,255,255,0.5)] border-4 border-[#8B5A2B] rounded-3xl relative overflow-hidden min-h-[300px]">
+        <div class="flex flex-col items-center justify-center p-12 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 border-4 border-amber-500/40 rounded-[2.5rem] relative overflow-hidden min-h-[450px] shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_0_60px_rgba(245,158,11,0.15)]">
+          <!-- Ánh sáng nền (Glow) -->
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(245,158,11,0.25),transparent_60%)] pointer-events-none"></div>
+          
+          <!-- Lưới chấm bi trang trí nền -->
+          <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiLz48L3N2Zz4=')] pointer-events-none"></div>
+
           <!-- Confetti container -->
           <div id="confetti_container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
           
-          <div class="z-10 text-center flex flex-col items-center gap-6">
-            <div id="lucky_mega_display" class="font-['Space_Grotesk'] text-7xl md:text-9xl font-black text-[#DE3A3B] drop-shadow-lg tracking-widest bg-white/80 px-8 py-4 rounded-3xl border-4 border-dashed border-[#DE3A3B] min-w-[300px] transition-transform duration-100">
+          <div class="z-10 text-center flex flex-col items-center gap-8 w-full max-w-3xl">
+            <!-- Màn hình hiển thị số MEGA -->
+            <div id="lucky_mega_display" class="font-['Space_Grotesk'] text-8xl md:text-[11rem] leading-none font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 filter drop-shadow-[0_0_30px_rgba(245,158,11,0.6)] tracking-[0.15em] bg-[#0f172a] px-12 py-8 md:py-12 rounded-[2rem] border-y-4 border-x-2 border-amber-500/30 min-w-[300px] md:min-w-[450px] shadow-[inset_0_10px_30px_rgba(0,0,0,0.8),0_10px_20px_rgba(0,0,0,0.5)] transition-all duration-300">
               000
             </div>
-            <div id="lucky_winner_name" class="text-2xl font-bold text-[#4A240A] h-8 opacity-0 transition-opacity duration-500">
-              <!-- Tên người trúng thưởng -->
+            
+            <!-- Tên người trúng thưởng -->
+            <div id="lucky_winner_name" class="text-3xl md:text-5xl font-black text-amber-300 uppercase tracking-widest drop-shadow-[0_0_15px_rgba(253,230,138,0.5)] min-h-[3rem] md:min-h-[4rem] opacity-0 transition-opacity duration-500 mt-2">
             </div>
-            <div class="flex gap-4 mt-4">
-              <button id="btn_start_lucky_draw" class="btn-pirate px-10 py-4 text-white font-black text-xl rounded-2xl transition cursor-pointer shadow-xl hover:scale-105 active:scale-95">
-                🎰 BẮT ĐẦU QUAY
+            
+            <!-- Cụm nút bấm -->
+            <div class="flex gap-6 mt-6 w-full justify-center">
+              <button id="btn_start_lucky_draw" class="group relative px-10 md:px-16 py-5 md:py-6 bg-gradient-to-b from-amber-400 to-orange-600 text-white font-black text-xl md:text-2xl rounded-2xl transition-all duration-200 shadow-[0_8px_0_#9a3412,0_15px_20px_rgba(0,0,0,0.4)] hover:-translate-y-1 hover:shadow-[0_9px_0_#9a3412,0_20px_25px_rgba(0,0,0,0.5)] hover:brightness-110 active:translate-y-2 active:shadow-[0_0px_0_#9a3412,0_5px_10px_rgba(0,0,0,0.4)] overflow-hidden">
+                <span class="relative z-10 flex items-center gap-3">
+                  <span class="text-3xl md:text-4xl">🎰</span> QUAY SỐ MEGA
+                </span>
               </button>
-              <button id="btn_reset_lucky_draw" class="px-6 py-4 bg-slate-200 text-slate-600 font-bold text-lg rounded-2xl transition cursor-pointer hover:bg-slate-300">
+              
+              <button id="btn_reset_lucky_draw" class="px-6 md:px-8 py-5 md:py-6 bg-slate-800/80 backdrop-blur-sm text-slate-300 font-bold text-lg md:text-xl rounded-2xl transition-all duration-200 hover:bg-slate-700 hover:text-white shadow-[0_0_15px_rgba(0,0,0,0.3)] border border-slate-600 hover:border-slate-400 hover:-translate-y-1 active:translate-y-1 flex items-center gap-2">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                 LÀM MỚI
               </button>
             </div>
