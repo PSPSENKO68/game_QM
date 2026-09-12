@@ -1617,7 +1617,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       luckyMegaDisplay.textContent = tempUser.mega_code;
       // Nhảy nhẹ scale thay vì đổi màu liên tục để giảm lag
       luckyMegaDisplay.style.transform = `scale(${1 + Math.random() * 0.05})`;
-      luckyMegaDisplay.classList.add('opacity-50', 'grayscale'); // Làm mờ trong lúc quay
+      luckyMegaDisplay.classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
+      luckyMegaDisplay.classList.add('text-white'); // Chữ trắng tinh khi đang quay
       
       spinCount++;
       if (spinCount >= maxSpins) {
@@ -1626,7 +1627,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Bật lại transition để scale đẹp mắt khi trúng giải
         luckyMegaDisplay.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         luckyMegaDisplay.style.transform = 'scale(1.1)';
-        luckyMegaDisplay.classList.remove('opacity-50', 'grayscale'); // Sáng bừng lên khi trúng giải
+        luckyMegaDisplay.classList.remove('text-white');
+        luckyMegaDisplay.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
         
         const finalIndex = Math.floor(Math.random() * availablePool.length);
         const winner = availablePool[finalIndex];
@@ -1694,7 +1696,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         luckyWinnerName.style.opacity = '0';
         confettiContainer.innerHTML = '';
         luckyMegaDisplay.style.transform = 'scale(1)';
-        luckyMegaDisplay.classList.remove('opacity-50', 'grayscale');
+        luckyMegaDisplay.classList.remove('text-white', 'opacity-50', 'grayscale');
+        luckyMegaDisplay.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
       }
     });
   }
