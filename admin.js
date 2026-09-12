@@ -1528,12 +1528,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchAndRenderUsers();
 
   // ── EXPORT GLOBAL FUNCTIONS ──────────────────────────────────────────────────
-  window.deleteUser = deleteUser;
-  window.editUser = editUser;
-  window.deleteQuiz = deleteQuiz;
-  window.editQuiz = editQuiz;
-  window.deleteWrongAnswer = deleteWrongAnswer;
-
+  // Removed undefined global function assignments that were causing ReferenceError crashes
+  
   // ── LUCKY DRAW LOGIC ────────────────────────────────────────────────────────
   const luckyMegaDisplay = document.getElementById('lucky_mega_display');
   const luckyWinnerName = document.getElementById('lucky_winner_name');
