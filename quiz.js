@@ -257,8 +257,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Counter UI
     questionCounter.textContent = `Câu ${index + 1}/${questions.length}`;
-    scoreDisplay.textContent = currentScore;
-    
+    if (mode === 2) {
+      scoreDisplay.textContent = `${correctCount}/${questions.length}`;
+    } else {
+      scoreDisplay.textContent = currentScore;
+    }
     // Smooth progress fill
     const progressPerc = (index / questions.length) * 100;
     progressBarFill.style.width = `${progressPerc}%`;
