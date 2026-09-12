@@ -59,12 +59,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       }
 
-      // MEGA Spinner Logic for ALL Modes
+      // MEGA Spinner Logic (CHỈ DÀNH CHO CHẾ ĐỘ CÀY CUỐC)
       const modeRaw = sessionStorage.getItem('last_quiz_mode') || '1';
       const mode = modeRaw === 'streak' ? 'streak' : parseInt(modeRaw);
       
-      // Nếu chưa có mã MEGA, thì mode nào chơi xong cũng được quay số MEGA
-      if (!freshUser.mega_code) {
+      // Người chơi chỉ được cấp số MEGA khi họ tham gia Cày Cuốc (streak)
+      if (mode === 'streak' && !freshUser.mega_code) {
         const megaCode = await db.generateMegaCode(user.id);
         if (megaCode) {
           const modal = document.getElementById('mega_spinner_modal');
