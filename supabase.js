@@ -854,8 +854,10 @@ export const db = {
           if (best) {
             u.best_time = best.time_spent;
             u.best_correct = best.correct_count;
+            u.has_participated = true;
           } else {
             const hasParticipated = !!userEarliestTime[u.id];
+            u.has_participated = hasParticipated;
             if (hasParticipated) {
               u.best_time = maxValidTime > 0 ? maxValidTime : 999999999;
             } else {
@@ -867,6 +869,7 @@ export const db = {
       } else {
         data.forEach(u => {
           const hasParticipated = !!userEarliestTime[u.id];
+          u.has_participated = hasParticipated;
           // Even if no playsData, maxValidTime is 0, so time is 999999999 anyway
           u.best_time = 999999999;
           u.best_correct = 0;

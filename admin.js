@@ -1545,7 +1545,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadLuckyDrawPool() {
     const users = await db.getLeaderboard();
     const totalUsers = users ? users.length : 0;
-    luckyDrawPool = (users || []).filter(u => u.mega_code !== null && u.mega_code !== undefined && String(u.mega_code).trim() !== '');
+    // Chỉ lấy những người ĐÃ THAM GIA chơi (has_participated) và có mã MEGA
+    luckyDrawPool = (users || []).filter(u => u.has_participated && u.mega_code !== null && u.mega_code !== undefined && String(u.mega_code).trim() !== '');
     return { total: totalUsers, valid: luckyDrawPool.length };
   }
 
