@@ -1550,17 +1550,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     luckyDrawPool = users.filter(u => u.is_active && u.mega_code && String(u.mega_code).trim() !== '');
   }
 
+  window.startLuckyDrawGlobal = function() {
+    startLuckyDraw();
+  };
+
   function startLuckyDraw() {
+    if (btnStartLuckyDraw) {
+      btnStartLuckyDraw.textContent = '⏳ ĐANG TẢI...';
+      btnStartLuckyDraw.disabled = true;
+    }
     if (luckyDrawPool.length === 0) {
       loadLuckyDrawPool().then(() => {
         if (luckyDrawPool.length === 0) {
           alert('Không có người chơi nào có mã MEGA hợp lệ để quay số!');
+          if (btnStartLuckyDraw) {
+            btnStartLuckyDraw.textContent = '🎰 BẮT ĐẦU QUAY';
+            btnStartLuckyDraw.disabled = false;
+          }
           return;
         }
         executeSpin();
       }).catch(err => {
         console.error("Lỗi khi load danh sách MEGA:", err);
         alert("Có lỗi xảy ra khi tải danh sách người chơi!");
+        if (btnStartLuckyDraw) {
+          btnStartLuckyDraw.textContent = '🎰 BẮT ĐẦU QUAY';
+          btnStartLuckyDraw.disabled = false;
+        }
       });
     } else {
       executeSpin();
@@ -1571,11 +1587,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     const availablePool = luckyDrawPool.filter(u => !luckyDrawWinners.includes(String(u.mega_code)));
     if (availablePool.length === 0) {
       alert('Tất cả những người có mã MEGA đều đã trúng thưởng!');
+      if (btnStartLuckyDraw) {
+        btnStartLuckyDraw.textContent = '🎰 BẮT ĐẦU QUAY';
+        btnStartLuckyDraw.disabled = false;
+      }
       return;
     }
 
-    btnStartLuckyDraw.disabled = true;
-    btnStartLuckyDraw.classList.add('opacity-50', 'cursor-not-allowed');
+    if (btnStartLuckyDraw) {
+      btnStartLuckyDraw.disabled = true;
+      btnStartLuckyDraw.textContent = '🎰 ĐANG QUAY...';
+      btnStartLuckyDraw.classList.add('opacity-50', 'cursor-not-allowed');
+    }
     luckyWinnerName.style.opacity = '0';
     confettiContainer.innerHTML = '';
     
@@ -1607,6 +1630,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateWinnersList();
         createConfetti();
         
+        btnStartLuckyDraw.textContent = '🎰 BẮT ĐẦU QUAY';
         btnStartLuckyDraw.disabled = false;
         btnStartLuckyDraw.classList.remove('opacity-50', 'cursor-not-allowed');
       }
