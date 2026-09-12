@@ -316,6 +316,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
           btn.textContent = '...';
 
+          const freshUser = await db.getUserById(currentUser.id);
+          if (!freshUser || !freshUser.mega_code) {
+            const proceed = window.confirm('Bạn nên chơi cày cuốc trước để lưu thành tích cá nhân. Việc tự ý tham gia thách đấu trước cày cuốc, hệ thống sẽ tự động lấy thời gian của người chót bảng và gán vào thành tích của bạn. Bạn có chắc chắn muốn tiếp tục?');
+            if (!proceed) {
+              btn.textContent = 'Thách Đấu ⚔️';
+              return;
+            }
+          }
+
           // Check limits before steal mode
           const stealsToday = await db.getStealsToday(currentUser.id);
           const maxSteals = await db.getMaxStealsPerDay();
