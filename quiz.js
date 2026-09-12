@@ -412,18 +412,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Make feedback details visible
     feedbackBanner.classList.remove('hidden');
 
-    // Auto next question after 1.5s
+    // Show "TIẾP TỤC" or "HOÀN THÀNH"
+    btnNextQuestion.disabled = false;
     if (currentIndex < questions.length - 1) {
-      btnNextQuestion.textContent = "ĐANG CHUYỂN...";
+      btnNextQuestion.textContent = "TIẾP TỤC ➔";
     } else {
-      btnNextQuestion.textContent = "ĐANG LƯU...";
+      btnNextQuestion.textContent = "HOÀN THÀNH ➔";
     }
-    btnNextQuestion.disabled = true;
-
-    setTimeout(() => {
-      btnNextQuestion.disabled = false;
-      btnNextQuestion.click();
-    }, 1500);
   }
 
   // Handle "TIẾP TỤC" (Next question or finish)
