@@ -3,7 +3,7 @@
  * Pulls current session result logs, validates retry limits, and guides navigation back to active play.
  */
 
-import { db, formatTimeSpent } from './supabase.js';
+import { db, formatTimeSpent, supabase } from './supabase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Authenticate check
@@ -64,7 +64,22 @@ document.addEventListener('DOMContentLoaded', async () => {
       const mode = modeRaw === 'streak' ? 'streak' : parseInt(modeRaw);
       
       // Người chơi chỉ được cấp số MEGA khi họ tham gia Cày Cuốc (mode === 1)
-      if (mode === 1 && !freshUser.mega_code) {
+      // Call generateMegaCode with a flag to check if they ALREADY have one, or just let generateMegaCode tell us.
+      // Actually, we can add a method checkUserMegaCode in db, or we can use fetch/REST?
+      // No, we can just use the db object! Wait, let's look at db.getUserById again.
+      // If we need to explicitly query, we should do it in supabase.js. 
+      // But we can just use db.generateMegaCode to check FIRST!
+      
+      let hasMegaCode = false;
+      if (freshUser && freshUser.mega_code) {
+        hasMegaCode = true;
+      } else {
+        // Fallback explicit check to bypass select(*) schema cache issues
+        const { data: megaData } = await supabase.from('users').select('mega_code').eq('id', user.id).single();
+        if (megaData && megaData.mega_code) hasMegaCode = true;
+      }
+      
+      if (mode === 1 && !hasMegaCode) {
         const megaCode = await db.generateMegaCode(user.id);
         if (megaCode) {
           const modal = document.getElementById('mega_spinner_modal');
