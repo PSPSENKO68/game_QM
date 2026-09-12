@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   function loadQuestion(index) {
     hasSelected = false;
-    btnNextQuestion.disabled = false;
+    btnNextQuestion.disabled = true; // Auto-next mode: user shouldn't skip
     btnNextQuestion.textContent = "TIẾP TỤC ➔";
     feedbackBanner.classList.add('hidden');
     answersContainer.classList.remove('opacity-50', 'opacity-80');

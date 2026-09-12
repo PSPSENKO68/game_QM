@@ -832,11 +832,16 @@ export const db = {
         let maxValidTime = 0;
         playsData.forEach(play => {
           const uid = play.user_id;
+          const playTime = parseFloat(play.time_spent) || 0;
+          
           if (!userBestPlays[uid]) {
             userBestPlays[uid] = play;
           } else {
-            const curr = userBestPlays[uid];
-            if (play.time_spent < curr.time_spent) {
+            const currTime = parseFloat(userBestPlays[uid].time_spent) || 0;
+            
+            if (currTime === 0 || currTime >= 999999000) {
+              userBestPlays[uid] = play;
+            } else if (playTime > 0 && playTime < currTime) {
               userBestPlays[uid] = play;
             }
           }
