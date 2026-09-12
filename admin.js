@@ -6,6 +6,7 @@
 import { db, parseCSV, exportAccountsAsCSV } from './supabase.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  try {
   // ── Kiểm tra phiên đăng nhập ────────────────────────────────────────────────
   const sessionUser = sessionStorage.getItem('current_user');
   if (!sessionUser) { window.location.replace('/login.html'); return; }
@@ -1690,5 +1691,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   }
-
+  } catch (err) {
+    alert("CRASH KHI KHỞI TẠO ADMIN: " + err.message + "\\n" + err.stack);
+    console.error(err);
+  }
 });
