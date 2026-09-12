@@ -1669,18 +1669,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function createConfetti() {
-    const colors = ['#fce18a', '#ff726d', '#b48def', '#f4306d', '#4287f5', '#42f563'];
-    for (let i = 0; i < 100; i++) {
-      const confetti = document.createElement('div');
-      confetti.className = 'absolute w-3 h-3 rounded-sm';
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-      confetti.style.left = Math.random() * 100 + '%';
-      confetti.style.top = '-10px';
-      const duration = Math.random() * 3 + 2;
-      const delay = Math.random() * 0.5;
-      confetti.style.animation = `fall ${duration}s ${delay}s linear forwards`;
-      confettiContainer.appendChild(confetti);
+    if (!window.confetti) return;
+
+    var duration = 5 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 50 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
     }
+
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      var particleCount = 50 * (timeLeft / duration);
+      // Phát pháo hoa từ 2 bên màn hình
+      window.confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+      window.confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+    }, 250);
   }
 
   if (btnStartLuckyDraw) {
