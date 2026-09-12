@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     Object.keys(optButtons).forEach(key => {
       const { btn } = optButtons[key];
       btn.disabled = false;
-      btn.className = btn.className.replace(/\b(ring-4|ring-emerald-500|ring-emerald-400|ring-rose-400|border-4|opacity-40|opacity-30|grayscale|scale-\[1\.03\])\b/g, '').trim();
+      btn.className = btn.className.replace(/\b(ring-4|ring-emerald-500|ring-emerald-400|ring-rose-400|border-4|opacity-50|opacity-40|opacity-30|grayscale|scale-\[1\.03\]|scale-\[0\.98\])\b/g, '').trim();
       btn.classList.add('scale-100');
     });
 
@@ -219,9 +219,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       sparkContainer.style.transform = `rotate(0deg)`;
       sparkContainer.style.opacity = '1';
     }
-    if (questionContainer) {
-      questionContainer.classList.remove('danger-blink');
-    }
 
     timerInterval = setInterval(() => {
       currentRemainingTime--;
@@ -236,9 +233,6 @@ document.addEventListener('DOMContentLoaded', async () => {
          if (countdownTimer) {
            countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
            countdownTimer.classList.add('animate-pulse', 'bg-red-600', 'text-white');
-         }
-         if (questionContainer && !questionContainer.classList.contains('danger-blink')) {
-           questionContainer.classList.add('danger-blink');
          }
       }
 
@@ -310,9 +304,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (hasSelected) return; // Prevent double trigger
     hasSelected = true;
     if (timerInterval) clearInterval(timerInterval);
-    
-    const questionContainer = document.getElementById('question_container');
-    if (questionContainer) questionContainer.classList.remove('danger-blink');
 
     // Calculate exact time spent in milliseconds for this question
     const elapsedMs = Math.max(0, Math.round(performance.now() - questionStartTime));
