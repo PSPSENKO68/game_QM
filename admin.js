@@ -1602,21 +1602,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     confettiContainer.innerHTML = '';
     
     let spinCount = 0;
-    const maxSpins = 50; 
-    const spinDelay = 50;
+    const maxSpins = 40; // 40 spins
+    const spinDelay = 100; // 100ms per spin = 4000ms (4 seconds)
     
+    // Tắt transition trong lúc quay để tránh giật lag (conflict với spinDelay)
+    luckyMegaDisplay.style.transition = 'none';
+
     luckyDrawInterval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * availablePool.length);
       const tempUser = availablePool[randomIndex];
       luckyMegaDisplay.textContent = tempUser.mega_code;
-      luckyMegaDisplay.style.transform = `scale(${1 + Math.random() * 0.1})`;
-      luckyMegaDisplay.style.color = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+      // Nhảy nhẹ scale thay vì đổi màu liên tục để giảm lag
+      luckyMegaDisplay.style.transform = `scale(${1 + Math.random() * 0.05})`;
+      luckyMegaDisplay.style.color = '#555'; // Màu xám trong lúc quay
       
       spinCount++;
       if (spinCount >= maxSpins) {
         clearInterval(luckyDrawInterval);
+        
+        // Bật lại transition để scale đẹp mắt khi trúng giải
+        luckyMegaDisplay.style.transition = 'all 0.3s ease-out';
         luckyMegaDisplay.style.transform = 'scale(1.1)';
-        luckyMegaDisplay.style.color = '#DE3A3B';
+        luckyMegaDisplay.style.color = '#DE3A3B'; // Đỏ nổi bật khi trúng
         
         const finalIndex = Math.floor(Math.random() * availablePool.length);
         const winner = availablePool[finalIndex];
