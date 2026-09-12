@@ -1658,11 +1658,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     luckyDrawWinners.forEach((code, index) => {
       const user = luckyDrawPool.find(u => String(u.mega_code) === code);
       const li = document.createElement('li');
-      li.className = 'flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200';
+      li.className = 'flex flex-col md:flex-row justify-between items-center bg-white p-4 md:p-5 rounded-2xl shadow-sm border border-amber-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 gap-3 md:gap-0 relative overflow-hidden group';
       li.innerHTML = `
-        <span class="font-bold text-[#8B5A2B]">Giải ${index + 1}</span>
-        <span class="text-lg font-black text-[#DE3A3B] font-['Space_Grotesk'] tracking-widest">${code}</span>
-        <span class="text-sm font-semibold text-[#4A240A]">${user ? user.full_name : 'Unknown'}</span>
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-orange-500 opacity-80 group-hover:opacity-100 transition-opacity"></div>
+        <div class="flex items-center gap-3 pl-2">
+          <span class="flex items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100 text-amber-800 font-bold text-sm px-4 py-1.5 rounded-full border border-amber-200 shadow-sm">
+            🎁 Giải ${index + 1}
+          </span>
+        </div>
+        <div class="flex flex-col items-center justify-center">
+          <span class="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600 font-['Space_Grotesk'] tracking-[0.2em] drop-shadow-sm">${code}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-lg font-bold text-[#4A240A] tracking-tight uppercase">${user ? user.full_name : 'Tài Khoản Ẩn'}</span>
+          <span class="text-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-110">✨</span>
+        </div>
       `;
       luckyWinnersList.appendChild(li);
     });
