@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       quizWeekBadge.classList.replace('text-[#E07242]', 'text-rose-500');
     }
     const scoreLabel = document.getElementById('score_label');
-    if (scoreLabel) scoreLabel.textContent = 'Điểm Thách Đấu:';
+    if (scoreLabel) scoreLabel.textContent = 'CHÍNH XÁC:';
     const bonusLabel = document.getElementById('bonus_label');
     if (bonusLabel) bonusLabel.textContent = '';
   } else if (mode === 'streak') {
@@ -172,6 +172,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       questions = rawQuestions.slice(0, 10);
     }
+  }
+
+  if (mode === 2 && scoreDisplay) {
+    scoreDisplay.textContent = `${correctCount}/${questions.length}`;
   }
 
   // Initialize Gameplay
@@ -341,7 +345,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       bonusScore += bonusEarned;
       
       // Update score display immediately for microfeedback
-      scoreDisplay.textContent = currentScore;
+      if (mode === 2) {
+        scoreDisplay.textContent = `${correctCount}/${questions.length}`;
+      } else {
+        scoreDisplay.textContent = currentScore;
+      }
       const scorePill = document.getElementById('score_pill');
       if (scorePill) {
         scorePill.classList.remove('score-animate');
@@ -357,7 +365,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       feedbackIcon.className = "w-10 h-10 rounded-2xl bg-white text-emerald-600 flex items-center justify-center font-black text-xl";
       feedbackIcon.textContent = "✓";
       feedbackTitle.textContent = "CHÍNH XÁC! 🎉";
-      feedbackSub.textContent = `+${basePoint} Điểm${bonusEarned > 0 ? ` (+${bonusEarned}đ Thưởng Tốc Độ)` : ''}`;
+      feedbackTitle.className = "font-black text-lg uppercase tracking-wide text-emerald-700";
+      if (mode === 2) {
+        feedbackSub.textContent = '';
+      } else {
+        feedbackSub.textContent = `+${basePoint} Điểm${bonusEarned > 0 ? ` (+${bonusEarned}đ Thưởng Tốc Độ)` : ''}`;
+      }
     } else {
       // Incorrect flow
       let selectedText = "";
