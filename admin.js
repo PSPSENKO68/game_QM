@@ -1608,7 +1608,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Tắt transition trong lúc quay để tránh giật lag (conflict với spinDelay)
     luckyMegaDisplay.style.transition = 'none';
 
-    luckyDrawInterval = setInterval(() => {
+    // Đảm bảo không có interval nào đang chạy ẩn trước khi bắt đầu
+    if (luckyDrawInterval) clearInterval(luckyDrawInterval);
+
+    const currentInterval = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * availablePool.length);
       const tempUser = availablePool[randomIndex];
       luckyMegaDisplay.textContent = tempUser.mega_code;
@@ -1618,7 +1621,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       spinCount++;
       if (spinCount >= maxSpins) {
-        clearInterval(luckyDrawInterval);
+        clearInterval(currentInterval);
         
         // Bật lại transition để scale đẹp mắt khi trúng giải
         luckyMegaDisplay.style.transition = 'all 0.3s ease-out';
@@ -1641,6 +1644,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnStartLuckyDraw.classList.remove('opacity-50', 'cursor-not-allowed');
       }
     }, spinDelay);
+    luckyDrawInterval = currentInterval;
   }
 
   function updateWinnersList() {
