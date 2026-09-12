@@ -1547,7 +1547,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadLuckyDrawPool() {
     const users = await db.adminGetUsers();
-    luckyDrawPool = users.filter(u => u.is_active && u.mega_code && u.mega_code.trim() !== '');
+    luckyDrawPool = users.filter(u => u.is_active && u.mega_code && String(u.mega_code).trim() !== '');
   }
 
   function startLuckyDraw() {
@@ -1558,6 +1558,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           return;
         }
         executeSpin();
+      }).catch(err => {
+        console.error("Lỗi khi load danh sách MEGA:", err);
+        alert("Có lỗi xảy ra khi tải danh sách người chơi!");
       });
     } else {
       executeSpin();
@@ -1565,7 +1568,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function executeSpin() {
-    const availablePool = luckyDrawPool.filter(u => !luckyDrawWinners.includes(u.mega_code));
+    const availablePool = luckyDrawPool.filter(u => !luckyDrawWinners.includes(String(u.mega_code)));
     if (availablePool.length === 0) {
       alert('Tất cả những người có mã MEGA đều đã trúng thưởng!');
       return;
@@ -1600,7 +1603,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         luckyWinnerName.textContent = winner.full_name;
         luckyWinnerName.style.opacity = '1';
         
-        luckyDrawWinners.push(winner.mega_code);
+        luckyDrawWinners.push(String(winner.mega_code));
         updateWinnersList();
         createConfetti();
         
@@ -1617,7 +1620,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     luckyWinnersList.innerHTML = '';
     luckyDrawWinners.forEach((code, index) => {
-      const user = luckyDrawPool.find(u => u.mega_code === code);
+      const user = luckyDrawPool.find(u => String(u.mega_code) === code);
       const li = document.createElement('li');
       li.className = 'flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200';
       li.innerHTML = `
