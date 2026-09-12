@@ -365,7 +365,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       feedbackIcon.className = "w-10 h-10 rounded-2xl bg-white text-emerald-600 flex items-center justify-center font-black text-xl";
       feedbackIcon.textContent = "✓";
       feedbackTitle.textContent = "CHÍNH XÁC! 🎉";
-      feedbackTitle.className = "font-black text-lg uppercase tracking-wide text-emerald-700";
+      feedbackTitle.className = "font-black text-lg uppercase tracking-wide text-white";
       if (mode === 2) {
         feedbackSub.textContent = '';
       } else {
