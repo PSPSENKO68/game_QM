@@ -1546,8 +1546,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   let luckyDrawWinners = [];
 
   async function loadLuckyDrawPool() {
-    const users = await db.adminGetUsers();
-    luckyDrawPool = users.filter(u => u.is_active && u.mega_code && String(u.mega_code).trim() !== '');
+    const users = await db.getLeaderboard();
+    // Leaderboard trả về các user có điểm. Chỉ lấy những người có mã mega hợp lệ
+    luckyDrawPool = users.filter(u => u.mega_code && String(u.mega_code).trim() !== '');
   }
 
   window.startLuckyDrawGlobal = function() {
