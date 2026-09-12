@@ -571,15 +571,9 @@
           <div id="confetti_container" class="absolute inset-0 pointer-events-none overflow-hidden z-0"></div>
           
           <div class="z-10 text-center flex flex-col items-center gap-8 w-full max-w-3xl">
-            <!-- Màn hình hiển thị số MEGA có viền đèn chạy -->
-            <div class="relative rounded-[2rem] overflow-hidden p-1 min-w-[300px] md:min-w-[450px] shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
-              <!-- Viền chạy sáng (Spinning light border) -->
-              <div class="absolute inset-[-100%] bg-[conic-gradient(from_0deg,transparent_0_160deg,rgba(245,158,11,1)_180deg,transparent_180deg_340deg,rgba(245,158,11,1)_360deg)] animate-[spin_2s_linear_infinite]"></div>
-              
-              <!-- Màn hình chính (Inner screen) -->
-              <div id="lucky_mega_display" class="relative z-10 w-full h-full flex items-center justify-center font-['Space_Grotesk'] text-8xl md:text-[11rem] leading-none font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 filter drop-shadow-[0_0_30px_rgba(245,158,11,0.6)] tracking-[0.15em] bg-[#0f172a] px-12 py-8 md:py-12 rounded-[1.8rem] shadow-[inset_0_10px_30px_rgba(0,0,0,0.8)] transition-all duration-300">
-                000
-              </div>
+            <!-- Màn hình hiển thị số MEGA -->
+            <div id="lucky_mega_display" class="relative z-10 font-['Space_Grotesk'] text-8xl md:text-[11rem] leading-none font-black text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-600 filter drop-shadow-[0_0_30px_rgba(245,158,11,0.6)] tracking-[0.15em] bg-[#0f172a] px-12 py-8 md:py-12 rounded-[2rem] border-y-4 border-x-2 border-amber-500/30 min-w-[300px] md:min-w-[450px] shadow-[inset_0_10px_30px_rgba(0,0,0,0.8),0_10px_20px_rgba(0,0,0,0.5)] transition-all duration-300 w-full flex items-center justify-center">
+              000
             </div>
             
             <!-- Tên người trúng thưởng -->
