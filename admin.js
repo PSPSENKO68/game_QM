@@ -1525,4 +1525,141 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── Initial render ───────────────────────────────────────────────────────────
   fetchAndRenderUsers();
+
+  // ── EXPORT GLOBAL FUNCTIONS ──────────────────────────────────────────────────
+  window.deleteUser = deleteUser;
+  window.editUser = editUser;
+  window.deleteQuiz = deleteQuiz;
+  window.editQuiz = editQuiz;
+  window.deleteWrongAnswer = deleteWrongAnswer;
+
+  // ── LUCKY DRAW LOGIC ────────────────────────────────────────────────────────
+  const luckyMegaDisplay = document.getElementById('lucky_mega_display');
+  const luckyWinnerName = document.getElementById('lucky_winner_name');
+  const btnStartLuckyDraw = document.getElementById('btn_start_lucky_draw');
+  const btnResetLuckyDraw = document.getElementById('btn_reset_lucky_draw');
+  const luckyWinnersList = document.getElementById('lucky_winners_list');
+  const confettiContainer = document.getElementById('confetti_container');
+  
+  let luckyDrawInterval = null;
+  let luckyDrawPool = [];
+  let luckyDrawWinners = [];
+
+  async function loadLuckyDrawPool() {
+    const users = await db.adminGetUsers();
+    luckyDrawPool = users.filter(u => u.is_active && u.mega_code && u.mega_code.trim() !== '');
+  }
+
+  function startLuckyDraw() {
+    if (luckyDrawPool.length === 0) {
+      loadLuckyDrawPool().then(() => {
+        if (luckyDrawPool.length === 0) {
+          alert('Không có người chơi nào có mã MEGA hợp lệ để quay số!');
+          return;
+        }
+        executeSpin();
+      });
+    } else {
+      executeSpin();
+    }
+  }
+
+  function executeSpin() {
+    const availablePool = luckyDrawPool.filter(u => !luckyDrawWinners.includes(u.mega_code));
+    if (availablePool.length === 0) {
+      alert('Tất cả những người có mã MEGA đều đã trúng thưởng!');
+      return;
+    }
+
+    btnStartLuckyDraw.disabled = true;
+    btnStartLuckyDraw.classList.add('opacity-50', 'cursor-not-allowed');
+    luckyWinnerName.style.opacity = '0';
+    confettiContainer.innerHTML = '';
+    
+    let spinCount = 0;
+    const maxSpins = 50; 
+    const spinDelay = 50;
+    
+    luckyDrawInterval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * availablePool.length);
+      const tempUser = availablePool[randomIndex];
+      luckyMegaDisplay.textContent = tempUser.mega_code;
+      luckyMegaDisplay.style.transform = `scale(${1 + Math.random() * 0.1})`;
+      luckyMegaDisplay.style.color = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+      
+      spinCount++;
+      if (spinCount >= maxSpins) {
+        clearInterval(luckyDrawInterval);
+        luckyMegaDisplay.style.transform = 'scale(1.1)';
+        luckyMegaDisplay.style.color = '#DE3A3B';
+        
+        const finalIndex = Math.floor(Math.random() * availablePool.length);
+        const winner = availablePool[finalIndex];
+        
+        luckyMegaDisplay.textContent = winner.mega_code;
+        luckyWinnerName.textContent = winner.full_name;
+        luckyWinnerName.style.opacity = '1';
+        
+        luckyDrawWinners.push(winner.mega_code);
+        updateWinnersList();
+        createConfetti();
+        
+        btnStartLuckyDraw.disabled = false;
+        btnStartLuckyDraw.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
+    }, spinDelay);
+  }
+
+  function updateWinnersList() {
+    if (luckyDrawWinners.length === 0) {
+      luckyWinnersList.innerHTML = '<li class="text-xs italic text-slate-500 text-center">Chưa có ai trúng thưởng phiên này</li>';
+      return;
+    }
+    luckyWinnersList.innerHTML = '';
+    luckyDrawWinners.forEach((code, index) => {
+      const user = luckyDrawPool.find(u => u.mega_code === code);
+      const li = document.createElement('li');
+      li.className = 'flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-200';
+      li.innerHTML = `
+        <span class="font-bold text-[#8B5A2B]">Giải ${index + 1}</span>
+        <span class="text-lg font-black text-[#DE3A3B] font-['Space_Grotesk'] tracking-widest">${code}</span>
+        <span class="text-sm font-semibold text-[#4A240A]">${user ? user.full_name : 'Unknown'}</span>
+      `;
+      luckyWinnersList.appendChild(li);
+    });
+  }
+
+  function createConfetti() {
+    const colors = ['#fce18a', '#ff726d', '#b48def', '#f4306d', '#4287f5', '#42f563'];
+    for (let i = 0; i < 100; i++) {
+      const confetti = document.createElement('div');
+      confetti.className = 'absolute w-3 h-3 rounded-sm';
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.left = Math.random() * 100 + '%';
+      confetti.style.top = '-10px';
+      const duration = Math.random() * 3 + 2;
+      const delay = Math.random() * 0.5;
+      confetti.style.animation = `fall ${duration}s ${delay}s linear forwards`;
+      confettiContainer.appendChild(confetti);
+    }
+  }
+
+  if (btnStartLuckyDraw) {
+    btnStartLuckyDraw.addEventListener('click', startLuckyDraw);
+  }
+  
+  if (btnResetLuckyDraw) {
+    btnResetLuckyDraw.addEventListener('click', () => {
+      if (confirm('Bạn có chắc chắn muốn làm mới lịch sử người trúng giải?')) {
+        luckyDrawWinners = [];
+        updateWinnersList();
+        luckyMegaDisplay.textContent = '000';
+        luckyWinnerName.style.opacity = '0';
+        confettiContainer.innerHTML = '';
+        luckyMegaDisplay.style.transform = 'scale(1)';
+        luckyMegaDisplay.style.color = '#DE3A3B';
+      }
+    });
+  }
+
 });
