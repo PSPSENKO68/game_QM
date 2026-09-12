@@ -219,6 +219,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       sparkContainer.style.transform = `rotate(0deg)`;
       sparkContainer.style.opacity = '1';
     }
+    if (questionContainer) {
+      questionContainer.classList.remove('danger-blink');
+    }
 
     timerInterval = setInterval(() => {
       currentRemainingTime--;
@@ -233,6 +236,9 @@ document.addEventListener('DOMContentLoaded', async () => {
          if (countdownTimer) {
            countdownTimer.classList.remove('bg-black', 'text-[#FFD700]');
            countdownTimer.classList.add('animate-pulse', 'bg-red-600', 'text-white');
+         }
+         if (questionContainer && !questionContainer.classList.contains('danger-blink')) {
+           questionContainer.classList.add('danger-blink');
          }
       }
 
@@ -304,6 +310,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (hasSelected) return; // Prevent double trigger
     hasSelected = true;
     if (timerInterval) clearInterval(timerInterval);
+    
+    const questionContainer = document.getElementById('question_container');
+    if (questionContainer) questionContainer.classList.remove('danger-blink');
 
     // Calculate exact time spent in milliseconds for this question
     const elapsedMs = Math.max(0, Math.round(performance.now() - questionStartTime));
