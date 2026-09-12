@@ -1547,8 +1547,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function loadLuckyDrawPool() {
     const users = await db.getLeaderboard();
-    // Leaderboard trả về các user có điểm. Chỉ lấy những người có mã mega hợp lệ
-    luckyDrawPool = users.filter(u => u.mega_code && String(u.mega_code).trim() !== '');
+    const totalUsers = users ? users.length : 0;
+    luckyDrawPool = (users || []).filter(u => u.mega_code !== null && u.mega_code !== undefined && String(u.mega_code).trim() !== '');
+    return { total: totalUsers, valid: luckyDrawPool.length };
   }
 
   window.startLuckyDrawGlobal = function() {
@@ -1561,9 +1562,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnStartLuckyDraw.disabled = true;
     }
     if (luckyDrawPool.length === 0) {
-      loadLuckyDrawPool().then(() => {
+      loadLuckyDrawPool().then((stats) => {
         if (luckyDrawPool.length === 0) {
-          alert('Không có người chơi nào có mã MEGA hợp lệ để quay số!');
+          alert(`Không thể quay! Bảng xếp hạng có ${stats.total} người, nhưng KHÔNG CÓ AI có mã MEGA hợp lệ (khác rỗng). Vui lòng kiểm tra lại cột mega_code trong cơ sở dữ liệu!`);
           if (btnStartLuckyDraw) {
             btnStartLuckyDraw.textContent = '🎰 BẮT ĐẦU QUAY';
             btnStartLuckyDraw.disabled = false;
