@@ -503,7 +503,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           <h3 class="font-extrabold text-sm leading-snug font-['Space_Grotesk']">${q.title}</h3>
           <div class="mt-2.5 text-[11px] font-semibold opacity-80 space-y-1">
             <p class="flex items-center gap-1.5"><span class="text-xs">👤</span> ${participantCounts[q.id]?.participants || 0} người tham gia</p>
-            <p class="flex items-center gap-1.5"><span class="text-xs">🎯</span> ${participantCounts[q.id]?.plays || 0} lượt trả lời</p>
+            <p class="flex items-center gap-1.5"><span class="text-xs">🎯</span> ${participantCounts[q.id]?.plays || 0} lượt chơi</p>
             <p class="flex items-center gap-1.5"><span class="text-xs">⭐</span> Tổng điểm trung bình: ${participantCounts[q.id]?.avgScore || 0}</p>
           </div>
         </div>
