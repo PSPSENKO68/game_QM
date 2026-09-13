@@ -1612,27 +1612,55 @@ export const db = {
   async adminGetDashboardStats() {
     const bounds = await this.getCurrentCycleBounds();
 
-    // 1. Tìm bộ đề có số câu sai nhiều nhất
+    // 1. Tìm bộ đề có số câu sai nhiều nhất & Tìm người Cày Cuốc giỏi nhất (Chế độ 1)
     const { data: playsData } = await supabase
       .from('play_history')
-      .select('quiz_id, wrong_count')
+      .select('quiz_id, wrong_count, user_id, correct_count, time_spent')
       .gte('played_at', bounds.start)
       .lte('played_at', bounds.end);
 
     let mostWrongQuizId = null;
     let maxWrongCount = 0;
     
+    let topGrinderId = null;
+    let topGrinderStats = { correct: -1, time: Infinity };
+
     if (playsData && playsData.length > 0) {
       const wrongCountByQuiz = {};
+      const grinderStatsByUser = {};
+
       playsData.forEach(p => {
-        if (!p.quiz_id) return;
-        wrongCountByQuiz[p.quiz_id] = (wrongCountByQuiz[p.quiz_id] || 0) + (parseInt(p.wrong_count) || 0);
+        // Gom dữ liệu bộ đề sai
+        if (p.quiz_id) {
+          wrongCountByQuiz[p.quiz_id] = (wrongCountByQuiz[p.quiz_id] || 0) + (parseInt(p.wrong_count) || 0);
+        }
+        
+        // Gom dữ liệu cày cuốc
+        if (p.user_id) {
+          if (!grinderStatsByUser[p.user_id]) grinderStatsByUser[p.user_id] = { correct: 0, time: 0 };
+          grinderStatsByUser[p.user_id].correct += (parseInt(p.correct_count) || 0);
+          grinderStatsByUser[p.user_id].time += (parseFloat(p.time_spent) || 0);
+        }
       });
 
+      // Tìm bộ đề sai nhiều nhất
       for (const [qId, count] of Object.entries(wrongCountByQuiz)) {
         if (count > maxWrongCount) {
           maxWrongCount = count;
           mostWrongQuizId = qId;
+        }
+      }
+
+      // Tìm Vua Cày Cuốc
+      for (const [uId, stats] of Object.entries(grinderStatsByUser)) {
+        if (stats.correct > topGrinderStats.correct) {
+          topGrinderStats = stats;
+          topGrinderId = uId;
+        } else if (stats.correct === topGrinderStats.correct) {
+          if (stats.time < topGrinderStats.time) {
+            topGrinderStats = stats;
+            topGrinderId = uId;
+          }
         }
       }
     }
@@ -1641,6 +1669,14 @@ export const db = {
     if (mostWrongQuizId) {
       const { data: qData } = await supabase.from('quizzes').select('title').eq('id', mostWrongQuizId).single();
       if (qData) mostWrongQuizTitle = qData.title;
+    }
+
+    let topGrinderName = "Chưa có dữ liệu";
+    if (topGrinderId) {
+      const { data: uData } = await supabase.from('users').select('full_name').eq('id', topGrinderId).single();
+      if (uData) {
+        topGrinderName = `${uData.full_name} - ${topGrinderStats.correct} câu (${this.formatTimeSpent(topGrinderStats.time)})`;
+      }
     }
 
     // 2. Tìm người bị thách đấu nhiều nhất
@@ -1676,7 +1712,8 @@ export const db = {
 
     return {
       mostWrongQuizTitle,
-      mostAttackedPlayerName
+      mostAttackedPlayerName,
+      topGrinderName
     };
   },
 
