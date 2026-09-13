@@ -1732,19 +1732,19 @@ export const db = {
         user_id,
         correct_count,
         time_spent,
-        quizzes ( month_no, week_no )
+        quizzes ( month_no, week_no, title )
       `);
 
     if (error || !plays) return [];
 
-    // Group by cycle: "Tháng X - Tuần Y" -> user_id -> { correct, time }
+    // Group by cycle: "Quiz Title" -> user_id -> { correct, time }
     const cyclesData = {};
     
     plays.forEach(p => {
       if (!p.quizzes || !p.user_id || adminIds.includes(p.user_id)) return; // Bỏ qua admin
       const m = p.quizzes.month_no || 1;
       const w = p.quizzes.week_no || 1;
-      const cycleKey = `Tháng ${m} - Tuần ${w}`;
+      const cycleKey = p.quizzes.title || `Tháng ${m} - Tuần ${w}`;
       
       if (!cyclesData[cycleKey]) {
         cyclesData[cycleKey] = { users: {}, sortKey: m * 100 + w };
