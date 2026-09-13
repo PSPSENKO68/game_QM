@@ -415,16 +415,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       const roleSelect = document.getElementById('form_user_role');
       const selectedRole = (roleSelect && !roleSelect.disabled) ? roleSelect.value : undefined;
 
+      let finalCode = formUserCode.value.trim();
+      if (!finalCode) {
+        finalCode = `AUTO_BOT_${Date.now().toString().slice(-6)}`;
+      }
+
+      let finalPin = formUserPin.value.trim();
+      if (!finalPin) {
+        finalPin = '1234';
+      }
+
       const userData = {
-        employee_code: formUserCode.value.trim(),
+        employee_code: finalCode,
         full_name: formUserFullName.value.trim(),
         department: formUserDept.value.trim(),
-        pin: formUserPin.value.trim(),
+        pin: finalPin,
         is_active: formUserActive.checked,
         max_plays: (formUserMaxPlays && formUserMaxPlays.value.trim() !== '') ? parseInt(formUserMaxPlays.value) : null,
         total_score: (formUserScore && formUserScore.value.trim() !== '') ? parseInt(formUserScore.value) : 0,
         ...(selectedRole ? { role: selectedRole } : {})
       };
+
+      const formUserTime = document.getElementById('form_user_time');
+      const virtualTimeStr = formUserTime ? formUserTime.value.trim() : '';
 
       // Cảnh báo nếu admin tự hạ quyền chính mình
       if (uId && selectedRole === 'user') {
@@ -436,14 +449,27 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       let result;
+      let finalUserId = uId;
       if (uId) {
         result = await db.adminUpdateUser(uId, userData);
         if (result.success) showAdminAlert('Cập nhật thành công ✅', `Đã cập nhật tài khoản "${userData.full_name}".`);
         else showAdminAlert('Lỗi', result.message || 'Không thể cập nhật.');
       } else {
         result = await db.adminCreateUser(userData);
-        if (result.success) showAdminAlert('Thêm thành công ✅', `Đã tạo tài khoản mới cho "${userData.full_name}".`);
-        else showAdminAlert('Lỗi', result.message || 'Không thể tạo tài khoản.');
+        if (result.success) {
+          finalUserId = result.id;
+          showAdminAlert('Thêm thành công ✅', `Đã tạo tài khoản mới cho "${userData.full_name}".`);
+        } else {
+          showAdminAlert('Lỗi', result.message || 'Không thể tạo tài khoản.');
+        }
+      }
+
+      // Tạo lượt chơi ảo nếu có nhập thời gian ảo
+      if (result.success && virtualTimeStr !== '' && finalUserId) {
+        const vTime = parseFloat(virtualTimeStr);
+        if (vTime >= 0) {
+           await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTime);
+        }
       }
 
       if (result.success) {
@@ -451,6 +477,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         fetchAndRenderUsers();
       }
     });
+
+    if (formUserFullName) {
+      formUserFullName.addEventListener('input', (e) => {
+        e.target.value = e.target.value.toUpperCase();
+      });
+    }
   }
 
   // ── 2. QUIZZES MANAGEMENT ────────────────────────────────────────────────────

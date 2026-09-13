@@ -1025,6 +1025,37 @@ export const db = {
 
     const { error } = await supabase.from('users').insert(newUser);
     if (error) return { success: false, message: error.message };
+    return { success: true, id: newUser.id };
+  },
+
+  async adminCreateDummyPlay(userId, score, time) {
+    const bounds = await this.getCurrentCycleBounds();
+    const playedAt = new Date().toISOString();
+    
+    // Tìm bộ đề đang active trong chu kỳ hiện tại để gắn play_history (hoặc dùng quiz_id = null cũng được vì Mode 2 Thách Đấu gộp chung)
+    const { data: activeQuizzes } = await supabase
+      .from('quizzes')
+      .select('id')
+      .eq('active', true)
+      .eq('month_no', bounds.month)
+      .eq('week_no', bounds.week)
+      .limit(1);
+      
+    let targetQuizId = activeQuizzes && activeQuizzes.length > 0 ? activeQuizzes[0].id : null;
+
+    const dummyRecord = {
+      id: genId('p'),
+      user_id: userId,
+      quiz_id: targetQuizId,
+      score: score,
+      correct_count: Math.floor(score / 10) || 1, // Ước tính số câu đúng
+      wrong_count: 0,
+      time_spent: time,
+      played_at: playedAt
+    };
+
+    const { error } = await supabase.from('play_history').insert(dummyRecord);
+    if (error) return { success: false, message: error.message };
     return { success: true };
   },
 
