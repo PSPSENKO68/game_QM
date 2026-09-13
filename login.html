@@ -168,7 +168,7 @@
     <!-- Login/Register Card Wrapper -->
     <div class="relative w-full animate-in" style="animation-delay: 0.1s">
       <!-- Sparks Container -->
-      <div id="sparks-container" class="absolute -bottom-4 left-0 w-full h-[300px] pointer-events-none z-0 overflow-visible"></div>
+      <div id="sparks-container" class="absolute -inset-6 pointer-events-none z-0 overflow-visible"></div>
 
       <!-- Login/Register Card -->
       <div class="brand-card relative z-10">
@@ -280,11 +280,13 @@
         
         // Randomize position, duration, and drift
         const left = Math.random() * 100; // 0 to 100%
+        const bottom = Math.random() * 100; // 0 to 100%
         const duration = Math.random() * 1.5 + 1; // 1s to 2.5s
         const drift = (Math.random() - 0.5) * 100; // -50px to +50px
         const size = Math.random() * 0.8 + 0.4; // scale
         
         spark.style.left = `${left}%`;
+        spark.style.bottom = `${bottom}%`;
         spark.style.animationDuration = `${duration}s`;
         spark.style.setProperty('--drift', `${drift}px`);
         spark.style.transform = `scale(${size})`;
