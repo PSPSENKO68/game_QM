@@ -127,13 +127,13 @@
     .spark {
       position: absolute;
       bottom: 10px;
-      width: 6px;
-      height: 6px;
-      background: radial-gradient(circle, #ffffff 0%, #ffc107 40%, #ff5722 80%);
+      width: 7px;
+      height: 7px;
+      background: radial-gradient(circle, #ffeb3b 0%, #ff9800 40%, #e64a19 100%);
       border-radius: 50%;
       pointer-events: none;
       animation: floatUp ease-in infinite;
-      box-shadow: 0 0 8px 2px rgba(255, 87, 34, 0.6);
+      box-shadow: 0 0 12px 3px rgba(230, 74, 25, 0.9);
       filter: blur(0.5px);
     }
 
@@ -297,7 +297,7 @@
         setTimeout(() => {
           spark.remove();
         }, duration * 1000);
-      }, 150); // Create a new spark every 150ms
+      }, 40); // Create a new spark every 40ms
     }
 
     // Initialize sparks
