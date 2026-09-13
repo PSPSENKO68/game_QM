@@ -1717,6 +1717,85 @@ export const db = {
     };
   },
 
+  async adminGetGrinderHistory() {
+    const { data: plays, error } = await supabase
+      .from('play_history')
+      .select(`
+        user_id,
+        correct_count,
+        time_spent,
+        quizzes ( month_no, week_no )
+      `);
+
+    if (error || !plays) return [];
+
+    // Group by cycle: "Tháng X - Tuần Y" -> user_id -> { correct, time }
+    const cyclesData = {};
+    
+    plays.forEach(p => {
+      if (!p.quizzes || !p.user_id) return;
+      const m = p.quizzes.month_no || 1;
+      const w = p.quizzes.week_no || 1;
+      const cycleKey = `Tháng ${m} - Tuần ${w}`;
+      
+      if (!cyclesData[cycleKey]) {
+        cyclesData[cycleKey] = { users: {}, sortKey: m * 100 + w };
+      }
+      
+      if (!cyclesData[cycleKey].users[p.user_id]) {
+        cyclesData[cycleKey].users[p.user_id] = { correct: 0, time: 0 };
+      }
+      
+      cyclesData[cycleKey].users[p.user_id].correct += (parseInt(p.correct_count) || 0);
+      cyclesData[cycleKey].users[p.user_id].time += (parseFloat(p.time_spent) || 0);
+    });
+
+    const historyList = [];
+    
+    // Tìm top grinder cho mỗi chu kỳ
+    for (const [cycleName, data] of Object.entries(cyclesData)) {
+      let topId = null;
+      let topStats = { correct: -1, time: Infinity };
+      
+      for (const [uId, stats] of Object.entries(data.users)) {
+        if (stats.correct > topStats.correct) {
+          topStats = stats;
+          topId = uId;
+        } else if (stats.correct === topStats.correct) {
+          if (stats.time < topStats.time) {
+            topStats = stats;
+            topId = uId;
+          }
+        }
+      }
+      
+      historyList.push({
+        cycleName,
+        sortKey: data.sortKey,
+        topGrinderId: topId,
+        correct: topStats.correct,
+        time: topStats.time
+      });
+    }
+
+    // Sort history by sortKey DESC (mới nhất lên đầu)
+    historyList.sort((a, b) => b.sortKey - a.sortKey);
+
+    // Fetch user names
+    for (const item of historyList) {
+      if (item.topGrinderId) {
+        const { data: uData } = await supabase.from('users').select('full_name, employee_code, department').eq('id', item.topGrinderId).single();
+        if (uData) {
+          item.grinderName = `${uData.full_name} (${uData.employee_code}) - ${uData.department || 'Chưa rõ'}`;
+        } else {
+          item.grinderName = "Người dùng ẩn";
+        }
+      }
+    }
+
+    return historyList;
+  },
+
   // ── 11. GAME GIỮ CHUỖI (STREAK MODE) ──────────────────────────────
   async getUserStreakStatus(userId) {
     const { data: history, error } = await supabase

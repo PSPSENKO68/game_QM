@@ -624,6 +624,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
         dashboardStatsQuiz.classList.remove('hidden');
       });
+
+      // Render Grinder History Table
+      const grinderContainer = document.getElementById('grinder_history_container');
+      const grinderTbody = document.getElementById('grinder_history_tbody');
+      
+      if (grinderContainer && grinderTbody) {
+        db.adminGetGrinderHistory().then(history => {
+          if (history && history.length > 0) {
+            grinderContainer.classList.remove('hidden');
+            grinderTbody.innerHTML = history.map((item, index) => {
+              const rowClass = index % 2 === 0 ? 'bg-white' : 'bg-emerald-50/50';
+              const isCurrent = index === 0 ? '<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-700">MỚI NHẤT</span>' : '';
+              return `
+                <tr class="${rowClass} border-b border-emerald-50 hover:bg-emerald-100/50 transition">
+                  <td class="p-2 font-semibold text-emerald-900 whitespace-nowrap">${item.cycleName} ${isCurrent}</td>
+                  <td class="p-2 text-emerald-800 font-medium">🏆 ${item.grinderName}</td>
+                  <td class="p-2 text-right font-mono text-xs text-slate-600">
+                    <span class="font-bold text-emerald-700">${item.correct} câu</span> <br/>
+                    (${db.formatTimeSpent(item.time)})
+                  </td>
+                </tr>
+              `;
+            }).join('');
+          } else {
+            grinderContainer.classList.add('hidden');
+          }
+        });
+      }
     }
   }
 

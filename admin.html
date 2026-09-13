@@ -319,8 +319,30 @@
           </div>
 
           <!-- Current Quizzes Grid -->
-          <!-- Quiz Dashboard Stats -->
+          <!-- Dashboard Stats Quiz (Auto Generated) -->
           <div id="dashboard_stats_quiz" class="hidden mb-4 animate-in w-full"></div>
+
+          <!-- Lịch sử Vua Cày Cuốc -->
+          <div id="grinder_history_container" class="hidden mb-6 bg-white border-2 border-emerald-100 rounded-2xl p-4 shadow-sm animate-in w-full">
+            <div class="flex items-center gap-2 mb-3 text-emerald-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <h3 class="font-black text-sm uppercase tracking-wider">Lịch Sử Vua Cày Cuốc Qua Các Chu Kỳ</h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead>
+                  <tr class="bg-emerald-50 text-emerald-900 border-b-2 border-emerald-100">
+                    <th class="p-2 font-bold whitespace-nowrap">Chu Kỳ</th>
+                    <th class="p-2 font-bold">Người Vô Địch</th>
+                    <th class="p-2 font-bold text-right">Thành Tích</th>
+                  </tr>
+                </thead>
+                <tbody id="grinder_history_tbody">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="quizzes_container">
             <!-- Rendered quiz cards dynamically -->
