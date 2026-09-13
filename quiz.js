@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } else {
     if (activeQuiz && quizWeekBadge) {
-      quizWeekBadge.textContent = `Tháng ${activeQuiz.month_no || 1} • Tuần ${activeQuiz.week_no || 'Này'}`;
+      quizWeekBadge.textContent = activeQuiz.title || 'ĐỀ KIỂM TRA';
     }
   }
 
