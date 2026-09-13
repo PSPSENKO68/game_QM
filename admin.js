@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       div.className = 'p-4 bg-[rgba(255,255,255,0.7)] rounded-2xl border-2 border-[#8B5A2B] shadow-xs';
       div.innerHTML = `
         <div class="flex items-start justify-between gap-3 mb-3">
-          <p class="text-xs font-bold text-[#4A240A] flex-1"><span class="text-[#DE3A3B] mr-1 font-['Space_Grotesk']">${idx + 1}.</span>${q.question_text}</p>
+          <p class="text-xs font-bold text-[#4A240A] flex-1 whitespace-pre-wrap"><span class="text-[#DE3A3B] mr-1 font-['Space_Grotesk']">${idx + 1}.</span>${q.question_text}</p>
           <div class="flex items-center gap-1.5">
             <button class="edit-question-btn p-1.5 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg hover:bg-[#E9C691] transition inline-flex items-center cursor-pointer text-[10px] font-bold gap-1" data-id="${q.id}" data-qtext="${encodeURIComponent(q.question_text)}" data-point="${q.point || 10}" data-time="${q.time_limit || 15}" data-image="${q.image_url || ''}" data-answers='${JSON.stringify((q.answers || []).map(a => ({ text: a.answer_text, correct: a.is_correct })))}' title="Sửa câu hỏi">✏️ Sửa</button>
             <button class="del-question-btn p-1.5 bg-rose-50 border-2 border-rose-200 text-rose-600 rounded-lg hover:bg-rose-100 transition inline-flex items-center cursor-pointer" data-id="${q.id}" title="Xóa câu hỏi">🗑️</button>
