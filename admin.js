@@ -570,6 +570,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
       });
     });
+    // Render Dashboard Stats Quiz
+    const dashboardStatsQuiz = document.getElementById('dashboard_stats_quiz');
+    if (dashboardStatsQuiz) {
+      db.adminGetDashboardStats().then(stats => {
+        dashboardStatsQuiz.innerHTML = `
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-red-100 border-2 border-red-200 shadow-sm flex flex-col justify-center">
+              <p class="text-[10px] font-black uppercase text-red-600 mb-1 tracking-wider">Bộ đề sai nhiều nhất (Chu kỳ)</p>
+              <p class="text-sm md:text-base font-bold text-red-900 font-['Space_Grotesk']">${stats.mostWrongQuizTitle}</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-100 border-2 border-indigo-200 shadow-sm flex flex-col justify-center">
+              <p class="text-[10px] font-black uppercase text-indigo-600 mb-1 tracking-wider">Người bị thách đấu nhiều nhất (Chu kỳ)</p>
+              <p class="text-sm md:text-base font-bold text-indigo-900 font-['Space_Grotesk']">${stats.mostAttackedPlayerName}</p>
+            </div>
+          </div>
+        `;
+        dashboardStatsQuiz.classList.remove('hidden');
+      });
+    }
   }
 
   async function showQuizQuestions(quizId, title, weekLabel, monthLabel, streakDay) {

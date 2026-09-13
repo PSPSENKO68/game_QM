@@ -1578,6 +1578,77 @@ export const db = {
     return result;
   },
 
+  async adminGetDashboardStats() {
+    const bounds = await this.getCurrentCycleBounds();
+
+    // 1. Tìm bộ đề có số câu sai nhiều nhất
+    const { data: playsData } = await supabase
+      .from('play_history')
+      .select('quiz_id, wrong_count')
+      .gte('played_at', bounds.start)
+      .lte('played_at', bounds.end);
+
+    let mostWrongQuizId = null;
+    let maxWrongCount = 0;
+    
+    if (playsData && playsData.length > 0) {
+      const wrongCountByQuiz = {};
+      playsData.forEach(p => {
+        if (!p.quiz_id) return;
+        wrongCountByQuiz[p.quiz_id] = (wrongCountByQuiz[p.quiz_id] || 0) + (parseInt(p.wrong_count) || 0);
+      });
+
+      for (const [qId, count] of Object.entries(wrongCountByQuiz)) {
+        if (count > maxWrongCount) {
+          maxWrongCount = count;
+          mostWrongQuizId = qId;
+        }
+      }
+    }
+
+    let mostWrongQuizTitle = "Chưa có dữ liệu";
+    if (mostWrongQuizId) {
+      const { data: qData } = await supabase.from('quizzes').select('title').eq('id', mostWrongQuizId).single();
+      if (qData) mostWrongQuizTitle = qData.title;
+    }
+
+    // 2. Tìm người bị thách đấu nhiều nhất
+    const { data: stealsData } = await supabase
+      .from('steal_history')
+      .select('defender_id')
+      .gte('created_at', bounds.start)
+      .lte('created_at', bounds.end);
+
+    let mostAttackedPlayerId = null;
+    let maxAttackCount = 0;
+
+    if (stealsData && stealsData.length > 0) {
+      const attackCountByUser = {};
+      stealsData.forEach(s => {
+        if (!s.defender_id) return;
+        attackCountByUser[s.defender_id] = (attackCountByUser[s.defender_id] || 0) + 1;
+      });
+
+      for (const [uId, count] of Object.entries(attackCountByUser)) {
+        if (count > maxAttackCount) {
+          maxAttackCount = count;
+          mostAttackedPlayerId = uId;
+        }
+      }
+    }
+
+    let mostAttackedPlayerName = "Chưa có dữ liệu";
+    if (mostAttackedPlayerId) {
+      const { data: uData } = await supabase.from('users').select('full_name, employee_code').eq('id', mostAttackedPlayerId).single();
+      if (uData) mostAttackedPlayerName = `${uData.full_name} (${uData.employee_code}) - ${maxAttackCount} lần`;
+    }
+
+    return {
+      mostWrongQuizTitle,
+      mostAttackedPlayerName
+    };
+  },
+
   // ── 11. GAME GIỮ CHUỖI (STREAK MODE) ──────────────────────────────
   async getUserStreakStatus(userId) {
     const { data: history, error } = await supabase
