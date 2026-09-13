@@ -1612,6 +1612,10 @@ export const db = {
   async adminGetDashboardStats() {
     const bounds = await this.getCurrentCycleBounds();
 
+    // Lấy danh sách admin để loại trừ
+    const { data: adminData } = await supabase.from('users').select('id').eq('role', 'owner');
+    const adminIds = adminData ? adminData.map(a => a.id) : [];
+
     // 1. Tìm bộ đề có số câu sai nhiều nhất & Tìm người Cày Cuốc giỏi nhất (Chế độ 1)
     const { data: playsData } = await supabase
       .from('play_history')
@@ -1630,13 +1634,13 @@ export const db = {
       const grinderStatsByUser = {};
 
       playsData.forEach(p => {
-        // Gom dữ liệu bộ đề sai
-        if (p.quiz_id) {
+        // Gom dữ liệu bộ đề sai (bỏ qua admin)
+        if (p.quiz_id && !adminIds.includes(p.user_id)) {
           wrongCountByQuiz[p.quiz_id] = (wrongCountByQuiz[p.quiz_id] || 0) + (parseInt(p.wrong_count) || 0);
         }
         
-        // Gom dữ liệu cày cuốc
-        if (p.user_id) {
+        // Gom dữ liệu cày cuốc (bỏ qua admin)
+        if (p.user_id && !adminIds.includes(p.user_id)) {
           if (!grinderStatsByUser[p.user_id]) grinderStatsByUser[p.user_id] = { correct: 0, time: 0 };
           grinderStatsByUser[p.user_id].correct += (parseInt(p.correct_count) || 0);
           grinderStatsByUser[p.user_id].time += (parseFloat(p.time_spent) || 0);
@@ -1692,7 +1696,7 @@ export const db = {
     if (stealsData && stealsData.length > 0) {
       const attackCountByUser = {};
       stealsData.forEach(s => {
-        if (!s.defender_id) return;
+        if (!s.defender_id || adminIds.includes(s.defender_id)) return;
         attackCountByUser[s.defender_id] = (attackCountByUser[s.defender_id] || 0) + 1;
       });
 
@@ -1718,6 +1722,10 @@ export const db = {
   },
 
   async adminGetGrinderHistory() {
+    // Lấy danh sách admin để loại trừ
+    const { data: adminData } = await supabase.from('users').select('id').eq('role', 'owner');
+    const adminIds = adminData ? adminData.map(a => a.id) : [];
+
     const { data: plays, error } = await supabase
       .from('play_history')
       .select(`
@@ -1733,7 +1741,7 @@ export const db = {
     const cyclesData = {};
     
     plays.forEach(p => {
-      if (!p.quizzes || !p.user_id) return;
+      if (!p.quizzes || !p.user_id || adminIds.includes(p.user_id)) return; // Bỏ qua admin
       const m = p.quizzes.month_no || 1;
       const w = p.quizzes.week_no || 1;
       const cycleKey = `Tháng ${m} - Tuần ${w}`;
