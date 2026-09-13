@@ -598,25 +598,23 @@ export const db = {
       wrong_answers: wrongAnswers
     };
 
-    const { error } = await supabase.from('play_history').insert(record);
-    if (error) {
-      console.error('savePlayRecord error:', error);
+    // Parallelize independent operations
+    const [insertResult, userDataRes, bounds] = await Promise.all([
+      supabase.from('play_history').insert(record),
+      mode !== 'streak' ? supabase.from('users').select('total_score, recoverable_points').eq('id', userId).single() : Promise.resolve({data: null}),
+      mode !== 'streak' ? this.getCurrentCycleBounds() : Promise.resolve(null)
+    ]);
+
+    if (insertResult.error) {
+      console.error('savePlayRecord error:', insertResult.error);
       return { success: false };
     }
 
     // Tính năng mới: Lấy điểm cao nhất trong chu kỳ hiện tại để cộng dồn vào tổng điểm cá nhân
     if (mode !== 'streak') {
-      const { data: userData } = await supabase
-        .from('users')
-        .select('total_score, recoverable_points')
-        .eq('id', userId)
-        .single();
-      
+      const userData = userDataRes.data;
       let currentTotal = parseInt(userData?.total_score) || 0;
       let recovPoints = parseInt(userData?.recoverable_points) || 0;
-      
-      // Lấy khoảng thời gian của chu kỳ hiện tại
-      const bounds = await this.getCurrentCycleBounds();
       
       // Lấy danh sách điểm các lượt chơi của BỘ ĐỀ NÀY trong chu kỳ này, trừ lượt vừa lưu
       const { data: cyclePlays } = await supabase
@@ -692,18 +690,28 @@ export const db = {
   },
 
   async executeSteal(attackerId, defenderId, attackerCorrectCount, attackerTimeSpent) {
-    // 1. Kiểm tra giới hạn 1 lần/ngày/người
-    const hasStolen = await db.hasStolenFromUserToday(attackerId, defenderId);
-    if (hasStolen) return { success: false, message: 'Bạn đã thách đấu người này hôm nay rồi.' };
+    // Parallelize all checks and data fetching
+    const [
+      hasStolen, 
+      maxSteals, 
+      stealsToday, 
+      defenderBest,
+      multipliers,
+      basePoints,
+      usersRes
+    ] = await Promise.all([
+      db.hasStolenFromUserToday(attackerId, defenderId),
+      db.getMaxStealsPerDay(),
+      db.getStealsToday(attackerId),
+      db.getBestPlayToday(defenderId),
+      db.getStealMultipliers(),
+      db.getStealBasePoints(),
+      supabase.from('users').select('id, total_score, has_shield, recoverable_points').in('id', [attackerId, defenderId])
+    ]);
 
-    // 2. Kiểm tra giới hạn tổng số lần thách đấu trong ngày
-    const maxSteals = await db.getMaxStealsPerDay();
-    const stealsToday = await db.getStealsToday(attackerId);
+    if (hasStolen) return { success: false, message: 'Bạn đã thách đấu người này hôm nay rồi.' };
     if (stealsToday >= maxSteals) return { success: false, message: 'Bạn đã hết lượt thách đấu hôm nay.' };
 
-    // 3. Lấy thành tích tốt nhất của người bị thách đấu
-    const defenderBest = await db.getBestPlayToday(defenderId);
-    
     const defCorrect = defenderBest ? parseInt(defenderBest.correct_count) || 0 : 0;
     const rawDefTime = defenderBest ? parseFloat(defenderBest.time_spent) || 999999999 : 999999999;
     
@@ -723,26 +731,7 @@ export const db = {
       }
     }
 
-    // 4. Lưu lịch sử
-    const { error } = await supabase.from('steal_history').insert({
-      id: genId('st'),
-      attacker_id: attackerId,
-      defender_id: defenderId,
-      is_success: isSuccess,
-      attacker_correct_count: attackerCorrectCount,
-      attacker_time_spent: atkTime,
-      defender_correct_count: defCorrect,
-      defender_time_spent: defTime
-    });
-
-    if (error) return { success: false, message: error.message };
-
-    // 5. Lấy multiplier & base points từ settings
-    const multipliers = await db.getStealMultipliers();
-    const basePoints = await db.getStealBasePoints();
-
-    // 6. Cộng/Trừ điểm
-    const { data: usersData } = await supabase.from('users').select('id, total_score, has_shield, recoverable_points').in('id', [attackerId, defenderId]);
+    const usersData = usersRes.data || [];
     const attackerData = usersData.find(u => u.id === attackerId);
     const defenderData = usersData.find(u => u.id === defenderId);
 
@@ -756,28 +745,45 @@ export const db = {
     const losePoints = Math.round(basePoints.lose * multipliers.lose);
 
     let shieldUsed = false;
+    const updatePromises = [];
+
+    // Lưu lịch sử thách đấu
+    updatePromises.push(supabase.from('steal_history').insert({
+      id: genId('st'),
+      attacker_id: attackerId,
+      defender_id: defenderId,
+      is_success: isSuccess,
+      attacker_correct_count: attackerCorrectCount,
+      attacker_time_spent: atkTime,
+      defender_correct_count: defCorrect,
+      defender_time_spent: defTime
+    }));
+
     if (isSuccess) {
-      // Attacker wins: Attacker gets +winPoints, Defender gets -winPoints (allow negative)
-      await supabase.from('users').update({ total_score: attackerTotal + winPoints }).eq('id', attackerId);
+      // Attacker wins
+      updatePromises.push(supabase.from('users').update({ total_score: attackerTotal + winPoints }).eq('id', attackerId));
       
       if (defenderData?.has_shield) {
         shieldUsed = true;
-        // Shield saves the day, defender loses 0 points, but shield breaks
-        await supabase.from('users').update({ has_shield: false }).eq('id', defenderId);
+        updatePromises.push(supabase.from('users').update({ has_shield: false }).eq('id', defenderId));
       } else {
-        await supabase.from('users').update({ 
+        updatePromises.push(supabase.from('users').update({ 
           total_score: defenderTotal - winPoints,
           recoverable_points: defenderRecov + winPoints
-        }).eq('id', defenderId);
+        }).eq('id', defenderId));
       }
     } else {
-      // Attacker loses: Attacker gets -losePoints (allow negative), Defender gets +losePoints
-      await supabase.from('users').update({ 
+      // Attacker loses
+      updatePromises.push(supabase.from('users').update({ 
         total_score: attackerTotal - losePoints,
         recoverable_points: attackerRecov + losePoints
-      }).eq('id', attackerId);
-      await supabase.from('users').update({ total_score: defenderTotal + losePoints }).eq('id', defenderId);
+      }).eq('id', attackerId));
+      updatePromises.push(supabase.from('users').update({ total_score: defenderTotal + losePoints }).eq('id', defenderId));
     }
+
+    const updateResults = await Promise.all(updatePromises);
+    const err = updateResults.find(r => r.error);
+    if (err) return { success: false, message: err.error.message };
 
     return { success: true, isWin: isSuccess, defCorrect, defTime, atkCorrect, atkTime, winPoints, losePoints, shieldUsed };
   },
