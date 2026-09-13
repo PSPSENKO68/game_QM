@@ -607,7 +607,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (dashboardStatsQuiz) {
       db.adminGetDashboardStats().then(stats => {
         dashboardStatsQuiz.innerHTML = `
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="p-4 rounded-2xl bg-gradient-to-br from-rose-50 to-red-100 border-2 border-red-200 shadow-sm flex flex-col justify-center">
               <p class="text-[10px] font-black uppercase text-red-600 mb-1 tracking-wider">Bộ đề sai nhiều nhất (Chu kỳ)</p>
               <p class="text-sm md:text-base font-bold text-red-900 font-['Space_Grotesk']">${stats.mostWrongQuizTitle}</p>
