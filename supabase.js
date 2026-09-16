@@ -641,13 +641,6 @@ export const db = {
         totalChanged = true;
       }
 
-      // 2. Hồi phục điểm bị cướp (nếu điểm đạt >= kỷ lục cũ)
-      if (newScore >= oldMaxInCycle && recovPoints > 0) {
-        currentTotal += recovPoints;
-        scoreUpdates.recoverable_points = 0; // Đã hồi phục xong
-        totalChanged = true;
-      }
-
       if (totalChanged) {
         scoreUpdates.total_score = currentTotal;
         await supabase.from('users').update(scoreUpdates).eq('id', userId);
