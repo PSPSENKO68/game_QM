@@ -246,11 +246,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (currentHistoryMode === 'steal') {
       if (wrapperHistoryNormal) wrapperHistoryNormal.classList.add('hidden');
       if (wrapperHistorySteal) wrapperHistorySteal.classList.remove('hidden');
-      if (typeof fetchAndRenderStealHistory === 'function') fetchAndRenderStealHistory();
+      fetchAndRenderStealHistory();
     } else {
       if (wrapperHistorySteal) wrapperHistorySteal.classList.add('hidden');
       if (wrapperHistoryNormal) wrapperHistoryNormal.classList.remove('hidden');
-      if (typeof fetchAndRenderHistory === 'function') fetchAndRenderHistory();
+      fetchAndRenderHistory();
     }
   }
 
@@ -1548,7 +1548,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  window.fetchAndRenderStealHistory = async function() {
+  async function fetchAndRenderStealHistory() {
     if (!stealHistoryTableBody) return;
     stealHistoryTableBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-400 italic">Đang tải lịch sử thách đấu...</td></tr>';
 
