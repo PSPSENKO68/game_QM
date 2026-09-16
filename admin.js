@@ -222,22 +222,53 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const subtabHistoryNormal = document.getElementById('subtab_history_normal');
   const subtabHistoryStreak = document.getElementById('subtab_history_streak');
+  const subtabHistorySteal = document.getElementById('subtab_history_steal');
   const wrapperHistoryNormal = document.getElementById('wrapper_history_normal');
-  const wrapperHistoryStreak = document.getElementById('wrapper_history_streak');
+  const wrapperHistorySteal = document.getElementById('wrapper_history_steal');
+
+  function updateHistoryTabsUI() {
+    if (subtabHistoryNormal) {
+      subtabHistoryNormal.className = currentHistoryMode === 'normal' 
+        ? 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer' 
+        : 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+    }
+    if (subtabHistoryStreak) {
+      subtabHistoryStreak.className = currentHistoryMode === 'streak'
+        ? 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer'
+        : 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+    }
+    if (subtabHistorySteal) {
+      subtabHistorySteal.className = currentHistoryMode === 'steal'
+        ? 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer'
+        : 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
+    }
+
+    if (currentHistoryMode === 'steal') {
+      if (wrapperHistoryNormal) wrapperHistoryNormal.classList.add('hidden');
+      if (wrapperHistorySteal) wrapperHistorySteal.classList.remove('hidden');
+      if (typeof fetchAndRenderStealHistory === 'function') fetchAndRenderStealHistory();
+    } else {
+      if (wrapperHistorySteal) wrapperHistorySteal.classList.add('hidden');
+      if (wrapperHistoryNormal) wrapperHistoryNormal.classList.remove('hidden');
+      if (typeof fetchAndRenderHistory === 'function') fetchAndRenderHistory();
+    }
+  }
 
   if (subtabHistoryNormal && subtabHistoryStreak) {
     subtabHistoryNormal.addEventListener('click', () => {
-      subtabHistoryNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
-      subtabHistoryStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
       currentHistoryMode = 'normal';
-      fetchAndRenderHistory();
+      updateHistoryTabsUI();
     });
     subtabHistoryStreak.addEventListener('click', () => {
-      subtabHistoryStreak.className = 'px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer';
-      subtabHistoryNormal.className = 'px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer';
       currentHistoryMode = 'streak';
-      fetchAndRenderHistory();
+      updateHistoryTabsUI();
     });
+    if (subtabHistorySteal) {
+      subtabHistorySteal.addEventListener('click', () => {
+        currentHistoryMode = 'steal';
+        updateHistoryTabsUI();
+      });
+    }
   }
 
 
@@ -1383,6 +1414,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // Steal History Elements
+  const stealHistoryTableBody = document.getElementById('steal_history_table_body');
+  const btnRefreshHistorySteal = document.getElementById('btn_refresh_history_steal');
+  const filterHistorySearchSteal = document.getElementById('filter_history_search_steal');
+  const btnClearHistoryFilterSteal = document.getElementById('btn_clear_history_filter_steal');
+
+  const triggerHistoryFilterSteal = () => fetchAndRenderStealHistory();
+  if (btnRefreshHistorySteal) btnRefreshHistorySteal.addEventListener('click', fetchAndRenderStealHistory);
+  if (filterHistorySearchSteal) filterHistorySearchSteal.addEventListener('input', triggerHistoryFilterSteal);
+  if (btnClearHistoryFilterSteal) {
+    btnClearHistoryFilterSteal.addEventListener('click', () => {
+      if (filterHistorySearchSteal) filterHistorySearchSteal.value = '';
+      fetchAndRenderStealHistory();
+    });
+  }
+
   async function fetchAndRenderHistory() {
     if (!historyTableBody) return;
     historyTableBody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-slate-400 italic">Đang tải lịch sử...</td></tr>';
@@ -1498,6 +1545,79 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         modalWrongAnswers.classList.remove('hidden');
       });
+    });
+  }
+
+  window.fetchAndRenderStealHistory = async function() {
+    if (!stealHistoryTableBody) return;
+    stealHistoryTableBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-400 italic">Đang tải lịch sử thách đấu...</td></tr>';
+
+    let historyData = await db.adminGetStealHistory();
+
+    const searchVal = filterHistorySearchSteal?.value.toLowerCase().trim() || '';
+    if (searchVal) {
+      historyData = historyData.filter(row => {
+        const attackerName = row.attacker?.full_name?.toLowerCase() || '';
+        const defenderName = row.defender?.full_name?.toLowerCase() || '';
+        return attackerName.includes(searchVal) || defenderName.includes(searchVal);
+      });
+    }
+
+    if (!historyData || historyData.length === 0) {
+      stealHistoryTableBody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-[#8B5A2B] italic">Chưa có lượt thách đấu nào.</td></tr>';
+      return;
+    }
+
+    stealHistoryTableBody.innerHTML = '';
+    historyData.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.className = 'hover:bg-[rgba(139,90,43,0.1)] transition';
+      const createdDate = new Date(row.created_at).toLocaleString('vi-VN');
+      
+      const attackerName = row.attacker ? row.attacker.full_name : 'N/A';
+      const attackerDept = row.attacker ? row.attacker.department : '';
+      
+      const defenderName = row.defender ? row.defender.full_name : 'N/A';
+      const defenderDept = row.defender ? row.defender.department : '';
+
+      const isSuccess = row.is_success;
+      const resultHtml = isSuccess
+        ? '<span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded text-[10px]">Cướp thành công</span>'
+        : '<span class="text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded text-[10px]">Thủ thành công</span>';
+
+      const formatTime = (ms) => {
+        const m = parseInt(ms) || 0;
+        const sec = Math.floor(m / 1000);
+        const milli = String(m % 1000).padStart(3, '0');
+        return `${sec}s${milli}'`;
+      };
+
+      const atkTime = formatTime(row.attacker_time_spent);
+      const defTime = formatTime(row.defender_time_spent);
+
+      tr.innerHTML = `
+        <td class="py-3 px-4 font-semibold text-[#593113]">${createdDate}</td>
+        <td class="py-3 px-4">
+          <p class="font-bold text-[#DE3A3B]">${attackerName}</p>
+          <p class="text-[10px] text-[#8B5A2B]">${attackerDept}</p>
+        </td>
+        <td class="py-3 px-4">
+          <p class="font-bold text-[#3C8230]">${defenderName}</p>
+          <p class="text-[10px] text-[#8B5A2B]">${defenderDept}</p>
+        </td>
+        <td class="py-3 px-4 text-center">
+          ${resultHtml}
+        </td>
+        <td class="py-3 px-4 text-center">
+          <span class="text-[#DE3A3B] font-bold">${row.attacker_correct_count || 0}</span>
+          <span class="text-[rgba(139,90,43,0.3)] mx-1">/</span>
+          <span class="text-[#3C8230] font-bold">${row.defender_correct_count || 0}</span>
+        </td>
+        <td class="py-3 px-4 text-center text-[#8B5A2B] font-semibold">
+          <span class="text-[#DE3A3B]">${atkTime}</span> / <span class="text-[#3C8230]">${defTime}</span>
+        </td>
+      `;
+      stealHistoryTableBody.appendChild(tr);
     });
   }
 

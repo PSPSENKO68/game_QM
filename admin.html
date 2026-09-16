@@ -508,6 +508,7 @@
           <div class="flex items-center gap-2 bg-[rgba(139,90,43,0.1)] p-1 rounded-xl mb-2 w-fit">
             <button id="subtab_history_normal" class="px-4 py-2 text-xs font-bold rounded-lg transition bg-[#DE3A3B] text-white shadow-sm cursor-pointer">Chế độ Thường</button>
             <button id="subtab_history_streak" class="px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer">Chế độ Giữ Chuỗi</button>
+            <button id="subtab_history_steal" class="px-4 py-2 text-xs font-bold rounded-lg transition text-[#8B5A2B] hover:bg-[rgba(139,90,43,0.1)] cursor-pointer">Chế độ Thách Đấu</button>
           </div>
           
           <!-- Normal History Wrapper -->
@@ -573,6 +574,47 @@
           </div>
         
           </div>
+
+          <!-- Steal History Wrapper -->
+          <div id="wrapper_history_steal" class="flex flex-col gap-6 hidden">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+              <div>
+                <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Lịch Sử Thách Đấu</h2>
+                <p class="text-xs text-[#593113] mt-1">Xem chi tiết các lượt thách đấu</p>
+              </div>
+              <button id="btn_refresh_history_steal"
+                class="btn-pirate-yellow px-3 py-2 text-[#2B1607] font-bold text-xs rounded-xl transition cursor-pointer">🔄
+                Làm mới</button>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-3 mb-6 card-wood p-3">
+              <input type="text" id="filter_history_search_steal" placeholder="Tìm theo tên người chơi..."
+                class="w-full sm:w-auto p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-lg text-xs font-bold flex-1 focus:outline-none" />
+              <button id="btn_clear_history_filter_steal"
+                class="w-full sm:w-auto btn-pirate-yellow px-4 py-2 text-[#2B1607] font-bold text-xs rounded-xl transition cursor-pointer">
+                XÓA LỌC
+              </button>
+            </div>
+
+            <div class="overflow-x-auto border-2 border-[#8B5A2B] rounded-2xl bg-[rgba(255,255,255,0.5)]">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-[rgba(139,90,43,0.1)] border-b-2 border-[#8B5A2B] text-[#8B5A2B]">
+                  <tr>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider">Thời gian</th>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider">Người thách đấu (Kẻ thù)</th>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider">Người bị thách đấu (Mục tiêu)</th>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider text-center">Kết quả</th>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider text-center">Câu đúng (Kẻ thù / Mục tiêu)</th>
+                    <th class="py-3 px-4 font-black uppercase tracking-wider text-center">TG (Kẻ thù / Mục tiêu)</th>
+                  </tr>
+                </thead>
+                <tbody id="steal_history_table_body" class="divide-y-2 divide-dashed divide-[rgba(139,90,43,0.3)] font-semibold text-[#4A240A]">
+                  <!-- Rows injected dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           </section>
 
 

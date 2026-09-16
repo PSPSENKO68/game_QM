@@ -1576,6 +1576,22 @@ export const db = {
     return data || [];
   },
 
+  async adminGetStealHistory() {
+    const { data, error } = await supabase
+      .from('steal_history')
+      .select(`
+        *,
+        attacker:users!steal_history_attacker_id_fkey ( full_name, employee_code, department ),
+        defender:users!steal_history_defender_id_fkey ( full_name, employee_code, department )
+      `)
+      .order('created_at', { ascending: false });
+    if (error) {
+      console.error('adminGetStealHistory error:', error);
+      return [];
+    }
+    return data || [];
+  },
+
   async adminGetQuizParticipantCount() {
     // Gom nhóm user_id duy nhất cho mỗi bộ đề và tính toán số lượt chơi, điểm trung bình
     const { data, error } = await supabase
