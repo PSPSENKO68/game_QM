@@ -504,16 +504,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Tạo lượt chơi ảo nếu có nhập thời gian ảo
       if (result.success && (virtualTimeStr !== '' || virtualTimeMsStr !== '') && finalUserId) {
-        let vTime = 0;
-        if (virtualTimeStr !== '') vTime += parseFloat(virtualTimeStr);
-        if (virtualTimeMsStr !== '') vTime += parseFloat(virtualTimeMsStr) / 1000;
+        let vTimeMs = 0;
+        if (virtualTimeStr !== '') vTimeMs += parseInt(virtualTimeStr) * 1000;
+        if (virtualTimeMsStr !== '') vTimeMs += parseInt(virtualTimeMsStr);
         
-        if (vTime > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
-           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTime);
+        if (vTimeMs > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
+           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
            if (!dummyResult.success) {
              showAdminAlert('Lỗi Thời Gian Ảo', dummyResult.message || 'Không thể tạo thời gian ảo.');
            } else {
-             console.log("Dummy play created successfully with time:", vTime);
+             console.log("Dummy play created successfully with time:", vTimeMs);
            }
         }
       }
