@@ -128,6 +128,77 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  // --- Change Password Logic ---
+  const btnShowChangePassword = document.getElementById('btn_show_change_password');
+  const btnBackToLogin = document.getElementById('btn_back_to_login');
+  const changePasswordForm = document.getElementById('change_password_form');
+  const cpPhoneInput = document.getElementById('cp_phone');
+  const cpOldPinInput = document.getElementById('cp_old_pin');
+  const cpNewPinInput = document.getElementById('cp_new_pin');
+  const btnSubmitChangePassword = document.getElementById('btn_submit_change_password');
+
+  if (btnShowChangePassword && btnBackToLogin && changePasswordForm) {
+    btnShowChangePassword.addEventListener('click', () => {
+      adminForm.classList.add('hidden-form');
+      changePasswordForm.classList.remove('hidden-form');
+      hideAlerts();
+    });
+
+    btnBackToLogin.addEventListener('click', () => {
+      changePasswordForm.classList.add('hidden-form');
+      adminForm.classList.remove('hidden-form');
+      hideAlerts();
+    });
+
+    changePasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlerts();
+
+      const phone = cpPhoneInput.value.trim();
+      const oldPin = cpOldPinInput.value.trim();
+      const newPin = cpNewPinInput.value.trim();
+
+      if (!phone || !oldPin || !newPin) {
+        showError('Vui lòng nhập đầy đủ thông tin.');
+        return;
+      }
+      if (newPin.length < 4) {
+        showError('PIN mới phải có ít nhất 4 ký tự.');
+        return;
+      }
+
+      setLoading(btnSubmitChangePassword, true, 'XÁC NHẬN ĐỔI MẬT KHẨU');
+
+      try {
+        // 1. Xác thực bằng PIN cũ
+        const loginResult = await db.login(phone, oldPin);
+        if (!loginResult.success) {
+          showError('Sai SĐT hoặc PIN cũ không đúng.');
+          shakeForm(changePasswordForm);
+          return;
+        }
+
+        // 2. Cập nhật PIN mới
+        const user = loginResult.user;
+        const updateResult = await db.adminUpdateUser(user.id, { pin: newPin });
+        
+        if (updateResult.success) {
+          showSuccess('Đổi mật khẩu thành công! Vui lòng quay lại Đăng nhập.');
+          cpOldPinInput.value = '';
+          cpNewPinInput.value = '';
+        } else {
+          showError(updateResult.message || 'Lỗi: Không thể cập nhật PIN (Vui lòng kiểm tra lại quyền Supabase RLS).');
+          shakeForm(changePasswordForm);
+        }
+      } catch (err) {
+        console.error(err);
+        showError('Lỗi kết nối. Vui lòng thử lại.');
+      } finally {
+        setLoading(btnSubmitChangePassword, false, 'XÁC NHẬN ĐỔI MẬT KHẨU');
+      }
+    });
+  }
+
   function setLoading(btn, isLoading, originalText) {
     if (isLoading) {
       btn.disabled = true;

@@ -232,6 +232,47 @@
           <button type="submit" id="btn_submit_admin" class="btn-submit mt-2" style="background: linear-gradient(180deg, #D48847 0%, #9C6036 100%); border-color: #4A240A;">
             <span>ĐĂNG NHẬP ADMIN</span>
           </button>
+          <div class="text-center mt-2">
+            <button type="button" id="btn_show_change_password" class="text-[11px] font-bold text-[#8B5A2B] hover:text-[#D48847] underline">
+              Đổi mật khẩu
+            </button>
+          </div>
+        </form>
+
+        <!-- CHANGE PASSWORD FORM -->
+        <form id="change_password_form" class="space-y-4 hidden-form">
+          <div class="bg-[#FFF8E7] p-3 rounded-xl border-2 border-[#C49A6C] mb-3">
+            <p class="text-[11px] text-[#4A240A] text-center font-bold">Lưu ý: Yêu cầu mật khẩu cũ để đổi sang mật khẩu mới.</p>
+          </div>
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">SĐT / Mã nhân viên</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">📱</span>
+              <input type="text" id="cp_phone" required placeholder="Tên đăng nhập..." class="brand-input" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">Mật khẩu cũ (PIN CŨ)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">🔒</span>
+              <input type="password" id="cp_old_pin" required placeholder="Nhập PIN cũ" class="brand-input" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-black uppercase tracking-widest text-[#4A240A] mb-1">Mật khẩu mới (PIN MỚI)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-[#8B5A2B]">🔑</span>
+              <input type="password" id="cp_new_pin" required placeholder="Nhập PIN mới" class="brand-input" />
+            </div>
+          </div>
+          <button type="submit" id="btn_submit_change_password" class="btn-submit mt-2" style="background: linear-gradient(180deg, #677B40 0%, #4F5E30 100%); border-color: #2F391B;">
+            <span>XÁC NHẬN ĐỔI MẬT KHẨU</span>
+          </button>
+          <div class="text-center mt-2">
+            <button type="button" id="btn_back_to_login" class="text-[11px] font-bold text-[#8B5A2B] hover:text-[#D48847] underline">
+              Quay lại đăng nhập
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -251,6 +292,7 @@
     const tabAdmin = document.getElementById('tab_admin');
     const quickForm = document.getElementById('quick_play_form');
     const adminForm = document.getElementById('admin_login_form');
+    const changePasswordForm = document.getElementById('change_password_form');
     const errorAlert = document.getElementById('error_alert');
     const successAlert = document.getElementById('success_alert');
 
@@ -259,6 +301,7 @@
       tabAdmin.classList.remove('active');
       quickForm.classList.remove('hidden-form');
       adminForm.classList.add('hidden-form');
+      changePasswordForm.classList.add('hidden-form');
       errorAlert.classList.add('hidden');
       successAlert.classList.add('hidden');
     });
@@ -268,6 +311,7 @@
       tabQuick.classList.remove('active');
       adminForm.classList.remove('hidden-form');
       quickForm.classList.add('hidden-form');
+      changePasswordForm.classList.add('hidden-form');
       errorAlert.classList.add('hidden');
       successAlert.classList.add('hidden');
     });
