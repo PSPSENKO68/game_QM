@@ -1149,8 +1149,11 @@ export const db = {
         : null;
     }
 
-    const { error } = await supabase.from('users').update(cleanUpdates).eq('id', id);
+    const { data, error } = await supabase.from('users').update(cleanUpdates).eq('id', id).select();
     if (error) return { success: false, message: error.message };
+    if (!data || data.length === 0) {
+      return { success: false, message: 'Lỗi: Không thể lưu vào Database (có thể do Supabase RLS chặn quyền UPDATE).' };
+    }
     return { success: true };
   },
 
