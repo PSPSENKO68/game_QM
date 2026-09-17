@@ -1072,6 +1072,73 @@ export const db = {
     return { success: true };
   },
 
+  async adminOverrideUserTime(userId, score, timeMs) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return { success: false, message: 'Chưa đăng nhập.' };
+
+    const bounds = await this.getCurrentCycleBounds();
+
+    // 1. Lấy quiz_id mặc định
+    const { data: activeQuizzes } = await supabase
+      .from('quizzes')
+      .select('id')
+      .eq('active', true)
+      .limit(1);
+      
+    let targetQuizId = activeQuizzes && activeQuizzes.length > 0 ? activeQuizzes[0].id : null;
+    if (!targetQuizId) {
+      const { data: anyQuiz } = await supabase.from('quizzes').select('id').limit(1);
+      if (anyQuiz && anyQuiz.length > 0) {
+        targetQuizId = anyQuiz[0].id;
+      } else {
+        const dummyQuizId = genId('q');
+        await supabase.from('quizzes').insert({
+          id: dummyQuizId,
+          title: 'Dummy Quiz for Override',
+          active: true,
+          created_at: new Date().toISOString()
+        });
+        targetQuizId = dummyQuizId;
+      }
+    }
+
+    // 2. Cập nhật tất cả lượt chơi trong chặng thành thời gian mới
+    const { data: existingPlays } = await supabase
+      .from('play_history')
+      .select('id')
+      .eq('user_id', userId)
+      .gte('played_at', bounds.start)
+      .lte('played_at', bounds.end);
+
+    if (existingPlays && existingPlays.length > 0) {
+      const { error: updateError } = await supabase
+        .from('play_history')
+        .update({ time_spent: timeMs, score: score })
+        .eq('user_id', userId)
+        .gte('played_at', bounds.start)
+        .lte('played_at', bounds.end);
+        
+      if (updateError) return { success: false, message: updateError.message };
+    } else {
+      // Nếu chưa có, tạo mới
+      const overrideRecord = {
+        id: genId('p'),
+        user_id: userId,
+        quiz_id: targetQuizId,
+        score: score,
+        correct_count: Math.floor(score / 10) || 1,
+        wrong_count: 0,
+        time_spent: timeMs,
+        played_at: new Date().toISOString(),
+        wrong_answers: []
+      };
+      const { error: insertError } = await supabase.from('play_history').insert(overrideRecord);
+      if (insertError) return { success: false, message: insertError.message };
+    }
+
+    return { success: true };
+  },
+
   async adminUpdateUser(id, updates) {
     // Dọn null/undefined trong updates
     const cleanUpdates = {};

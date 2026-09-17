@@ -509,9 +509,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (virtualTimeMsStr !== '') vTimeMs += parseInt(virtualTimeMsStr);
         
         if (vTimeMs > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
-           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
+           const dummyResult = await db.adminOverrideUserTime(finalUserId, userData.total_score, vTimeMs);
            if (!dummyResult.success) {
-             alert('Lỗi: ' + dummyResult.message);
+             alert('Lỗi ghi đè thời gian: ' + dummyResult.message);
            }
         }
       }
