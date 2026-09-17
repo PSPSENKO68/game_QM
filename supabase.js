@@ -40,11 +40,10 @@ export async function bootstrapDatabase() {
         is_active: true
       });
     } else {
-       // Đảm bảo số điện thoại và PIN được cập nhật cho tài khoản này
+       // Đảm bảo số điện thoại và role được cập nhật cho tài khoản này (KHÔNG ghi đè PIN)
        await supabase.from('users').update({ 
          employee_code: 'ADMIN999',
          phone_number: '0337411036', 
-         pin: '123456', 
          role: 'owner' 
        }).eq('id', existingAdmin[0].id);
     }
