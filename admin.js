@@ -378,6 +378,11 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (formUserScore) formUserScore.value = targetU.total_score || 0;
           formUserActive.checked = targetU.is_active;
 
+          const formUserTime = document.getElementById('form_user_time');
+          const formUserTimeMs = document.getElementById('form_user_time_ms');
+          if (formUserTime) formUserTime.value = '';
+          if (formUserTimeMs) formUserTimeMs.value = '';
+
           // Phân quyền: set dropdown role
           const roleSelect = document.getElementById('form_user_role');
           if (roleSelect) {
@@ -468,7 +473,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
 
       const formUserTime = document.getElementById('form_user_time');
-      const virtualTimeStr = formUserTime ? formUserTime.value.trim() : '';
+      const formUserTimeMs = document.getElementById('form_user_time_ms');
+      let virtualTimeStr = formUserTime && formUserTime.value.trim() !== '' ? formUserTime.value.trim() : '';
+      let virtualTimeMsStr = formUserTimeMs && formUserTimeMs.value.trim() !== '' ? formUserTimeMs.value.trim() : '';
 
       // Cảnh báo nếu admin tự hạ quyền chính mình
       if (uId && selectedRole === 'user') {
@@ -496,9 +503,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
 
       // Tạo lượt chơi ảo nếu có nhập thời gian ảo
-      if (result.success && virtualTimeStr !== '' && finalUserId) {
-        const vTime = parseFloat(virtualTimeStr);
-        if (vTime >= 0) {
+      if (result.success && (virtualTimeStr !== '' || virtualTimeMsStr !== '') && finalUserId) {
+        let vTime = 0;
+        if (virtualTimeStr !== '') vTime += parseFloat(virtualTimeStr);
+        if (virtualTimeMsStr !== '') vTime += parseFloat(virtualTimeMsStr) / 1000;
+        
+        if (vTime > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
            await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTime);
         }
       }
