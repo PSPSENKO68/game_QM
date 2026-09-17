@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=7';
+import { db, parseCSV, exportAccountsAsCSV } from './?v=8';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -509,12 +509,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (virtualTimeMsStr !== '') vTimeMs += parseInt(virtualTimeMsStr);
         
         if (vTimeMs > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
-           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
-           if (!dummyResult.success) {
-             showAdminAlert('Lỗi Thời Gian Ảo', dummyResult.message || 'Không thể tạo thời gian ảo.');
-           } else {
-             console.log("Dummy play created successfully with time:", vTimeMs);
-           }
+           await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
         }
       }
 

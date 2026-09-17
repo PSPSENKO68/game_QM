@@ -1054,6 +1054,7 @@ export const db = {
         targetQuizId = dummyQuizId;
       }
     }
+
     const dummyRecord = {
       id: genId('p'),
       user_id: userId,
