@@ -1038,7 +1038,10 @@ export const db = {
       .limit(1);
       
     let targetQuizId = activeQuizzes && activeQuizzes.length > 0 ? activeQuizzes[0].id : null;
-
+    if (!targetQuizId) {
+      const { data: anyQuiz } = await supabase.from('quizzes').select('id').limit(1);
+      if (anyQuiz && anyQuiz.length > 0) targetQuizId = anyQuiz[0].id;
+    }
     const dummyRecord = {
       id: genId('p'),
       user_id: userId,

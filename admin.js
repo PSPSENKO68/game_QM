@@ -509,7 +509,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (virtualTimeMsStr !== '') vTime += parseFloat(virtualTimeMsStr) / 1000;
         
         if (vTime > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
-           await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTime);
+           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTime);
+           if (!dummyResult.success) {
+             showAdminAlert('Lỗi Thời Gian Ảo', dummyResult.message || 'Không thể tạo thời gian ảo.');
+           } else {
+             console.log("Dummy play created successfully with time:", vTime);
+           }
         }
       }
 
