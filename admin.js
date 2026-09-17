@@ -509,7 +509,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (virtualTimeMsStr !== '') vTimeMs += parseInt(virtualTimeMsStr);
         
         if (vTimeMs > 0 || virtualTimeStr === '0' || virtualTimeMsStr === '0') {
-           await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
+           const dummyResult = await db.adminCreateDummyPlay(finalUserId, userData.total_score, vTimeMs);
+           if (!dummyResult.success) {
+             alert('Lỗi: ' + dummyResult.message);
+           }
         }
       }
 
