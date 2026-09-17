@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js';
+import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=7';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {

@@ -1040,7 +1040,19 @@ export const db = {
     let targetQuizId = activeQuizzes && activeQuizzes.length > 0 ? activeQuizzes[0].id : null;
     if (!targetQuizId) {
       const { data: anyQuiz } = await supabase.from('quizzes').select('id').limit(1);
-      if (anyQuiz && anyQuiz.length > 0) targetQuizId = anyQuiz[0].id;
+      if (anyQuiz && anyQuiz.length > 0) {
+        targetQuizId = anyQuiz[0].id;
+      } else {
+        // Force create a dummy quiz if database has zero quizzes
+        const dummyQuizId = genId('q');
+        await supabase.from('quizzes').insert({
+          id: dummyQuizId,
+          title: 'Dummy Quiz for Bot',
+          active: true,
+          created_at: new Date().toISOString()
+        });
+        targetQuizId = dummyQuizId;
+      }
     }
     const dummyRecord = {
       id: genId('p'),
@@ -1050,7 +1062,8 @@ export const db = {
       correct_count: Math.floor(score / 10) || 1, // Ước tính số câu đúng
       wrong_count: 0,
       time_spent: time,
-      played_at: playedAt
+      played_at: playedAt,
+      wrong_answers: []
     };
 
     const { error } = await supabase.from('play_history').insert(dummyRecord);
