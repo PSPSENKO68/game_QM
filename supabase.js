@@ -610,11 +610,9 @@ export const db = {
       return { success: false };
     }
 
-    // Tính năng mới: Lấy điểm cao nhất trong chu kỳ hiện tại để cộng dồn vào tổng điểm cá nhân
     if (mode !== 'streak') {
       const userData = userDataRes.data;
       let currentTotal = parseInt(userData?.total_score) || 0;
-      let recovPoints = parseInt(userData?.recoverable_points) || 0;
       
       // Lấy danh sách điểm các lượt chơi của BỘ ĐỀ NÀY trong chu kỳ này, trừ lượt vừa lưu
       const { data: cyclePlays } = await supabase
@@ -634,8 +632,13 @@ export const db = {
       let scoreUpdates = {};
       let totalChanged = false;
 
-      // 1. Cộng điểm chênh lệch (nếu phá kỷ lục)
-      if (newScore > oldMaxInCycle) {
+      // 1. Nếu điểm <= 0 (bằng 0 hoặc âm), cày cuốc lại sẽ được reset bằng chính điểm đạt được
+      if (currentTotal <= 0 && newScore > 0) {
+        currentTotal = newScore;
+        totalChanged = true;
+      } 
+      // 2. Nếu điểm đang dương, áp dụng luật chỉ lấy điểm cao nhất trong chu kỳ
+      else if (newScore > oldMaxInCycle) {
         const diff = newScore - oldMaxInCycle;
         currentTotal += diff;
         totalChanged = true;
