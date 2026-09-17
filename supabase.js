@@ -1073,9 +1073,6 @@ export const db = {
   },
 
   async adminOverrideUserTime(userId, score, timeMs) {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return { success: false, message: 'Chưa đăng nhập.' };
-
     const bounds = await this.getCurrentCycleBounds();
 
     // 1. Lấy quiz_id mặc định
