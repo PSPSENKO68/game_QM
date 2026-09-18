@@ -568,7 +568,7 @@ export const db = {
   async savePlayRecord(userId, quizId, score, correctCount = 0, wrongCount = 0, timeSpent = 0, wrongAnswers = [], mode = 1, stealTargetId = null) {
     if (mode === 2 && stealTargetId) {
       // Chế độ thách đấu
-      const result = await db.executeSteal(userId, stealTargetId, correctCount, timeSpent);
+      const result = await db.executeSteal(userId, stealTargetId, correctCount, timeSpent, quizId);
       if (result && result.success) {
         return { 
           success: true, 
@@ -653,16 +653,22 @@ export const db = {
     return { success: true };
   },
 
-  async getBestPlayToday(userId) {
+  async getBestPlayToday(userId, quizId = null) {
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
     
-    const { data, error } = await supabase
+    let query = supabase
       .from('play_history')
       .select('score, correct_count, time_spent')
       .eq('user_id', userId)
       .gte('played_at', todayStart.toISOString())
-      .lte('played_at', todayEnd.toISOString())
+      .lte('played_at', todayEnd.toISOString());
+
+    if (quizId) {
+      query = query.eq('quiz_id', quizId);
+    }
+
+    const { data, error } = await query
       .order('correct_count', { ascending: false })
       .order('time_spent', { ascending: true })
       .limit(1);
@@ -685,7 +691,7 @@ export const db = {
     return data[0];
   },
 
-  async executeSteal(attackerId, defenderId, attackerCorrectCount, attackerTimeSpent) {
+  async executeSteal(attackerId, defenderId, attackerCorrectCount, attackerTimeSpent, quizId = null) {
     // Parallelize all checks and data fetching
     const [
       hasStolen, 
@@ -699,7 +705,7 @@ export const db = {
       db.hasStolenFromUserToday(attackerId, defenderId),
       db.getMaxStealsPerDay(),
       db.getStealsToday(attackerId),
-      db.getBestPlayToday(defenderId),
+      db.getBestPlayToday(defenderId, quizId),
       db.getStealMultipliers(),
       db.getStealBasePoints(),
       supabase.from('users').select('id, total_score, has_shield, recoverable_points').in('id', [attackerId, defenderId])
