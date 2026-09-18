@@ -3,7 +3,7 @@
  * Hiển thị bảng xếp hạng Top 20 nhân viên điểm cao nhất.
  */
 
-import { db } from './supabase.js?v=9';
+import { db } from './supabase.js?v=10';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const leaderboardList = document.getElementById('leaderboard_list');
