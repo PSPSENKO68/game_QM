@@ -1651,7 +1651,7 @@ export const db = {
       .from('play_history')
       .select(`
         *,
-        users ( full_name, employee_code, department ),
+        users ( full_name, employee_code, department, role ),
         quizzes ( title, month_no, week_no, streak_day )
       `)
       .order('played_at', { ascending: false });
@@ -1659,7 +1659,14 @@ export const db = {
       console.error('adminGetPlayHistory error:', error);
       return [];
     }
-    return data || [];
+    
+    // Ẩn admin khỏi lịch sử
+    return (data || []).filter(row => {
+      if (!row.users) return false;
+      const role = row.users.role;
+      const empCode = row.users.employee_code;
+      return role !== 'owner' && role !== 'admin' && empCode !== 'ADMIN999';
+    });
   },
 
   async adminGetStealHistory() {
@@ -1667,15 +1674,21 @@ export const db = {
       .from('steal_history')
       .select(`
         *,
-        attacker:users!steal_history_attacker_id_fkey ( full_name, employee_code, department ),
-        defender:users!steal_history_defender_id_fkey ( full_name, employee_code, department )
+        attacker:users!steal_history_attacker_id_fkey ( full_name, employee_code, department, role ),
+        defender:users!steal_history_defender_id_fkey ( full_name, employee_code, department, role )
       `)
       .order('created_at', { ascending: false });
     if (error) {
       console.error('adminGetStealHistory error:', error);
       return [];
     }
-    return data || [];
+    
+    // Ẩn admin khỏi lịch sử thách đấu
+    return (data || []).filter(row => {
+      const isAttackerAdmin = row.attacker && (row.attacker.role === 'owner' || row.attacker.role === 'admin' || row.attacker.employee_code === 'ADMIN999');
+      const isDefenderAdmin = row.defender && (row.defender.role === 'owner' || row.defender.role === 'admin' || row.defender.employee_code === 'ADMIN999');
+      return !isAttackerAdmin && !isDefenderAdmin;
+    });
   },
 
   async adminGetQuizParticipantCount() {
