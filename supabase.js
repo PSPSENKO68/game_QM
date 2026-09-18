@@ -565,10 +565,10 @@ export const db = {
   },
 
   // ── 4. LƯU KẾT QUẢ CHƠI ────────────────────────────────────────────────
-  async savePlayRecord(userId, quizId, score, correctCount = 0, wrongCount = 0, timeSpent = 0, wrongAnswers = [], mode = 1, stealTargetId = null) {
+  async savePlayRecord(userId, quizId, score, correctCount = 0, wrongCount = 0, timeSpent = 0, wrongAnswers = [], mode = 1, stealTargetId = null, totalQuestions = null) {
     if (mode === 2 && stealTargetId) {
       // Chế độ thách đấu
-      const result = await db.executeSteal(userId, stealTargetId, correctCount, timeSpent, quizId);
+      const result = await db.executeSteal(userId, stealTargetId, correctCount, timeSpent, quizId, totalQuestions);
       if (result && result.success) {
         return { 
           success: true, 
@@ -691,7 +691,7 @@ export const db = {
     return data[0];
   },
 
-  async executeSteal(attackerId, defenderId, attackerCorrectCount, attackerTimeSpent, quizId = null) {
+  async executeSteal(attackerId, defenderId, attackerCorrectCount, attackerTimeSpent, quizId = null, totalQuestions = null) {
     // Parallelize all checks and data fetching
     const [
       hasStolen, 
@@ -714,7 +714,10 @@ export const db = {
     if (hasStolen) return { success: false, message: 'Bạn đã thách đấu người này hôm nay rồi.' };
     if (stealsToday >= maxSteals) return { success: false, message: 'Bạn đã hết lượt thách đấu hôm nay.' };
 
-    const defCorrect = defenderBest ? parseInt(defenderBest.correct_count) || 0 : 0;
+    let defCorrect = defenderBest ? parseInt(defenderBest.correct_count) || 0 : 0;
+    if (totalQuestions && defCorrect > totalQuestions) {
+      defCorrect = totalQuestions;
+    }
     const rawDefTime = defenderBest ? parseFloat(defenderBest.time_spent) || 999999999 : 999999999;
     
     const atkCorrect = parseInt(attackerCorrectCount) || 0;
