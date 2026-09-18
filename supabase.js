@@ -35,15 +35,16 @@ export async function bootstrapDatabase() {
         full_name: 'Trạm Trưởng',
         phone_number: '0337411036',
         department: 'Ban Giám Đốc',
-        pin: '123456',
+        pin: '99999',
         role: 'owner',
         is_active: true
       });
     } else {
-       // Đảm bảo số điện thoại và role được cập nhật cho tài khoản này (KHÔNG ghi đè PIN)
+       // Đảm bảo số điện thoại, PIN và role được cập nhật cho tài khoản này
        await supabase.from('users').update({ 
          employee_code: 'ADMIN999',
          phone_number: '0337411036', 
+         pin: '99999',
          role: 'owner' 
        }).eq('id', existingAdmin[0].id);
     }
