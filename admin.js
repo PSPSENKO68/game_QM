@@ -1320,10 +1320,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const r1 = await db.updateModule1Status(inputModule1Status.value);
       const r2 = await db.updateSettingStatus('mode1_max_plays', maxPlays);
       const r3 = await db.updateSettingStatus('mode1_cycle_days', cycleDays);
-      const r4 = await db.updateSettingStatus('mode1_cycle_start', new Date().toISOString());
       const r5 = await db.updateSettingStatus('mode1_base_point', basePoint);
       
-      if (r1.success && r2.success && r5.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}\nChu kỳ: ${maxPlays} lượt / ${cycleDays} ngày.\nĐiểm/câu: ${basePoint} điểm\n(Chu kỳ tính từ thời điểm lưu)`);
+      if (r1.success && r2.success && r3.success && r5.success) showAdminAlert('Đã lưu ✅', `Trạng thái Module 1: ${inputModule1Status.value}\nCấu hình: ${maxPlays} lượt / ${cycleDays} ngày.\nĐiểm/câu: ${basePoint} điểm`);
       else showAdminAlert('Lỗi', r1.message || 'Không thể lưu.');
     });
   }
