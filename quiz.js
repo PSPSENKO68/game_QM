@@ -3,7 +3,7 @@
  * Manages question shuffling, answering state, score calculation, correct feedback, and database persistence.
  */
 
-import { db } from './supabase.js?v=11';
+import { db } from './supabase.js?v=12';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Authenticated session check
@@ -460,9 +460,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const totalQuizScore = currentScore;
 
       try {
-        // Save results to Database
         const wrongCount = questions.length - correctCount;
-        const result = await db.savePlayRecord(user.id, quizId, totalQuizScore + earnedBonus, correctCount, wrongCount, totalTimeSpent, wrongAnswersDetails, mode, stealTargetId);
+        const result = await db.savePlayRecord(user.id, quizId, totalQuizScore + earnedBonus, correctCount, wrongCount, totalTimeSpent, wrongAnswersDetails, mode, stealTargetId, questions.length);
 
         if (mode === 2) {
           if (result && result.success) {
