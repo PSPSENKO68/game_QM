@@ -653,10 +653,12 @@ export const db = {
     return { success: true };
   },
 
-  async getBestPlayToday(userId, quizId = null) {
+  async getBestPlayToday(userId, quizId = null, totalQuestions = null) {
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
     const todayEnd = new Date(); todayEnd.setHours(23, 59, 59, 999);
     
+    // Nếu có quizId cụ thể mà hệ thống muốn khóa cứng, có thể giữ lại,
+    // nhưng ở đây ta bỏ qua query filter theo quiz_id để cho phép lấy điểm chặng cũ.
     let query = supabase
       .from('play_history')
       .select('score, correct_count, time_spent')
@@ -664,17 +666,33 @@ export const db = {
       .gte('played_at', todayStart.toISOString())
       .lte('played_at', todayEnd.toISOString());
 
-    if (quizId) {
-      query = query.eq('quiz_id', quizId);
-    }
-
-    const { data, error } = await query
-      .order('correct_count', { ascending: false })
-      .order('time_spent', { ascending: true })
-      .limit(1);
-
+    const { data, error } = await query;
     if (error || !data || data.length === 0) return null;
-    return data[0];
+
+    let bestPlay = null;
+    let bestEffectiveCorrect = -1;
+    let bestTime = 999999999;
+
+    for (const play of data) {
+      let correct = parseInt(play.correct_count) || 0;
+      let time = parseFloat(play.time_spent) || 999999999;
+      
+      // Áp dụng chặn trần
+      if (totalQuestions && correct > totalQuestions) {
+        correct = totalQuestions;
+      }
+      
+      if (correct > bestEffectiveCorrect) {
+        bestEffectiveCorrect = correct;
+        bestTime = time;
+        bestPlay = { ...play, correct_count: correct }; // Gán số câu đã chặn trần để trả về
+      } else if (correct === bestEffectiveCorrect && time < bestTime) {
+        bestTime = time;
+        bestPlay = { ...play, correct_count: correct };
+      }
+    }
+    
+    return bestPlay;
   },
 
   async getBestPlayOverall(userId) {
@@ -705,7 +723,7 @@ export const db = {
       db.hasStolenFromUserToday(attackerId, defenderId),
       db.getMaxStealsPerDay(),
       db.getStealsToday(attackerId),
-      db.getBestPlayToday(defenderId, quizId),
+      db.getBestPlayToday(defenderId, null, totalQuestions),
       db.getStealMultipliers(),
       db.getStealBasePoints(),
       supabase.from('users').select('id, total_score, has_shield, recoverable_points').in('id', [attackerId, defenderId])
