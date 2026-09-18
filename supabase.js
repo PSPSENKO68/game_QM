@@ -1662,10 +1662,11 @@ export const db = {
     
     // Ẩn admin khỏi lịch sử
     return (data || []).filter(row => {
-      if (!row.users) return false;
-      const role = row.users.role;
-      const empCode = row.users.employee_code;
-      return role !== 'owner' && role !== 'admin' && empCode !== 'ADMIN999';
+      let u = Array.isArray(row.users) ? row.users[0] : row.users;
+      if (!u) return false;
+      const role = String(u.role || '').toLowerCase();
+      const empCode = String(u.employee_code || '').toUpperCase();
+      return role !== 'owner' && role !== 'admin' && !empCode.includes('ADMIN');
     });
   },
 
@@ -1685,9 +1686,13 @@ export const db = {
     
     // Ẩn admin khỏi lịch sử thách đấu
     return (data || []).filter(row => {
-      const isAttackerAdmin = row.attacker && (row.attacker.role === 'owner' || row.attacker.role === 'admin' || row.attacker.employee_code === 'ADMIN999');
-      const isDefenderAdmin = row.defender && (row.defender.role === 'owner' || row.defender.role === 'admin' || row.defender.employee_code === 'ADMIN999');
-      return !isAttackerAdmin && !isDefenderAdmin;
+      const atk = Array.isArray(row.attacker) ? row.attacker[0] : row.attacker;
+      const def = Array.isArray(row.defender) ? row.defender[0] : row.defender;
+      
+      const isAtkAdmin = atk && (String(atk.role || '').toLowerCase() === 'owner' || String(atk.role || '').toLowerCase() === 'admin' || String(atk.employee_code || '').toUpperCase().includes('ADMIN'));
+      const isDefAdmin = def && (String(def.role || '').toLowerCase() === 'owner' || String(def.role || '').toLowerCase() === 'admin' || String(def.employee_code || '').toUpperCase().includes('ADMIN'));
+      
+      return !isAtkAdmin && !isDefAdmin;
     });
   },
 
