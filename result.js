@@ -3,7 +3,7 @@
  * Pulls current session result logs, validates retry limits, and guides navigation back to active play.
  */
 
-import { db, formatTimeSpent, supabase } from './supabase.js?v=8';
+import { db, formatTimeSpent, supabase } from './supabase.js?v=9';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Authenticate check
