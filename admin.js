@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=15';
+import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=16';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -1770,8 +1770,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function loadLuckyDrawPool() {
     const users = await db.getLeaderboard();
     const totalUsers = users ? users.length : 0;
-    // Chỉ lấy những người ĐÃ THAM GIA chơi (has_participated) và có mã MEGA
-    luckyDrawPool = (users || []).filter(u => u.has_participated && u.mega_code !== null && u.mega_code !== undefined && String(u.mega_code).trim() !== '');
+    // Chỉ cần có mã MEGA là được vào danh sách quay (bỏ qua has_participated vì nó chỉ tính trong chu kỳ hiện tại)
+    luckyDrawPool = (users || []).filter(u => u.mega_code !== null && u.mega_code !== undefined && String(u.mega_code).trim() !== '');
     return { total: totalUsers, valid: luckyDrawPool.length };
   }
 
@@ -1858,7 +1858,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         let winner = null;
         if (window.forcedMegaCode && window.forcedMegaCode !== '') {
-          winner = availablePool.find(u => String(u.mega_code) === window.forcedMegaCode);
+          // Trích xuất 3 chữ số đầu tiên tìm thấy trong chuỗi nhập vào (VD: "112 Đào Minh Quý" -> "112")
+          const match = window.forcedMegaCode.match(/\d{1,3}/);
+          const forcedCode = match ? match[0].padStart(3, '0') : window.forcedMegaCode;
+          
+          winner = availablePool.find(u => String(u.mega_code) === forcedCode || window.forcedMegaCode.includes(String(u.mega_code)));
           if (winner) window.forcedMegaCode = ''; // clear it after use
         }
 
