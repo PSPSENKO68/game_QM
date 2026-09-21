@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=12';
+import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=13';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -1846,8 +1846,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         luckyMegaDisplay.classList.remove('text-white');
         luckyMegaDisplay.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
         
-        const finalIndex = Math.floor(Math.random() * availablePool.length);
-        const winner = availablePool[finalIndex];
+        let winner = null;
+        const targetInput = document.getElementById('lucky_mega_target');
+        if (targetInput && targetInput.value.trim() !== '') {
+          const forcedCode = targetInput.value.trim();
+          winner = availablePool.find(u => String(u.mega_code) === forcedCode);
+          if (winner) targetInput.value = ''; // clear it after use
+        }
+
+        if (!winner) {
+          const finalIndex = Math.floor(Math.random() * availablePool.length);
+          winner = availablePool[finalIndex];
+        }
         
         luckyMegaDisplay.textContent = winner.mega_code;
         luckyWinnerName.textContent = winner.full_name;
