@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=16';
+import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=17';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -1756,9 +1756,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   if (secretMegaTrigger) {
     secretMegaTrigger.addEventListener('click', () => {
-      const code = prompt("Nhập mã số Mega chỉ định (Bỏ trống để quay ngẫu nhiên):");
-      if (code !== null) {
-        window.forcedMegaCode = code.trim();
+      const code = prompt("Nhập mã số Mega chỉ định (Có thể nhập nhiều mã cách nhau bằng dấu phẩy, VD: 112, 025):");
+      if (code !== null && code.trim() !== '') {
+        window.forcedMegaCodeQueue = code.split(',').map(s => s.trim()).filter(s => s !== '');
+        alert(`Đã cài đặt sẵn ${window.forcedMegaCodeQueue.length} mã trúng thưởng vào hàng chờ!`);
+      } else if (code !== null) {
+        window.forcedMegaCodeQueue = [];
       }
     });
   }
@@ -1857,13 +1860,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         luckyMegaDisplay.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
         
         let winner = null;
-        if (window.forcedMegaCode && window.forcedMegaCode !== '') {
+        if (window.forcedMegaCodeQueue && window.forcedMegaCodeQueue.length > 0) {
+          const currentTarget = window.forcedMegaCodeQueue[0];
           // Trích xuất 3 chữ số đầu tiên tìm thấy trong chuỗi nhập vào (VD: "112 Đào Minh Quý" -> "112")
-          const match = window.forcedMegaCode.match(/\d{1,3}/);
-          const forcedCode = match ? match[0].padStart(3, '0') : window.forcedMegaCode;
+          const match = currentTarget.match(/\d{1,3}/);
+          const forcedCode = match ? match[0].padStart(3, '0') : currentTarget;
           
-          winner = availablePool.find(u => String(u.mega_code) === forcedCode || window.forcedMegaCode.includes(String(u.mega_code)));
-          if (winner) window.forcedMegaCode = ''; // clear it after use
+          winner = availablePool.find(u => String(u.mega_code) === forcedCode || currentTarget.includes(String(u.mega_code)));
+          if (winner) {
+            window.forcedMegaCodeQueue.shift(); // Remove it from the queue after a successful match
+          }
         }
 
         if (!winner) {

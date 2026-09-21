@@ -3,7 +3,7 @@
  * Quản lý thông tin cá nhân, kiểm tra quiz, lượt chơi, và profile update.
  */
 
-import { db } from './supabase.js?v=16';
+import { db } from './supabase.js?v=17';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Kiểm tra đăng nhập

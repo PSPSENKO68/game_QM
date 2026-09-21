@@ -3,7 +3,7 @@
  * Manages question shuffling, answering state, score calculation, correct feedback, and database persistence.
  */
 
-import { db } from './supabase.js?v=16';
+import { db } from './supabase.js?v=17';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Authenticated session check
