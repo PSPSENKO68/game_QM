@@ -3,7 +3,7 @@
  * Xử lý đăng nhập, kiểm tra Chủ Nhật, và tự động seed database lần đầu.
  */
 
-import { db, bootstrapDatabase } from './supabase.js?v=14';
+import { db, bootstrapDatabase } from './supabase.js?v=15';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // Đã đăng nhập → chuyển thẳng vào app

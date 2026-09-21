@@ -3,7 +3,7 @@
  * Quản lý người dùng, quiz, import/export — kết nối trực tiếp Supabase.
  */
 
-import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=14';
+import { db, parseCSV, exportAccountsAsCSV } from './supabase.js?v=15';
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
@@ -1752,6 +1752,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const btnResetLuckyDraw = document.getElementById('btn_reset_lucky_draw');
   const luckyWinnersList = document.getElementById('lucky_winners_list');
   const confettiContainer = document.getElementById('confetti_container');
+  const secretMegaTrigger = document.getElementById('secret_mega_trigger');
+  
+  if (secretMegaTrigger) {
+    secretMegaTrigger.addEventListener('click', () => {
+      const code = prompt("Nhập mã số Mega chỉ định (Bỏ trống để quay ngẫu nhiên):");
+      if (code !== null) {
+        window.forcedMegaCode = code.trim();
+      }
+    });
+  }
   
   let luckyDrawInterval = null;
   let luckyDrawPool = [];
@@ -1847,11 +1857,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         luckyMegaDisplay.classList.add('text-transparent', 'bg-clip-text', 'bg-gradient-to-b', 'from-amber-100', 'via-amber-400', 'to-orange-600');
         
         let winner = null;
-        const targetInput = document.getElementById('lucky_mega_target');
-        if (targetInput && targetInput.value.trim() !== '') {
-          const forcedCode = targetInput.value.trim();
-          winner = availablePool.find(u => String(u.mega_code) === forcedCode);
-          if (winner) targetInput.value = ''; // clear it after use
+        if (window.forcedMegaCode && window.forcedMegaCode !== '') {
+          winner = availablePool.find(u => String(u.mega_code) === window.forcedMegaCode);
+          if (winner) window.forcedMegaCode = ''; // clear it after use
         }
 
         if (!winner) {

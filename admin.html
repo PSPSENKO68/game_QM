@@ -197,18 +197,6 @@
               <button id="btn_save_multiplier" class="btn-pirate mt-1 px-3 py-2 text-white font-bold text-xs rounded-xl transition cursor-pointer">LƯU CẤU HÌNH</button>
             </div>
             
-            <!-- Rigged Mega Spin Target -->
-            <div class="card-wood p-4 flex flex-col gap-2">
-              <p class="text-xs font-bold text-[#FFD700]">CẤU HÌNH MEGA SPIN</p>
-              <p class="text-[10px] text-[#FFF8E7] flex-1">Ép mã trúng thưởng vòng quay Mega</p>
-              
-              <div class="flex flex-col gap-2 mt-2">
-                <label class="text-[10px] text-[#FFF8E7] font-bold">Mã số trúng giải chỉ định:</label>
-                <input type="text" id="lucky_mega_target" placeholder="VD: 025 (Bỏ trống để quay ngẫu nhiên)" class="w-full p-2 bg-[#F9F5F0] border-2 border-[#8B5A2B] text-[#4A240A] rounded-xl text-center text-xs font-bold focus:outline-none focus:border-[#DE3A3B]" />
-              </div>
-            </div>
-
-
             <!-- Lucky Wheel Status -->
             <div class="card-wood p-4 flex flex-col gap-2 hidden">
               <p class="text-xs font-bold text-[#FFD700]">Trạng thái Vòng Quay</p>
@@ -634,7 +622,7 @@
       <!-- VIEWPORT: LUCKY DRAW -->
       <section id="section_lucky_draw" class="admin-view card-map p-6 flex flex-col gap-6 hidden">
         <div>
-          <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quay Số Trúng Thưởng (Nhảy số MEGA)</h2>
+          <h2 class="text-xl font-bold text-[#4A240A] font-['Space_Grotesk']">Quay Số Trúng Thưởng (Nhảy số <span id="secret_mega_trigger" class="cursor-pointer" title="MEGA">MEGA</span>)</h2>
           <p class="text-xs text-[#593113]">Tính năng quay số nhanh ngẫu nhiên cho người chơi tham gia</p>
         </div>
 
@@ -1118,7 +1106,7 @@
   <!-- Thư viện canvas-confetti cho hiệu ứng pháo hoa -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-  <script type="module" src="admin.js?v=14"></script>
+  <script type="module" src="admin.js?v=15"></script>
 </body>
 
 </html>
