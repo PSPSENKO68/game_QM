@@ -1724,24 +1724,32 @@ export const db = {
       .select('quiz_id, user_id, score');
 
     const stats = {};
-    const seen = {};
+    const userBest = {};
 
     (data || []).forEach(row => {
       if (!stats[row.quiz_id]) {
-        stats[row.quiz_id] = { totalPlays: 0, totalScore: 0 };
-        seen[row.quiz_id] = new Set();
+        stats[row.quiz_id] = { totalPlays: 0 };
+        userBest[row.quiz_id] = {};
       }
-      seen[row.quiz_id].add(row.user_id);
+      
+      const s = parseInt(row.score) || 0;
       stats[row.quiz_id].totalPlays++;
-      stats[row.quiz_id].totalScore += (row.score || 0);
+      
+      if (userBest[row.quiz_id][row.user_id] === undefined || s > userBest[row.quiz_id][row.user_id]) {
+         userBest[row.quiz_id][row.user_id] = s;
+      }
     });
 
     const result = {};
     for (const quizId in stats) {
+      const participants = Object.keys(userBest[quizId]);
+      let sumBest = 0;
+      participants.forEach(u => sumBest += userBest[quizId][u]);
+      
       result[quizId] = {
-        participants: seen[quizId].size,
+        participants: participants.length,
         plays: stats[quizId].totalPlays,
-        avgScore: stats[quizId].totalPlays > 0 ? Math.round(stats[quizId].totalScore / stats[quizId].totalPlays) : 0
+        avgScore: participants.length > 0 ? Math.round(sumBest / participants.length) : 0
       };
     }
 
