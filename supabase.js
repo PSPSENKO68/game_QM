@@ -1723,8 +1723,6 @@ export const db = {
       .from('play_history')
       .select('quiz_id, user_id, score');
 
-    if (error) return {};
-
     const stats = {};
     const seen = {};
 
@@ -1745,6 +1743,30 @@ export const db = {
         plays: stats[quizId].totalPlays,
         avgScore: stats[quizId].totalPlays > 0 ? Math.round(stats[quizId].totalScore / stats[quizId].totalPlays) : 0
       };
+    }
+
+    // Thêm số lượt thách đấu vào bộ đề Thách Đấu (streak_day != null)
+    // Vì steal_history không lưu quiz_id, ta sẽ cộng dồn vào các bộ đề Thách Đấu
+    const { data: quizzes } = await supabase.from('quizzes').select('id, streak_day').not('streak_day', 'is', null).eq('active', true);
+    if (quizzes && quizzes.length > 0) {
+      const { data: stealData } = await supabase.from('steal_history').select('attacker_id, defender_id');
+      if (stealData && stealData.length > 0) {
+        // Gán vào bộ đề thách đấu đang active
+        const activeStreakQuiz = quizzes[0].id;
+        
+        if (!result[activeStreakQuiz]) {
+           result[activeStreakQuiz] = { participants: 0, plays: 0, avgScore: 0 };
+        }
+        
+        const stealParticipants = new Set();
+        stealData.forEach(row => {
+          stealParticipants.add(row.attacker_id);
+          stealParticipants.add(row.defender_id);
+        });
+        
+        result[activeStreakQuiz].plays += stealData.length; // Thêm số lượt thách đấu
+        result[activeStreakQuiz].participants = Math.max(result[activeStreakQuiz].participants, stealParticipants.size);
+      }
     }
 
     return result;
